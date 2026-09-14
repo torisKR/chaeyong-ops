@@ -98,6 +98,9 @@ AI CLI에서:
 - `pipeline` 모드 → `data/pipeline.md` 대기 URL 일괄 처리
 - `pdf` 모드 → 한국어 ATS 이력서 (`cv-template.ko-standard.html`)
 - `jiwon` 모드 → 지원서 폼 작성 도우미
+- `cover` / `email` → 자기소개서·지원 메일 초안
+- `batch` 모드 → `batch/batch-runner.sh` 대량 평가 (한국어 worker 프롬프트)
+- `deep` / `contacto` / `ofertas` → 리서치·아웃리치·오퍼 비교
 
 ## 한국 포털 설정
 

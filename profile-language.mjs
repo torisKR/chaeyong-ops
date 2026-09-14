@@ -1,6 +1,10 @@
+import { existsSync, readFileSync } from 'fs';
+import { join } from 'path';
 import * as yaml from 'js-yaml';
 
 const DEFAULT_OUTPUT_LANGUAGE = 'en';
+export const DEFAULT_BRIEF_TEMPLATE = 'modes/_brief.template.md';
+export const KO_BRIEF_TEMPLATE = 'modes/_brief.template.ko.md';
 
 function normalizeOutputLanguage(value) {
   if (typeof value !== 'string') return DEFAULT_OUTPUT_LANGUAGE;
@@ -19,6 +23,24 @@ export function parseOutputLanguage(profileYaml) {
   } catch {
     return DEFAULT_OUTPUT_LANGUAGE;
   }
+}
+
+/** Resolve which brief template doctor should seed from `config/profile.yml`. */
+export function resolveBriefTemplatePath(projectRoot) {
+  const profilePath = join(projectRoot, 'config', 'profile.yml');
+  let lang = DEFAULT_OUTPUT_LANGUAGE;
+  if (existsSync(profilePath)) {
+    try {
+      lang = parseOutputLanguage(readFileSync(profilePath, 'utf-8'));
+    } catch {
+      /* keep default */
+    }
+  }
+  const koPath = join(projectRoot, ...KO_BRIEF_TEMPLATE.split('/'));
+  if (lang === 'ko' && existsSync(koPath)) {
+    return KO_BRIEF_TEMPLATE;
+  }
+  return DEFAULT_BRIEF_TEMPLATE;
 }
 
 /** Build the canonical output-language rule injected into every model prompt. */
