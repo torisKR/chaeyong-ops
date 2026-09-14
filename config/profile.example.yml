@@ -1,23 +1,26 @@
-# Career-Ops Profile Configuration
-# Copy this file to config/profile.yml and fill in your details.
-# This is the single source of truth for your personal data across all modes.
+# Chaeyong Ops (채용옵스) profile example — Korean backend / fullstack seeker
+# Copy to config/profile.yml and replace EVERY placeholder with your own data.
+# Do NOT commit config/profile.yml (it is gitignored). Never put a real phone
+# or personal email in tracked example files.
+#
+# This is the single source of truth for identity + targeting across all modes.
 
 candidate:
-  full_name: "Jane Smith"
-  email: "jane@example.com"
+  full_name: "유주환"
+  email: "you.example@example.com"
   # Optional. Any other mailboxes that are also you. Follow-up contact extraction uses these to
   # avoid reporting your own address as somebody to chase, when a tracker note happens to cite it.
   # alternate_emails:
-  #   - "jane@previous-employer.example"
-  phone: "+1-555-0123"
+  #   - "you.previous@example.com"
+  phone: "010-0000-0000"
   # Optional. Used by `/career-ops email` contact blocks in markets where WeChat
   # is an expected recruiting channel. Omit or leave blank if not applicable.
   wechat: ""
-  location: "San Francisco, CA"
-  linkedin: "linkedin.com/in/janesmith"
-  portfolio_url: "https://janesmith.dev"
-  github: "github.com/janesmith"
-  twitter: "https://x.com/janesmith"
+  location: "서울, 대한민국"
+  linkedin: "linkedin.com/in/example-user"
+  portfolio_url: "https://example.com"
+  github: "github.com/example-user"
+  twitter: ""
   # Optional profile photo for the PDF CV (opt-in, #264). Leave empty to omit it
   # entirely: US/UK and many-market ATS penalize photos, so the photoless layout
   # is the default. Set it only for DACH/European markets (Germany, Austria,
@@ -28,67 +31,68 @@ candidate:
   photo_style: rounded
 
 target_roles:
-  # Your North Star roles — what you're optimizing for
+  # North Star — Korean backend / fullstack (edit to match YOU)
   primary:
-    - "Senior AI Engineer"
-    - "Staff ML Engineer"
+    - "풀스택 개발자"
+    - "백엔드 개발자"
   # Archetypes help the evaluation system score fit
   archetypes:
-    - name: "AI/ML Engineer"
-      level: "Senior/Staff"
+    - name: "백엔드 개발자 (NestJS/Node.js)"
+      level: "주니어 (1–3년)"
       fit: "primary"        # primary = dream role, secondary = good fit, adjacent = stretch
-    - name: "AI Product Manager"
-      level: "Senior"
+    - name: "풀스택 개발자 (React/Next.js + NestJS)"
+      level: "주니어 (1–3년)"
+      fit: "primary"
+    - name: "프론트엔드 개발자 (React/Next.js)"
+      level: "주니어"
       fit: "secondary"
-    - name: "Solutions Architect"
-      level: "Mid-Senior"
-      fit: "adjacent"
 
 narrative:
   # Your professional headline (1 line)
-  headline: "ML Engineer turned AI product builder"
+  headline: "TypeScript 풀스택 — NestJS 백엔드와 React/Next.js"
   # Your exit story — what makes you unique
-  exit_story: "Built and sold my SaaS after 5 years. Now focused on applied AI at scale."
+  exit_story: "약 1년 7개월 TypeScript 제품 개발. NestJS·Prisma·PostgreSQL 백엔드와 React/Next.js·React Native(Expo)를 함께 다룹니다."
   # Your top 3-5 superpowers
   superpowers:
-    - "End-to-end ML pipelines"
-    - "Fast prototyping (idea to prod in 2 weeks)"
-    - "Cross-functional communication"
+    - "NestJS + Prisma + PostgreSQL API"
+    - "React / Next.js UI와 tRPC 타입 공유"
+    - "AWS + Terraform으로 배포 파이프라인 운영"
   # Proof points — projects, articles, case studies with measurable impact
+  # Use numbers that exist in YOUR cv.md only. The figures below are fictional placeholders.
   proof_points:
-    - name: "Project Alpha"
-      url: "https://janesmith.dev/project-alpha"
-      hero_metric: "Reduced inference latency 40%"
-    - name: "Open Source Tool"
-      url: "https://github.com/janesmith/tool"
-      hero_metric: "2K+ GitHub stars"
+    - name: "사내 API 모듈화 (placeholder)"
+      url: "https://example.com/projects/api"
+      hero_metric: "placeholder — replace with a number from cv.md"
+    - name: "모바일/웹 클라이언트 (placeholder)"
+      url: "https://github.com/example-user/app"
+      hero_metric: "placeholder — do not invent metrics"
   # Optional: dashboard/demo URL with credentials
   # dashboard:
-  #   url: "https://janesmith.dev/demo"
+  #   url: "https://example.com/demo"
   #   password: "demo-2026"
 
 compensation:
-  target_range: "$150K-200K"     # Your target total comp
-  currency: "USD"
-  minimum: "$120K"               # Walk-away number
-  location_flexibility: "Remote preferred, 1 week/month on-site possible"
+  target_range: "4,000–5,500만원"  # 세전 연봉 예시. 본인 기준으로 수정
+  currency: "KRW"
+  minimum: "3,800만원"             # Walk-away (세전)
+  location_flexibility: "서울·경기 하이브리드 가능, 재택 우대"
 
 location:
-  country: "United States"
-  city: "San Francisco"
-  timezone: "PST"
-  visa_status: "No sponsorship needed"
+  country: "대한민국"
+  city: "서울"
+  timezone: "Asia/Seoul"
+  visa_status: "한국 내 근로 가능"
   # Countries/regions where you ALREADY hold work authorization (no sponsorship
   # needed there). Drives the Work-Authorization signal in job evaluation
   # (modes/oferta.md → Block A "Work-authorization check"). Optional — omit or
   # leave [] if not applicable; the free-text visa_status above still applies.
-  authorized_in: ["United States"]
+  authorized_in: ["대한민국"]
   # true if you need visa sponsorship for roles OUTSIDE authorized_in. When a JD
   # explicitly states it will not sponsor, that is a hard blocker (see
   # modes/_profile.md "Your Location Policy"). Omit → treated as false.
   needs_sponsorship: false
   # For remote roles outside your country:
-  # onsite_availability: "1 week/month in any city"
+  # onsite_availability: "주 1–2회 서울 출근 가능"
 
 language:
   # Human-facing output language for reports, tracker notes, PDFs, cover
@@ -141,7 +145,7 @@ cv:
   # templates/cv-template.modern.html). Leave unset/commented to use the built-in
   # templates/cv-template.html. You can also pick per-generation just by asking
   # (e.g. "use the modern template").
-  # template: modern
+  template: ko-standard
   # For a restrained Chinese technical CV, use: template: zh-minimal
   #
   # (Optional) Section order for the generated CV (#2533). The sections you name
@@ -205,7 +209,7 @@ cover_letter:
 
   # Your current professional domain (used to detect domain gaps vs the JD).
   # Plain English, e.g. "digital media", "fintech", "healthcare IT".
-  primary_domain: "your current domain"
+  primary_domain: "B2B SaaS / 웹·앱 제품 (TypeScript)"
 
   # Languages you are actively learning. Each entry MAY produce a closing
   # sentence in that language IF the JD location matches one of the listed

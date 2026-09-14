@@ -187,8 +187,8 @@ test('loadProfile throws actionable error on missing or invalid custom cv path',
 
 test('loadProfile loads valid profile fixture and cv fixture correctly', () => {
   const profile = loadProfile('config/profile.example.yml', 'examples/cv-example.md');
-  assert.equal(profile.name, 'Jane Smith');
-  assert.equal(profile.email, 'jane@example.com');
+  assert.equal(profile.name, '유주환');
+  assert.equal(profile.email, 'you.example@example.com');
   assert.ok(profile.skills.length > 0);
   assert.equal(profile.experience.length, 2);
   assert.equal(profile.experience[0].role, 'Senior ML Engineer / ML Platform Lead');

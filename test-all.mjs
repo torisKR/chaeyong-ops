@@ -2366,7 +2366,7 @@ const outputLanguageClaudeDoc = readTextLF('CLAUDE.md');
 const careerOpsSkill = readTextLF('.agents/skills/career-ops/SKILL.md');
 const batchPrompt = readTextLF('batch/batch-prompt.md');
 
-if (/language:\s*\n(?:\s*#.*\n)*\s*output:\s*["']?en["']?/.test(profileExample)) {
+if (/language:\s*\n(?:\s*#.*\n)*\s*output:\s*["']?(en|ko)["']?/.test(profileExample)) {
   pass('profile.example.yml documents language.output default');
 } else {
   fail('profile.example.yml is missing language.output default');

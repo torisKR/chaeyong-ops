@@ -40,21 +40,16 @@
 
 이 skill은 모든 목표 역할을 같은 비중으로 다룹니다. primary/secondary 구분은 없습니다. 보상과 성장 가능성이 맞다면 각 역할은 모두 성공입니다.
 
+채용옵스 기본 예시(한국 주니어 풀스택/백엔드). **개인 타깃은 `modes/_profile.md`와 `config/profile.yml`에 적습니다.** 이 파일에 본인 회사명·연봉·전화번호를 넣지 마세요.
+
 | Archetype | 주제 축 | 회사가 구매하는 가치 |
 |-----------|---------|----------------------|
-| **AI Platform / LLMOps Engineer** | Evaluation, Observability, Reliability, Pipelines | metric 기반으로 AI를 production에 올리는 사람 |
-| **Agentic Workflows / Automation** | HITL, Tooling, Orchestration, Multi-Agent | 신뢰할 수 있는 agent system을 만드는 사람 |
-| **Technical AI Product Manager** | GenAI/Agents, PRDs, Discovery, Delivery | business 요구를 AI product로 번역하는 사람 |
-| **AI Solutions Architect** | Hyperautomation, Enterprise, Integrations | end-to-end AI architecture를 설계하는 사람 |
-| **AI Forward Deployed Engineer** | Client-facing, Fast delivery, Prototyping | 고객 현장에서 AI solution을 빠르게 배포하는 사람 |
-| **AI Transformation Lead** | Change management, Adoption, Enablement | 조직의 AI transformation을 이끄는 사람 |
+| **백엔드 개발자 (NestJS / Node.js)** | API, 도메인, Prisma/PostgreSQL, 인증 | TypeScript 서버를 책임지고 배송하는 사람 |
+| **풀스택 개발자 (React/Next.js + NestJS)** | UI + API, tRPC, 제품 배송 | 화면부터 API까지 한 사이클을 끝내는 사람 |
+| **프론트엔드 개발자 (React / Next.js / RN)** | UI, Next.js, Expo | 웹·앱 클라이언트를 제품 품질로 올리는 사람 |
+| **플랫폼 / 인프라 (adjacent)** | AWS, Terraform, CI | 배포·환경을 코드로 유지하는 사람 |
 
-<!-- [개인화] 위 archetype을 자신의 목표 역할에 맞게 조정하세요.
-     Backend engineering 예시:
-     - Senior Backend Engineer
-     - Staff Platform Engineer
-     - Engineering Manager
-     등 -->
+<!-- [개인화] 위 archetype을 자신의 목표 역할에 맞게 `modes/_profile.md`에서 덮어쓰세요. -->
 
 ### Archetype별 adaptive framing
 
@@ -62,12 +57,10 @@
 
 | 역할이... | 후보자에게서 강조할 것 | Proof point source |
 |-----------|------------------------|--------------------|
-| Platform / LLMOps | production 경험, observability, evals, closed-loop | article-digest.md + cv.md |
-| Agentic / Automation | multi-agent orchestration, HITL, reliability, cost | article-digest.md + cv.md |
-| Technical AI PM | product discovery, PRD, metric, stakeholder management | cv.md + article-digest.md |
-| Solutions Architect | system design, integration, enterprise readiness | article-digest.md + cv.md |
-| Forward Deployed Engineer | 빠른 delivery, 고객 접점, prototype to production | cv.md + article-digest.md |
-| AI Transformation Lead | change management, team enablement, adoption | cv.md + article-digest.md |
+| Backend / NestJS | API 설계, Prisma·PostgreSQL, 레거시 Spring/MyBatis 연동 | cv.md |
+| Fullstack | Next.js + NestJS + tRPC 타입 공유 | cv.md |
+| Frontend | React / React Native(Expo) | cv.md |
+| Infra-adjacent | AWS, Terraform — 맡은 범위만 claim | cv.md |
 
 <!-- [개인화] 자신의 구체적인 project/article을 위 archetype에 연결하세요. -->
 
@@ -87,13 +80,13 @@
 
 ### Cross-cutting advantage
 
-프로필을 **"실제 실행 경험을 가진 technical builder"**로 framing하고, 역할에 맞게 조정합니다.
-- PM: "prototype으로 불확실성을 줄이고 discipline 있게 production까지 전달하는 builder"
-- FDE: "day 1부터 observability와 metric을 갖춰 delivery하는 builder"
-- SA: "실제 integration 경험으로 end-to-end system을 설계하는 builder"
-- LLMOps: "closed-loop quality system으로 AI를 production에 올리는 builder"
+프로필을 **"TypeScript로 제품 기능을 끝까지 배송하는 주니어 풀스택/백엔드"**로 framing하고, 역할에 맞게 조정합니다.
+- Backend: "NestJS·Prisma로 API를 책임지는 builder"
+- Fullstack: "화면과 API를 한 타입 시스템(tRPC)으로 연결하는 builder"
+- Frontend: "React/Next.js·Expo로 클라이언트를 제품 품질로 올리는 builder"
+- Infra: "AWS·Terraform으로 본인이 맡은 배포 범위만 claim하는 builder"
 
-"Builder"를 전문성의 신호로 positioning합니다. "그냥 이것저것 만드는 사람"처럼 보이면 안 됩니다. 실제 proof point가 credibility를 만듭니다.
+"Builder"를 전문성의 신호로 positioning합니다. "그냥 이것저것 만드는 사람"처럼 보이면 안 됩니다. 실제 proof point가 credibility를 만듭니다. 사용 경험 ≠ 프레임워크를 직접 만들었다는 authorship claim.
 
 ### Portfolio as proof point (중요 지원에 사용)
 
