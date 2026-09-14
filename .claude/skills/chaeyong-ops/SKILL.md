@@ -78,8 +78,9 @@ license: MIT
   /chaeyong-ops {JD or URL}  → 자동 평가 + report + PDF + tracker
   /chaeyong-ops scan         → portals.yml 스캔 (원티드·잡코리아·사람인 등)
   /chaeyong-ops gonggo       → 채용 공고 A–G+H 평가만
+  /chaeyong-ops triage       → 1차 빠른 점수 (go/no-go, 파일 없음)
   /chaeyong-ops pipeline     → pipeline.md inbox 처리
-  /chaeyong-ops pdf          → 맞춤 이력서 PDF
+  /chaeyong-ops pdf          → 맞춤 이력서 PDF (ko-standard)
   /chaeyong-ops jiwon        → 지원서 작성 도우미
   /chaeyong-ops tracker      → 지원 현황
 
