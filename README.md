@@ -218,6 +218,8 @@ content_filter:
 
 Claude Code, Cursor, Codex, OpenCode, Antigravity CLI, Qwen, Kimi, GitHub Copilot 등 [에이전트 스킬 표준](https://agentskills.io) CLI에서 동작합니다.
 
+Slash commands are not guaranteed in Codex. See [CODEX.md](CODEX.md) for interactive and headless usage: run `codex` in the repo root, or `codex exec "prompt"` for one-shot workers. Ask Codex in plain language to run a chaeyong-ops mode by name if `/chaeyong-ops` is unavailable.
+
 ## 기여
 
 Issue와 PR을 환영합니다. 한국 포털 provider 개선, 평가 기준 보강, 문서 번역 모두 좋습니다. 새 provider는 [providers/ADDING_A_PROVIDER.md](providers/ADDING_A_PROVIDER.md)를 따르세요.
