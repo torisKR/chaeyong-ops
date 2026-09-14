@@ -1,0 +1,57 @@
+name: 'CodeQL Analysis'
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 4 * * 1' # Weekly Monday 4am UTC
+
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ['javascript-typescript', 'go']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: Setup Go
+        if: matrix.language == 'go'
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: dashboard/go.mod
+          cache-dependency-path: dashboard/go.sum
+
+      - name: Build Go
+        if: matrix.language == 'go'
+        # go build skips *_test.go, so CodeQL's traced build never saw test
+        # files (tool status showed Go at 13/26 files scanned). Compiling the
+        # test packages without running them (-run '^$') lets the extractor
+        # cover them too. The two windows-tagged files stay out by platform.
+        run: |
+          cd dashboard
+          go build ./...
+          go test -run '^$' ./...
+
+      - name: Autobuild
+        if: matrix.language != 'go'
+        uses: github/codeql-action/autobuild@v4
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: '/language:${{ matrix.language }}'

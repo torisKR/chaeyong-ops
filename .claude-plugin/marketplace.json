@@ -1,0 +1,20 @@
+{
+  "name": "career-ops",
+  "metadata": {
+    "description": "Open-source AI job search that runs locally in your AI coding CLI: scan job portals, evaluate listings into a structured A-H report with a 1-5 score, tailor your CV, track applications",
+    "version": "1.32.0"
+  },
+  "owner": {
+    "name": "santifer",
+    "url": "https://santifer.io"
+  },
+  "plugins": [
+    {
+      "name": "career-ops",
+      "source": "./",
+      "description": "Open-source AI job search that runs locally in your AI coding CLI: scan job portals, evaluate listings into a structured A-H report with a 1-5 score, tailor your CV, track applications",
+      "category": "productivity",
+      "version": "1.32.0"
+    }
+  ]
+}
