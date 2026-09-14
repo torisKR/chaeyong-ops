@@ -94,7 +94,9 @@ AI CLI에서:
 - URL 붙여넣기 → **auto-pipeline** (평가 + PDF + tracker 자동)
 - `scan` 모드 → `node scan.mjs` / 원티드·잡코리아·사람인 스캔
 - `gonggo` 모드 → 한국어 채용 공고 A–G+H 평가
+- `triage` 모드 → 1차 빠른 점수 (PASS만 full 평가)
 - `pipeline` 모드 → `data/pipeline.md` 대기 URL 일괄 처리
+- `pdf` 모드 → 한국어 ATS 이력서 (`cv-template.ko-standard.html`)
 - `jiwon` 모드 → 지원서 폼 작성 도우미
 
 ## 한국 포털 설정
