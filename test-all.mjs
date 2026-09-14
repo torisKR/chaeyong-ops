@@ -2366,7 +2366,7 @@ const outputLanguageClaudeDoc = readTextLF('CLAUDE.md');
 const careerOpsSkill = readTextLF('.agents/skills/career-ops/SKILL.md');
 const batchPrompt = readTextLF('batch/batch-prompt.md');
 
-if (/language:\s*\n(?:\s*#.*\n)*\s*output:\s*["']?en["']?/.test(profileExample)) {
+if (/language:\s*\n(?:\s*#.*\n)*\s*output:\s*["']?(en|ko)["']?/.test(profileExample)) {
   pass('profile.example.yml documents language.output default');
 } else {
   fail('profile.example.yml is missing language.output default');
@@ -2609,6 +2609,14 @@ for (const header of ['專業摘要', '工作經歷', '學歷', '證照', '技�
   }
 }
 
+for (const header of ['요약', '핵심 역량', '경력', '학력', '기술 스택']) {
+  if (generatePdfScript.includes(`['${header}',`)) {
+    pass(`SECTION_ALIASES maps Korean header: ${header}`);
+  } else {
+    fail(`SECTION_ALIASES missing Korean header: ${header}`);
+  }
+}
+
 // generate-pdf.mjs imports playwright at module scope; degrade to a warning
 // rather than crashing the suite where it is not installed.
 let pdfModule = null;
@@ -2641,6 +2649,11 @@ if (pdfModule) {
     ['专业摘要', 'summary'],       // Simplified (modes/zh)
     ['工作经历', 'experience'],
     ['学历', 'education'],
+    ['요약', 'summary'],
+    ['경력', 'experience'],
+    ['학력', 'education'],
+    ['기술 스택', 'skills'],
+    ['핵심 역량', 'competencies'],
   ];
   let keysOk = true;
   for (const [title, expected] of keyCases) {
@@ -2650,7 +2663,7 @@ if (pdfModule) {
       keysOk = false;
     }
   }
-  if (keysOk) pass(`sectionKey resolves all ${keyCases.length} PL/EN/ZH heading spellings`);
+  if (keysOk) pass(`sectionKey resolves all ${keyCases.length} PL/EN/ZH/KO heading spellings`);
 
   // Hermetic cv.md stand-in: passed in directly, so the test does not depend on
   // a cv.md existing in the checkout (it is gitignored).

@@ -2875,6 +2875,8 @@ async function main() {
   // 2. Read portals.yml
   if (!existsSync(PORTALS_PATH)) {
     console.error('Error: portals.yml not found. Run onboarding first.');
+    console.error('Korean boards: cp templates/portals-kr.example.yml portals.yml');
+    console.error('Then: node scan.mjs   (see docs/APPLY-KR.md)');
     process.exit(1);
   }
 

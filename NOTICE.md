@@ -11,10 +11,12 @@
 ## 수정 사항 (한국형 포크)
 
 - 한국어 README 및 기본 설정 (`language.output: ko`, `modes/ko`)
-- 잡코리아·사람인·원티드 job board provider
-- 한국 채용 시장 평가 기준 강화 (`modes/ko/`)
+- 잡코리아·사람인·원티드·리멤버 job board provider
+- 한국 채용 시장 평가 기준 강화 (`modes/ko/`) — 기본 타깃 예시: 풀스택/백엔드
 - 한국어 이력서 템플릿 (`templates/cv-template.ko-standard.html`)
 - 영어 필수 공고 필터 예시 (`templates/portals-kr.example.yml`)
+- 한국 지원 워크플로 (`docs/APPLY-KR.md`)
+- 채용옵스 브랜드 에셋 (`assets/`)
 
 ## 라이선스
 
@@ -28,4 +30,4 @@
 
 ## 한국 채용 사이트 이용약관
 
-잡코리아·사람인·원티드 provider는 공개 목록 페이지/API를 읽기 전용으로 조회합니다. MIT 라이선스가 사이트 이용약관을 대체하지 않습니다. 배포·운영 전 각 사이트의 robots.txt와 이용약관에서 자동 수집 허용 범위를 확인하세요.
+잡코리아·사람인·원티드·리멤버 provider는 공개 목록 페이지/API를 읽기 전용으로 조회합니다. MIT 라이선스가 사이트 이용약관을 대체하지 않습니다. 배포·운영 전 각 사이트의 robots.txt와 이용약관에서 자동 수집 허용 범위를 확인하세요. Cloudflare/WAF 챌린지는 우회하지 않습니다.

@@ -436,8 +436,8 @@ const USER_LAYER_PREREQS = [
   {
     path: 'cv.md',
     fix: [
-      'Create cv.md in the project root with your CV in markdown',
-      'See examples/ for reference CVs',
+      'Run: cp cv.example.md cv.md',
+      'Then replace placeholders with your own facts (never invent metrics)',
     ],
   },
   {
@@ -457,8 +457,8 @@ const USER_LAYER_PREREQS = [
   {
     path: 'portals.yml',
     fix: [
-      'Run: cp templates/portals.example.yml portals.yml',
-      'Then customize with your target companies',
+      'Run: cp templates/portals-kr.example.yml portals.yml',
+      'Then enable Saramin/JobKorea/Remember only after checking each site\'s terms',
     ],
   },
 ];
