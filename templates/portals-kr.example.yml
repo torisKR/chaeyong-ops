@@ -92,6 +92,22 @@ job_boards:
     enabled: true
     notes: "Wanted keyword pass for NestJS / Node.js roles."
 
+  - name: Wanted — Node.js
+    provider: wanted
+    careers_url: https://www.wanted.co.kr/
+    searchKeywords: "Node.js"
+    max_pages: 3
+    enabled: true
+    notes: "Wanted keyword pass for Node.js titles."
+
+  - name: Wanted — TypeScript
+    provider: wanted
+    careers_url: https://www.wanted.co.kr/
+    searchKeywords: "TypeScript"
+    max_pages: 3
+    enabled: true
+    notes: "Wanted keyword pass for TypeScript titles."
+
   # ── 사람인 (HTML 검색) ───────────────────────────────────────
   - name: Saramin — 백엔드
     provider: saramin

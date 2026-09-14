@@ -40,6 +40,9 @@ job_boards:
     max_pages: 5
     enabled: true
 
+  # 같은 파일에 풀스택 / NestJS / Node.js / TypeScript Wanted 보드도 활성화됨
+  # (templates/portals-kr.example.yml)
+
   - name: Saramin — 개발
     provider: saramin
     searchKeywords: "개발"

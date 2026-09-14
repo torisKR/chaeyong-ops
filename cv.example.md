@@ -5,8 +5,11 @@
 > 실명 전화번호·개인 이메일은 git에 커밋하지 마세요.
 
 **위치:** 서울, 대한민국  
+**Location:** Seoul, Republic of Korea  
 **이메일:** you.example@example.com  
+**Email:** you.example@example.com  
 **전화:** 010-0000-0000  
+**Phone:** 010-0000-0000  
 **GitHub:** github.com/example-user  
 **LinkedIn:** linkedin.com/in/example-user
 
@@ -16,12 +19,16 @@ TypeScript 풀스택 개발자. 약 1년 7개월 동안 NestJS 백엔드와 Reac
 
 주니어로서 **제품 기능을 끝까지 배송**하는 쪽을 선호합니다. 목표 역할은 백엔드 개발자(NestJS/Node.js)와 풀스택 개발자입니다.
 
+## 핵심 역량
+
+NestJS · Node.js · TypeScript · Prisma · PostgreSQL · React · Next.js · tRPC · AWS · Terraform
+
 ## 경력
 
 ### 예시회사 A — 서울 (하이브리드)
 
 **풀스택 개발자**  
-2025.02 – 현재 (약 1년 7개월 — 날짜는 본인 재직 기간으로 교체)
+2025.02 – 현재
 
 - NestJS + Prisma + PostgreSQL로 도메인 API를 설계·구현 (placeholder — 본인 모듈만 기재)
 - Next.js 웹과 React Native(Expo) 앱에서 tRPC로 타입 공유 (placeholder)
@@ -31,19 +38,19 @@ TypeScript 풀스택 개발자. 약 1년 7개월 동안 NestJS 백엔드와 Reac
 ### 예시회사 B — 원격 / 계약 (선택 섹션)
 
 **웹 개발 (인턴 또는 이전 역할 — 없으면 삭제)**  
-YYYY.MM – YYYY.MM
+2024.06 – 2025.01
 
 - React로 관리자 화면 구현 (placeholder)
 - 숫자·사용자 규모는 `cv.md`에 확인된 값만 남깁니다. 모르면 삭제합니다.
 
 ## 프로젝트
 
-- **사내 API / 어드민 (비공개)** — NestJS 모듈, 인증, CRUD. 공개 repo가 아니면 링크를 넣지 않습니다.
+- **사내 API / 어드민 (비공개)** — NestJS 모듈, 인증, CRUD. 공개 repo가 없으면 링크를 넣지 않습니다.
 - **모바일 클라이언트 (Expo)** — 본인이 커밋한 화면만 적습니다. “React Native를 썼다” ≠ “직접 만든 프레임워크”.
 
 ## 학력
 
-- 예시대학교 컴퓨터공학과, 학사 (YYYY)
+- 학사, 예시대학교 컴퓨터공학과 (YYYY)
 
 ## 기술
 

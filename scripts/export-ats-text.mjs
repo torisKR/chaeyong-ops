@@ -52,17 +52,17 @@ export function parseCvMarkdown(markdown) {
     result.name = h1Match[1].trim();
   }
 
-  // 2. Parse contact info lines
-  const contactLines = markdown.match(/^\*\*([A-Za-z]+):\*\*\s*(.+)$/gm) || [];
+  // 2. Parse contact info lines (English + Korean labels used in cv.example.md)
+  const contactLines = markdown.match(/^\*\*([^*]+):\*\*\s*(.+)$/gm) || [];
   for (const line of contactLines) {
-    const m = line.match(/^\*\*([A-Za-z]+):\*\*\s*(.+)$/);
+    const m = line.match(/^\*\*([^*]+):\*\*\s*(.+)$/);
     if (!m) continue;
-    const key = m[1].toLowerCase();
+    const key = m[1].trim().toLowerCase();
     const val = m[2].trim();
-    if (key === 'email') result.email = val;
-    else if (key === 'location') result.location = val;
-    else if (key === 'linkedin') result.linkedin = val;
-    else if (key === 'phone') result.phone = val;
+    if ((key === 'email' || key === '이메일' || key === 'e-mail') && !result.email) result.email = val;
+    else if ((key === 'location' || key === '위치' || key === '소재지') && !result.location) result.location = val;
+    else if (key === 'linkedin' && !result.linkedin) result.linkedin = val;
+    else if ((key === 'phone' || key === '전화' || key === '휴대폰' || key === 'mobile') && !result.phone) result.phone = val;
   }
 
   // 3. Split by H2 sections
@@ -83,9 +83,14 @@ export function parseCvMarkdown(markdown) {
     const body = markdown.slice(current.index, actualEnd).trim();
     const titleLower = current.title.toLowerCase();
 
-    if (titleLower.includes('summary')) {
+    if (titleLower.includes('summary') || current.title.includes('요약')) {
       result.summary = body;
-    } else if (titleLower.includes('experience') || titleLower.includes('work history') || titleLower.includes('recent engineering')) {
+    } else if (
+      titleLower.includes('experience')
+      || titleLower.includes('work history')
+      || titleLower.includes('recent engineering')
+      || current.title.includes('경력')
+    ) {
       const h3Regex = /^###\s+(.+)$/gm;
       let h3Match;
       const h3Sections = [];
@@ -124,7 +129,7 @@ export function parseCvMarkdown(markdown) {
           result.experience.push(entry);
         }
       }
-    } else if (titleLower.includes('education')) {
+    } else if (titleLower.includes('education') || current.title.includes('학력')) {
       const lines = body.split('\n').map(l => l.trim()).filter(Boolean);
       for (const l of lines) {
         const clean = l.replace(/^[-*•]\s+/, '').trim();
@@ -140,7 +145,7 @@ export function parseCvMarkdown(markdown) {
           result.education.push({ degree: clean });
         }
       }
-    } else if (titleLower.includes('skills')) {
+    } else if (titleLower.includes('skills') || current.title.includes('기술')) {
       const lines = body.split('\n').map(l => l.trim()).filter(Boolean);
       for (const l of lines) {
         let content = l.replace(/^[-*•]\s+/, '').trim();

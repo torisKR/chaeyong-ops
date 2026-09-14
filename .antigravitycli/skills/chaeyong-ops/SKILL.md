@@ -100,6 +100,7 @@ license: MIT
   /chaeyong-ops ofertas      → 여러 오퍼 비교
 
 개인 데이터(cv.md, profile.yml)는 공개 저장소에 커밋하지 마세요.
+지원 순서: docs/APPLY-KR.md (scan → gonggo ≥4.0 → 포털에서 직접 제출)
 ```
 
 ---

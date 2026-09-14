@@ -1,5 +1,7 @@
 # Chaeyong Ops (채용옵스) profile example — Korean backend / fullstack seeker
-# Copy to config/profile.yml and replace EVERY placeholder with your own data.
+# This file IS the Korean-market default (서울, KRW 4,000만원+, NestJS/Node/TS,
+# language.output: ko, modes_dir: modes/ko). Copy to config/profile.yml.
+# Replace EVERY placeholder with your own data.
 # Do NOT commit config/profile.yml (it is gitignored). Never put a real phone
 # or personal email in tracked example files.
 #
@@ -214,16 +216,14 @@ cover_letter:
   # Languages you are actively learning. Each entry MAY produce a closing
   # sentence in that language IF the JD location matches one of the listed
   # countries AND the user confirms inclusion during the cover letter flow.
-  # Remove the block entirely if not applicable.
-  language_learning:
-    - language: Spanish
-      current_level: B1
-      target_level: B2
-      target_date: "end of 2026"
-      # The sentence to include, written in that language. Keep it one line.
-      sentence: "Estoy aprendiendo español y espero alcanzar el nivel B2 a finales de 2026."
-      # Only trigger this entry when the JD location is in one of these countries.
-      countries: [Spain, Mexico, Argentina, Colombia, Chile]
+  # Omit for Korean-market applications unless you actually use this.
+  # language_learning:
+  #   - language: English
+  #     current_level: B1
+  #     target_level: B2
+  #     target_date: "end of 2026"
+  #     sentence: ""
+  #     countries: []
 
 # ── Contact Preferences ──────────────────────────────────────────────────────
 #
@@ -294,7 +294,9 @@ cover_letter:
 # `/career-ops pdf {company-slug}`. Fractional thresholds work (e.g. 3.5 —
 # half-point scores like 3.5/5 occur in evaluations). Set it to 0 to
 # generate a PDF for every offer.
-# auto_pdf_score_threshold: 4.0
+#
+# Korean apply workflow (docs/APPLY-KR.md): do not auto-PDF below 4.0/5.
+auto_pdf_score_threshold: 4.0
 
 # ── Two-pass triage gate ────────────────────────────────────────────────────
 #
