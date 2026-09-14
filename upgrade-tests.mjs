@@ -291,10 +291,25 @@ function newestAncestorTag(targetSha) {
   return tags.length ? tags[tags.length - 1] : null;
 }
 
+/** Forks that never imported career-ops-v* tags cannot run this gate.
+ *  Skipping (exit 0) is the honest outcome — failing would demand tags
+ *  this history does not have, and fetching upstream tags would still
+ *  leave them non-ancestors of HEAD. */
+function requireAncestorTag(targetSha, context) {
+  const newestOld = newestAncestorTag(targetSha);
+  if (newestOld) return newestOld;
+  const available = releaseTags();
+  console.log(
+    `SKIP: no career-ops-v* release tag is an ancestor of HEAD (${context}). ` +
+    `This checkout has ${available.length} matching tag(s). ` +
+    `Expected on chaeyong-ops / other forks that do not import upstream tags.`,
+  );
+  process.exit(0);
+}
+
 function prGate() {
   const targetSha = git(ROOT, 'rev-parse', 'HEAD');
-  const newestOld = newestAncestorTag(targetSha);
-  if (!newestOld) { console.error('No release tag is an ancestor of HEAD — fetch tags first (CI: fetch-depth: 0)'); process.exit(1); }
+  const newestOld = requireAncestorTag(targetSha, '--pr-gate');
   console.log(`PR gate: ${newestOld} -> ${targetSha.slice(0, 8)}`);
   // Two legs, one per dismiss-marker state. apply() branches on trackedness and
   // each branch has its own failure mode, so a single leg leaves the other one
@@ -321,8 +336,7 @@ function prGate() {
  *  Proves the gate is capable of failing — a gate never seen red proves nothing. */
 function canary() {
   const targetSha = git(ROOT, 'rev-parse', 'HEAD');
-  const newestOld = newestAncestorTag(targetSha);
-  if (!newestOld) { console.error('No release tag is an ancestor of HEAD'); process.exit(1); }
+  const newestOld = requireAncestorTag(targetSha, '--canary');
   const { failures } = runLeg({
     oldTag: newestOld, targetSha, label: 'canary',
     mutateMirror: (mirror, work) => {
@@ -377,8 +391,7 @@ function canary() {
 function localPathsLeg() {
   const FORK_FILE = 'run-nightly.ps1';
   const baseSha = git(ROOT, 'rev-parse', 'HEAD');
-  const oldTag = newestAncestorTag(baseSha);
-  if (!oldTag) { console.error('No release tag is an ancestor of HEAD — fetch tags first (CI: fetch-depth: 0)'); process.exit(1); }
+  const oldTag = requireAncestorTag(baseSha, '--local-paths');
 
   const work = realpathSync(mkdtempSync(join(tmpdir(), 'upgrade-localpaths-')));
   const failures = [];
