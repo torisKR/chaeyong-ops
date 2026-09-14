@@ -31,6 +31,9 @@
 
 **제출 전 반드시 직접 검토하세요.** 4.0/5 미만 공고에는 지원하지 않는 것을 권장합니다.
 
+**지금 지원하려면 → [docs/APPLY-KR.md](docs/APPLY-KR.md)**  
+프로필 → `cv.md` → `node scan.mjs` → `gonggo` **≥ 4.0** → `pdf` / `jiwon` → 포털에서 **직접** 제출.
+
 ## 출처 및 라이선스
 
 | 항목 | 내용 |
@@ -87,7 +90,7 @@ flowchart LR
 
 | 포털 | Provider | 방식 | 기본 `enabled` | 비고 |
 |------|----------|------|----------------|------|
-| **원티드** | `wanted` | 공개 JSON `GET /api/v4/jobs` | `true` | 키워드 검색 지원. [이용약관](https://www.wanted.co.kr/) 확인 |
+| **원티드** | `wanted` | 공개 JSON `GET /api/v4/jobs` | `true` | 키워드: 백엔드·풀스택·NestJS·Node.js·TypeScript. CloudFront 403 시 집 네트워크에서 재시도 또는 URL 붙여넣기. [이용약관](https://www.wanted.co.kr/) 확인 |
 | **사람인** | `saramin` | HTML 검색 파싱 | `false` | robots.txt·ToS 확인 후 활성화 |
 | **잡코리아** | `jobkorea` | HTML 검색 파싱 | `false` | robots.txt·ToS 확인 후 활성화 |
 | **리멤버** | `remember` | 공개 `/job/postings` HTML stub | `false` | robots.txt는 `/job/` 허용. Cloudflare가 데이터센터 IP를 차단하는 경우가 많음. **우회하지 않음** |
@@ -103,6 +106,8 @@ MIT 라이선스가 원티드·사람인·잡코리아·리멤버의 이용약�
 `cv.md`, `config/profile.yml`, `portals.yml`, `data/*`, 연락처·지원 기록은 **gitignored** 입니다. 예제 파일(`config/profile.example.yml`, `cv.example.md`)만 추적합니다. 예제의 이름·이메일은 placeholder입니다. **실명 전화번호·개인 이메일을 커밋하지 마세요.** 개인용은 비공개 저장소가 안전합니다.
 
 ## 빠른 시작
+
+전체 지원 순서(스캔 → 4.0 필터 → PDF → 수동 제출)는 **[docs/APPLY-KR.md](docs/APPLY-KR.md)** 입니다.
 
 ### 1. 클론
 
@@ -170,6 +175,7 @@ job_boards:
     searchKeywords: "백엔드"
     max_pages: 5
     enabled: true
+  # + Wanted — 풀스택 / NestJS / Node.js / TypeScript (portals-kr.example.yml)
 
   - name: Saramin — 개발
     provider: saramin
@@ -225,4 +231,5 @@ Issue와 PR을 환영합니다. 한국 포털 provider 개선, 평가 기준 보
 - [career-ops MIT 라이선스](https://raw.githubusercontent.com/career-ops-hq/career-ops/main/LICENSE)
 - [career-ops 상표 정책](https://raw.githubusercontent.com/career-ops-hq/career-ops/main/TRADEMARK.md)
 - [NOTICE.md](NOTICE.md) — 이 포크의 수정 사항
+- [docs/APPLY-KR.md](docs/APPLY-KR.md) — 한국 지원 워크플로 (scan → gonggo ≥4.0 → 수동 제출)
 - [assets/](assets/) — 채용옵스 로고·파비콘

@@ -5,6 +5,7 @@ Simple geometric mark for the Korean fork: a document (JD / CV) feeding a funnel
 | File | Use |
 |------|-----|
 | `logo.svg` / `icon.svg` | App mark (README hero, 96×96) |
+| `icon.png` / `banner.png` | Optional raster hero (use in README when present) |
 | `favicon.svg` | Tab / shortcut icon |
 | `wordmark-light.svg` | README wordmark (light background) |
 | `wordmark-dark.svg` | README wordmark (dark background) |

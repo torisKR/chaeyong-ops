@@ -195,3 +195,19 @@ test('loadProfile loads valid profile fixture and cv fixture correctly', () => {
   assert.equal(profile.education.length, 2);
   assert.equal(profile.education[0].institution, 'UT Austin');
 });
+
+test('parseCvMarkdown reads Korean section headings and contact labels', async () => {
+  const { readFileSync } = await import('node:fs');
+  const koreanCv = readFileSync(new URL('../cv.example.md', import.meta.url), 'utf8');
+  const parsed = parseCvMarkdown(koreanCv);
+  assert.equal(parsed.name, '유주환');
+  assert.equal(parsed.email, 'you.example@example.com');
+  assert.equal(parsed.phone, '010-0000-0000');
+  assert.match(parsed.location, /서울|Seoul/);
+  assert.match(parsed.summary, /TypeScript 풀스택/);
+  assert.ok(parsed.experience.length >= 1);
+  assert.equal(parsed.experience[0].role, '풀스택 개발자');
+  assert.match(parsed.experience[0].duration, /^2025/);
+  assert.ok(parsed.skills.includes('TypeScript'));
+  assert.ok(parsed.education.length >= 1);
+});

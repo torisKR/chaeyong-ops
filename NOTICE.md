@@ -15,6 +15,7 @@
 - 한국 채용 시장 평가 기준 강화 (`modes/ko/`) — 기본 타깃 예시: 풀스택/백엔드
 - 한국어 이력서 템플릿 (`templates/cv-template.ko-standard.html`)
 - 영어 필수 공고 필터 예시 (`templates/portals-kr.example.yml`)
+- 한국 지원 워크플로 (`docs/APPLY-KR.md`)
 - 채용옵스 브랜드 에셋 (`assets/`)
 
 ## 라이선스

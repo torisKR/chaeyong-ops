@@ -356,6 +356,17 @@ const SECTION_ALIASES = new Map([
   ['技术栈', 'skills'],
   ['興趣', 'interests'],
   ['兴趣', 'interests'],
+  // Korean — modes/ko + templates/cv-template.ko-standard.html (요약, 핵심 역량, …)
+  ['요약', 'summary'],
+  ['핵심 역량', 'competencies'],
+  ['경력', 'experience'],
+  ['근무 경력', 'experience'],
+  ['프로젝트', 'projects'],
+  ['학력', 'education'],
+  ['자격증', 'certifications'],
+  ['수상', 'awards'],
+  ['기술', 'skills'],
+  ['기술 스택', 'skills'],
 ].map(([alias, key]) => [foldDiacritics(alias), key]));
 
 function normalizeSectionTitle(text) {
