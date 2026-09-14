@@ -2,9 +2,11 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, statSync, writeFileSy
 import { dirname, isAbsolute, join, relative, resolve, sep } from 'path';
 import { tmpdir } from 'os';
 import { fail, pass, rmSync, ROOT, run } from './helpers.mjs';
+import { detectSkillId } from '../scaffolder/bin/skill-entrypoints.mjs';
 
 console.log('\nSkill project-root resolution (#3332)');
 
+const SKILL_ID = detectSkillId(ROOT);
 const entrypoints = [
   '.agents',
   '.antigravitycli',
@@ -14,7 +16,7 @@ const entrypoints = [
   '.kimi',
   '.opencode',
   '.qwen',
-].map(dir => join(dir, 'skills', 'career-ops', 'SKILL.md'));
+].map(dir => join(dir, 'skills', SKILL_ID, 'SKILL.md'));
 
 function findProjectRoot(skillPath) {
   let current = dirname(skillPath);

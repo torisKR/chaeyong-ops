@@ -1,49 +1,63 @@
 // Shared CLI skill entrypoint bootstrap — used by npx init and update-system.
-// Ensures every supported CLI gets .*/skills/career-ops/SKILL.md even when the
+// Ensures every supported CLI gets .*/skills/{skill-id}/SKILL.md even when the
 // cloned release predates a CLI (e.g. Grok on v1.13.0). Materializes pointer
 // files to canonical content on filesystems without symlink support.
+//
+// skill-id is career-ops upstream, or chaeyong-ops on this branded fork.
+// Functions that take `root` detect the id from that tree so fixture tests
+// that plant a career-ops layout still exercise the original paths.
 import { readFileSync, writeFileSync, existsSync, mkdirSync, lstatSync } from 'node:fs';
 import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-export const CANONICAL_SKILL_PATH = '.agents/skills/career-ops/SKILL.md';
+const THIS_REPO = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
-export const SKILL_ENTRYPOINTS = [
-  {
-    path: '.claude/skills/career-ops/SKILL.md',
-    pointer: '../../../.agents/skills/career-ops/SKILL.md',
-  },
-  {
-    path: '.cursor/skills/career-ops/SKILL.md',
-    pointer: '../../../.agents/skills/career-ops/SKILL.md',
-  },
-  {
-    path: '.opencode/skills/career-ops/SKILL.md',
-    pointer: '../../../.agents/skills/career-ops/SKILL.md',
-  },
-  {
-    path: '.qwen/skills/career-ops/SKILL.md',
-    pointer: '../../../.agents/skills/career-ops/SKILL.md',
-  },
-  {
-    path: '.antigravitycli/skills/career-ops/SKILL.md',
-    pointer: '../../../.agents/skills/career-ops/SKILL.md',
-  },
-  {
-    path: '.grok/skills/career-ops/SKILL.md',
-    pointer: '../../../.agents/skills/career-ops/SKILL.md',
-  },
-  {
-    path: '.kimi/skills/career-ops/SKILL.md',
-    pointer: '../../../.agents/skills/career-ops/SKILL.md',
-  },
+export const SKILL_CLIS = [
+  '.claude',
+  '.cursor',
+  '.opencode',
+  '.qwen',
+  '.antigravitycli',
+  '.grok',
+  '.kimi',
 ];
+
+export function detectSkillId(root) {
+  if (existsSync(join(root, '.agents', 'skills', 'chaeyong-ops', 'SKILL.md'))) return 'chaeyong-ops';
+  if (existsSync(join(root, '.agents', 'skills', 'career-ops', 'SKILL.md'))) return 'career-ops';
+  return 'career-ops';
+}
+
+export function skillPathsFor(skillId) {
+  const canonical = `.agents/skills/${skillId}/SKILL.md`;
+  const pointer = `../../../${canonical}`;
+  return {
+    id: skillId,
+    canonical,
+    pointer,
+    slash: `/${skillId}`,
+    entrypoints: SKILL_CLIS.map((cli) => ({
+      path: `${cli}/skills/${skillId}/SKILL.md`,
+      pointer,
+    })),
+  };
+}
+
+export function skillPathsAt(root) {
+  return skillPathsFor(detectSkillId(root));
+}
+
+// Repo-level defaults (this checkout). Fixture tests must use skillPathsAt(root).
+const repoSkill = skillPathsAt(THIS_REPO);
+export const CANONICAL_SKILL_PATH = repoSkill.canonical;
+export const SKILL_ENTRYPOINTS = repoSkill.entrypoints;
 
 function repoPath(root, path) {
   return join(root, ...path.split('/'));
 }
 
-function readCanonical(root) {
-  const canonicalPath = repoPath(root, CANONICAL_SKILL_PATH);
+function readCanonical(root, canonicalRel = skillPathsAt(root).canonical) {
+  const canonicalPath = repoPath(root, canonicalRel);
   if (!existsSync(canonicalPath)) return null;
   try {
     return readFileSync(canonicalPath, 'utf-8');
@@ -53,11 +67,12 @@ function readCanonical(root) {
 }
 
 export function materializeSkillEntrypoints(root) {
-  const canonicalContent = readCanonical(root);
+  const { entrypoints, canonical } = skillPathsAt(root);
+  const canonicalContent = readCanonical(root, canonical);
   if (canonicalContent === null) return [];
 
   const materialized = [];
-  for (const entry of SKILL_ENTRYPOINTS) {
+  for (const entry of entrypoints) {
     const entryPath = repoPath(root, entry.path);
     if (!existsSync(entryPath)) continue;
 
@@ -84,11 +99,12 @@ export function materializeSkillEntrypoints(root) {
 }
 
 export function ensureSkillEntrypoints(root) {
-  const canonicalContent = readCanonical(root);
+  const { entrypoints, canonical } = skillPathsAt(root);
+  const canonicalContent = readCanonical(root, canonical);
   if (canonicalContent === null) return [];
 
   const touched = [];
-  for (const entry of SKILL_ENTRYPOINTS) {
+  for (const entry of entrypoints) {
     const entryPath = repoPath(root, entry.path);
 
     if (!existsSync(entryPath)) {
