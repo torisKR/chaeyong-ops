@@ -1,13 +1,13 @@
 ---
 name: chaeyong-ops
 description: >-
-  한국형 AI 구직 파이프라인 — 잡코리아·사람인·원티드·리멤버 스캔, 채용 공고 A–G+H 평가,
+  한국형 AI 구직 파이프라인 — 잡코리아·사람인·원티드 스캔, 채용 공고 A–G+H 평가,
   맞춤 이력서, 지원 추적. JD/URL 붙여넣기, scan, pdf, tracker, interview 등
   chaeyong-ops 모드 실행 시 사용. (career-ops 기반 포크)
 arguments: mode
 user_invocable: true
 user-invocable: true
-argument-hint: "[scan | gonggo | oferta | pipeline | pdf | apply | batch | tracker | ...]"
+argument-hint: "[scan | gonggo | oferta | ofertas | pipeline | pdf | apply | jiwon | batch | tracker | triage | cover | email | latex | latex-tex | add | expand | deep | contacto | training | project | interview-prep | interview | interview/plan | interview/practice | interview/debrief | interview-redflag | patterns | offer-prep | titles | upskill | followup | reply-watch | outcome | update | agent-inbox | discover]"
 license: MIT
 ---
 
@@ -17,7 +17,7 @@ license: MIT
 
 ## Project Root Resolution
 
-`SKILL.md` 위치에서 상위로 올라가 `AGENTS.md`와 `modes/`가 있는 디렉터리를 `PROJECT_ROOT`로 사용합니다. 모든 경로는 CWD가 아니라 `PROJECT_ROOT` 기준입니다.
+`SKILL.md` 위치에서 상위로 올라가 `AGENTS.md`와 `modes/`가 있는 디렉터리를 `PROJECT_ROOT`로 사용합니다. Resolve every path in this router (`modes/`, `config/`, `data/`, scripts, templates, and output paths) against `PROJECT_ROOT`, never against the process's current working directory.
 
 ## Market mode resolution
 
@@ -51,7 +51,10 @@ license: MIT
 
 ## Invocation Notes
 
-- Cursor: `.cursor/skills/chaeyong-ops/`
+- CLIs with slash-command registration can expose this router as `/chaeyong-ops`.
+- Cursor: `.cursor/skills/chaeyong-ops/` — ask for a mode by name, or paste a JD/URL.
+- Interactive Codex sessions use `codex` in the repo root. Slash commands are not guaranteed in Codex, so ask Codex to run the same mode by name if `/chaeyong-ops` is unavailable.
+- Headless Codex workers use `codex exec "prompt"`.
 - 슬래시 명령: `/chaeyong-ops` (또는 `/chaeyong-ops scan`)
 - Codex: `codex exec "Run chaeyong-ops scan mode"`
 
@@ -61,13 +64,42 @@ license: MIT
 |-------|------|
 | (empty) | discovery menu |
 | JD text or URL | **auto-pipeline** |
-| `gonggo` / `oferta` | evaluation A–G+H |
-| `jiwon` / `apply` | application assistant |
-| `scan` | portal scan (wanted, jobkorea, saramin, remember, …) |
-| `pipeline` | process `data/pipeline.md` |
-| `pdf` | tailored CV PDF |
-| `tracker` | application status |
-| (see career-ops router for full list) | same semantics |
+| `gonggo` / `oferta` | `oferta` |
+| `ofertas` | `ofertas` |
+| `contacto` | `contacto` |
+| `deep` | `deep` |
+| `interview-prep` | `interview-prep` |
+| `interview` | `interview` |
+| `interview/plan` | `interview/plan` |
+| `interview/practice` | `interview/practice` |
+| `interview/debrief` | `interview/debrief` |
+| `pdf` | `pdf` |
+| `text` | `text` |
+| `latex` | `latex` |
+| `latex-tex` | `latex-tex` |
+| `email` | `email` |
+| `add` | `add` |
+| `expand` | `expand` |
+| `training` | `training` |
+| `project` | `project` |
+| `tracker` | `tracker` |
+| `agent-inbox` | `agent-inbox` |
+| `pipeline` | `pipeline` |
+| `jiwon` / `apply` | `apply` |
+| `scan` | `scan` |
+| `discover` | `discover` |
+| `batch` | `batch` |
+| `patterns` | `patterns` |
+| `offer-prep` | `offer-prep` |
+| `titles` | `titles` |
+| `upskill` | `upskill` |
+| `followup` | `followup` |
+| `reply-watch` | `reply-watch` |
+| `outcome` | `outcome` |
+| `interview-redflag` | `interview-redflag` |
+| `update` | `update` |
+| `cover` | `cover` |
+| `triage` | `triage` |
 
 **Auto-pipeline:** `$mode`가 알려진 sub-command가 아니고 JD/URL이면 `auto-pipeline` 실행.
 
@@ -75,21 +107,30 @@ license: MIT
 
 ## Output Language Directive
 
-> Write all human-facing output in `{language.output}` (default `ko`). Market terms from `modes/ko` may stay (정규직, 포괄임금제) but explain when needed.
+Before executing any mode, read `config/profile.yml` if it exists and resolve:
+
+- `language.output` → ISO language code for human-facing output. Default: `ko`.
+- `language.modes_dir` → optional market-mode directory.
+
+> Write all human-facing output in `{language.output}` (default `ko`) regardless of the language of these instructions or the job description. Market terms from `modes/ko` may stay (정규직, 포괄임금제) but explain when needed.
 
 ---
 
 ## Discovery Menu
 
+If your CLI supports `/chaeyong-ops`, show this menu. In Codex, surface the same options in plain text and map the requested mode the same way.
+
 ```
 채용옵스 (Chaeyong Ops) — Command Center
 
   /chaeyong-ops {JD or URL}  → 자동 평가 + report + PDF + tracker
-  /chaeyong-ops scan         → portals.yml 스캔 (원티드·잡코리아·사람인·리멤버)
+  /chaeyong-ops scan         → portals.yml 스캔 (원티드·잡코리아·사람인 등)
   /chaeyong-ops gonggo       → 채용 공고 A–G+H 평가만
   /chaeyong-ops triage       → 1차 빠른 점수 (go/no-go, 파일 없음)
   /chaeyong-ops pipeline     → pipeline.md inbox 처리
   /chaeyong-ops pdf          → 맞춤 이력서 PDF (ko-standard)
+  /chaeyong-ops latex        → Export CV as LaTeX/Overleaf .tex
+  /chaeyong-ops latex-tex    → Tailor your own resume.tex in place
   /chaeyong-ops jiwon        → 지원서 작성 도우미
   /chaeyong-ops cover        → 자기소개서 / 커버레터
   /chaeyong-ops email        → 지원 메일 초안
@@ -98,33 +139,40 @@ license: MIT
   /chaeyong-ops deep         → 회사 심층 리서치
   /chaeyong-ops contacto     → LinkedIn 아웃리치
   /chaeyong-ops ofertas      → 여러 오퍼 비교
+  /chaeyong-ops offer-prep   → Read a received offer/contract (clause walk + lawyer questions)
+  /chaeyong-ops titles       → Suggest adjacent job titles from your CV to broaden the search
 
 개인 데이터(cv.md, profile.yml)는 공개 저장소에 커밋하지 마세요.
-지원 순서: docs/APPLY-KR.md (scan → gonggo ≥4.0 → 포털에서 직접 제출)
 ```
 
 ---
 
 ## Context Loading
 
-`modes/_custom.md` → procedural rules only.
+If `modes/_custom.md` exists, read it after `modes/_profile.md` and before the selected mode file. It contains user house rules and procedural preferences. It may override workflow/style defaults, but it never adds factual claims about the candidate.
 
-### `_shared.md` + mode file 필요
+### Modes that require `_shared.md` + their mode file
 
-`{modes_dir}/_shared.md` + `modes/_profile.md` + `modes/_custom.md` + `{modes_dir}/{mode}.md`
+Read `modes/_shared.md` + `modes/_profile.md` (if exists) + `modes/_custom.md` (if exists) + `modes/{mode}.md`
 
-Applies to: `auto-pipeline`, `gonggo`, `oferta`, `pdf`, `apply`, `pipeline`, `scan`, `batch`, …
+Applies to: `auto-pipeline`, `gonggo`, `oferta`, `ofertas`, `pdf`, `text`, `contacto`, `apply`, `pipeline`, `scan`, `batch`
 
-### Subagent delegation
+### Standalone modes with profile and custom context
 
-`scan`, `apply`, `pipeline` (3+ URLs): worker에 위 mode 파일 주입.
+Read `modes/_profile.md` (if exists) + `modes/_custom.md` (if exists) + `modes/{mode}.md`
+
+Applies to: `tracker`, `agent-inbox`, `deep`, `interview-prep`, `interview`, `interview/plan`, `interview/practice`, `interview/debrief`, `latex`, `latex-tex`, `training`, `project`, `patterns`, `titles`, `upskill`, `followup`, `reply-watch`, `outcome`, `cover`, `email`, `add`, `offer-prep`, `discover`
+
+### Modes delegated to subagent
+
+For `scan`, `apply` (with Playwright), and `pipeline` (3+ URLs): launch as a worker/subagent with the content of `_shared.md` + `_profile.md` (if exists) + `_custom.md` (if exists) + `modes/{mode}.md` injected into the worker prompt. If your CLI exposes an `Agent(...)` primitive, the call looks like this:
 
 ```python
 Agent(
   subagent_type="general-purpose",
-  prompt="[language directive]\n\n[shared + profile + custom + mode md]\n\n[data]",
+  prompt="[output language directive]\n\n[content of modes/_shared.md]\n\n[content of modes/_profile.md if exists]\n\n[content of modes/_custom.md if exists]\n\n[content of modes/{mode}.md]\n\n[invocation-specific data]",
   description="chaeyong-ops {mode}"
 )
 ```
 
-Execute the loaded mode file.
+Execute the instructions from the loaded mode file.

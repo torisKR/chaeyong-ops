@@ -58,6 +58,13 @@ import * as yaml from 'js-yaml';
 import { pass, fail, warn, run, runAcrossUtcDay, lastRunFailure, formatRunFailure, fileExists, finish, ROOT, QUICK, NODE, DEFAULT_SCRIPT_TIMEOUT_MS, getBash, toBashPath, hermeticGitEnv } from './tests/helpers.mjs';
 import { flagValue, hasFlag } from './lib/cli-flags.mjs';
 import { collectMjsFiles, isNestedCheckout, isUnderNestedCheckout } from './lib/mjs-files.mjs';
+import { detectSkillId, skillPathsFor } from './scaffolder/bin/skill-entrypoints.mjs';
+
+const SKILL_ID = detectSkillId(ROOT);
+const SKILL = skillPathsFor(SKILL_ID);
+const SKILL_SLASH = SKILL.slash;
+const CLAUDE_SKILL_PATH = `.claude/skills/${SKILL_ID}/SKILL.md`;
+const ROUTER_SKILL_PATHS = [CLAUDE_SKILL_PATH, SKILL.canonical];
 
 /**
  * Read a repo-relative text file as UTF-8.
@@ -1701,13 +1708,7 @@ const systemFiles = [
   'modes/oferta.md', 'modes/pdf.md', 'modes/scan.md',
   'modes/heuristics/recruiter-side.md',
   'templates/states.yml', 'templates/cv-template.html',
-  '.claude/skills/career-ops/SKILL.md',
-  '.cursor/skills/career-ops/SKILL.md',
-  '.opencode/skills/career-ops/SKILL.md',
-  '.qwen/skills/career-ops/SKILL.md',
-  '.antigravitycli/skills/career-ops/SKILL.md',
-  '.grok/skills/career-ops/SKILL.md',
-  '.kimi/skills/career-ops/SKILL.md',
+  ...SKILL.entrypoints.map((e) => e.path),
 ];
 
 for (const f of systemFiles) {
@@ -1738,7 +1739,7 @@ for (const f of systemFiles) {
 // defect is actually about, and still catches #1051: a link-path blob never
 // equals the canonical blob. Reading the INDEX (not the filesystem) keeps this
 // true on Windows checkouts, where a symlink entry materializes as a text file.
-const CANONICAL_ENTRYPOINT = '.agents/skills/career-ops/SKILL.md';
+const CANONICAL_ENTRYPOINT = SKILL.canonical;
 const stagedBlob = (path) => {
   const entry = run('git', ['ls-files', '-s', path]);
   if (entry === null || entry === '') return null;
@@ -1751,7 +1752,7 @@ if (!canonicalEntry) {
   fail(`Could not read git index entry for the canonical entrypoint ${CANONICAL_ENTRYPOINT}`);
 }
 
-const skillEntrypoints = systemFiles.filter((f) => f.endsWith('/skills/career-ops/SKILL.md'));
+const skillEntrypoints = systemFiles.filter((f) => f.endsWith(`/skills/${SKILL_ID}/SKILL.md`));
 for (const f of skillEntrypoints) {
   const staged = stagedBlob(f);
   if (!staged) {
@@ -2363,7 +2364,7 @@ console.log('\n7d. Output language contract');
 const profileExample = readTextLF('config/profile.example.yml');
 const outputLanguageAgentsDoc = readTextLF('AGENTS.md');
 const outputLanguageClaudeDoc = readTextLF('CLAUDE.md');
-const careerOpsSkill = readTextLF('.agents/skills/career-ops/SKILL.md');
+const careerOpsSkill = readTextLF(SKILL.canonical);
 const batchPrompt = readTextLF('batch/batch-prompt.md');
 
 if (/language:\s*\n(?:\s*#.*\n)*\s*output:\s*["']?(en|ko)["']?/.test(profileExample)) {
@@ -2896,26 +2897,26 @@ if (
   fail('_custom.md read-path regressed: missing Sources of Truth row, honor rule in _shared.md, or the pre-generation read in pdf.md (#1388 would reopen)');
 }
 
-for (const skillPath of ['.claude/skills/career-ops/SKILL.md', '.agents/skills/career-ops/SKILL.md']) {
+for (const skillPath of ROUTER_SKILL_PATHS) {
   if (!fileExists(skillPath)) {
     fail(`${skillPath} is missing`);
     continue;
   }
   const skill = readFile(skillPath);
-  if (skill.includes('/career-ops latex')) {
-    pass(`${skillPath} exposes /career-ops latex in discovery menu`);
+  if (skill.includes(`${SKILL_SLASH} latex`)) {
+    pass(`${skillPath} exposes ${SKILL_SLASH} latex in discovery menu`);
   } else {
-    fail(`${skillPath} does not expose /career-ops latex in discovery menu`);
+    fail(`${skillPath} does not expose ${SKILL_SLASH} latex in discovery menu`);
   }
   if (
     skill.includes('email') &&
     skill.includes('| `email` | `email` |') &&
-    skill.includes('/career-ops email') &&
+    skill.includes(`${SKILL_SLASH} email`) &&
     /Standalone modes[\s\S]*Applies to:[^\n]*`email`/.test(skill)
   ) {
-    pass(`${skillPath} exposes /career-ops email in routing, discovery, and standalone loading`);
+    pass(`${skillPath} exposes ${SKILL_SLASH} email in routing, discovery, and standalone loading`);
   } else {
-    fail(`${skillPath} does not fully expose /career-ops email`);
+    fail(`${skillPath} does not fully expose ${SKILL_SLASH} email`);
   }
 }
 
@@ -2942,7 +2943,7 @@ if (
   fail('email mode missing required application-email behavior');
 }
 
-for (const skillPath of ['.claude/skills/career-ops/SKILL.md', '.agents/skills/career-ops/SKILL.md']) {
+for (const skillPath of ROUTER_SKILL_PATHS) {
   if (!fileExists(skillPath)) {
     fail(`${skillPath} is missing`);
     continue;
@@ -3825,11 +3826,11 @@ if (
   }
 }
 
-const routerSkill = readFile('.agents/skills/career-ops/SKILL.md');
+const routerSkill = readFile(SKILL.canonical);
 if (
   /argument-hint:.*offer-prep/.test(routerSkill) &&
   routerSkill.includes('| `offer-prep` | `offer-prep` |') &&
-  routerSkill.includes('/career-ops offer-prep') &&
+  routerSkill.includes(`${SKILL_SLASH} offer-prep`) &&
   /Applies to:.*`offer-prep`/.test(routerSkill) &&
   !/Modes delegated to subagent[\s\S]*offer-prep/.test(routerSkill)
 ) {
@@ -6329,26 +6330,21 @@ for (const [name, marker] of criticalRoutingContracts) {
   if (marker.test(agents)) pass(`AGENTS.md preserves ${name} routing for Claude`);
   else fail(`AGENTS.md is missing ${name} routing required by the Claude wrapper`);
 }
-const claudeSkillEntrypoint = readFile('.claude/skills/career-ops/SKILL.md');
-if (/\.agents\/skills\/career-ops\/SKILL\.md/.test(claudeSkillEntrypoint) || claudeSkillEntrypoint === readFile('.agents/skills/career-ops/SKILL.md')) {
-  pass('Claude skill invocation resolves to the canonical career-ops router');
+const claudeSkillEntrypoint = readFile(CLAUDE_SKILL_PATH);
+if (new RegExp(`\\.agents\\/skills\\/${SKILL_ID}\\/SKILL\\.md`).test(claudeSkillEntrypoint) || claudeSkillEntrypoint === readFile(SKILL.canonical)) {
+  pass(`Claude skill invocation resolves to the canonical ${SKILL_ID} router`);
 } else {
-  fail('Claude skill invocation does not resolve to the canonical career-ops router');
+  fail(`Claude skill invocation does not resolve to the canonical ${SKILL_ID} router`);
 }
 
 // ── 12. SKILL SYMLINK INTEGRITY ─────────────────────────────
 
 console.log('\n12. Skill symlink integrity');
 
-const canonicalSkill = '.agents/skills/career-ops/SKILL.md';
-const symlinks = [
-  '.claude/skills/career-ops/SKILL.md',
-  '.cursor/skills/career-ops/SKILL.md',
-  '.opencode/skills/career-ops/SKILL.md',
-  '.qwen/skills/career-ops/SKILL.md',
-  '.antigravitycli/skills/career-ops/SKILL.md',
-  '.grok/skills/career-ops/SKILL.md',
-];
+const canonicalSkill = SKILL.canonical;
+const symlinks = SKILL.entrypoints
+  .map((e) => e.path)
+  .filter((p) => !p.startsWith('.kimi/')); // kimi is in SKILL_ENTRYPOINTS; this list historically omitted it
 
 let canonicalReal = null;
 let canonicalContent = null;
@@ -6391,11 +6387,11 @@ if (
   /`codex`/.test(canonicalContent ?? '') &&
   /`codex exec/.test(canonicalContent ?? '') &&
   /prompt/i.test(canonicalContent ?? '') &&
-  /\/career-ops/.test(canonicalContent ?? '')
+  (canonicalContent ?? '').includes(SKILL_SLASH)
 ) {
-  pass('career-ops skill router documents the Codex invocation model');
+  pass(`${SKILL_ID} skill router documents the Codex invocation model`);
 } else {
-  fail('career-ops skill router is missing Codex invocation guidance');
+  fail(`${SKILL_ID} skill router is missing Codex invocation guidance`);
 }
 
 console.log('\n12c. Codex documentation guidance');
@@ -6495,7 +6491,7 @@ console.log('\n12a-bis. Every tracked skill entrypoint is materializable');
   try {
     const tracked = execSync('git ls-files', { cwd: ROOT, encoding: 'utf-8' })
       .split('\n')
-      .filter((p) => /^\.[^/]+\/skills\/career-ops\/SKILL\.md$/.test(p))
+      .filter((p) => new RegExp(`^\\.[^/]+/skills/${SKILL_ID}/SKILL\\.md$`).test(p))
       .filter((p) => !p.startsWith('.agents/')) // the canonical target, not an entrypoint
       .sort();
 
@@ -6542,7 +6538,7 @@ console.log('\n12b. Skill entrypoint bootstrap (npx / old releases)');
     // teaches whoever hits it to edit the expectation without reading it. The
     // assertion that matters is "bootstraps everything in the registry", and
     // that one holds whatever the registry contains.
-    const expectedTouched = skills.SKILL_ENTRYPOINTS.map((e) => e.path).sort();
+    const expectedTouched = skills.skillPathsAt(fixtureRoot).entrypoints.map((e) => e.path).sort();
 
     if (JSON.stringify(touched) === JSON.stringify(expectedTouched)) {
       pass('ensureSkillEntrypoints bootstraps all CLI skill entrypoints');
@@ -17068,18 +17064,18 @@ try {
   fail(`modes/titles.md missing or unreadable: ${e.message}`);
 }
 
-for (const skillPath of ['.claude/skills/career-ops/SKILL.md', '.agents/skills/career-ops/SKILL.md']) {
+for (const skillPath of ROUTER_SKILL_PATHS) {
   if (!fileExists(skillPath)) continue; // existence already checked in section 8
   const skill = readFile(skillPath);
   if (
     /argument-hint:[^\n]*titles/.test(skill) &&
     skill.includes('| `titles` | `titles` |') &&
-    skill.includes('/career-ops titles') &&
+    skill.includes(`${SKILL_SLASH} titles`) &&
     /Standalone modes[\s\S]*Applies to:[^\n]*`titles`/.test(skill)
   ) {
-    pass(`${skillPath} exposes /career-ops titles in argument-hint, routing, discovery, and standalone loading`);
+    pass(`${skillPath} exposes ${SKILL_SLASH} titles in argument-hint, routing, discovery, and standalone loading`);
   } else {
-    fail(`${skillPath} does not fully expose /career-ops titles`);
+    fail(`${skillPath} does not fully expose ${SKILL_SLASH} titles`);
   }
 }
 

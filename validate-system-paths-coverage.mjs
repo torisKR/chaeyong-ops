@@ -65,6 +65,7 @@ const EXCLUDES = [
   'flake.nix',
   'batch/logs/.gitkeep',
   'batch/tracker-additions/.gitkeep',
+  'batch/tracker-additions/merged/.gitkeep',
   'interview-prep/.gitkeep',
   // The declaration file itself. Normally untracked, so normally invisible to
   // this check — but a FORK that runs this suite in CI has to commit it, or CI
