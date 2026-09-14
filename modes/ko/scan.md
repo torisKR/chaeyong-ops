@@ -2,7 +2,7 @@
 
 `portals.yml`에 설정된 포털을 스캔하고, 제목·내용 필터를 통과한 신규 공고를 `data/pipeline.md`에 추가합니다.
 
-> **기본 실행 (zero-token):** `node scan.mjs` — provider가 있는 보드는 API/HTML 파싱으로 자동 처리합니다. 한국 provider: `wanted`, `jobkorea`, `saramin`.
+> **기본 실행 (zero-token):** `node scan.mjs` — provider가 있는 보드는 API/HTML 파싱으로 자동 처리합니다. 한국 provider: `wanted`, `jobkorea`, `saramin`, `remember`.
 >
 > **에이전트 워크플로:** Playwright/WebSearch는 `scan.mjs`가 처리하지 못하는 보드(로그인 wall, SPA만 있는 페이지)에만 사용합니다.
 
@@ -30,7 +30,7 @@ content_filter:
     - "원어민"
 
 title_filter:
-  positive: ["백엔드", "frontend", "AI", "데이터", "DevOps"]
+  positive: ["백엔드", "풀스택", "NestJS", "Node.js", "TypeScript", "frontend"]
   negative: ["인턴", "영업", "마케팅"]
 
 job_boards:
@@ -50,10 +50,16 @@ job_boards:
     provider: jobkorea
     searchKeywords: "개발"
     max_pages: 3
-    enabled: false
+    enabled: false   # 이용약관 확인 후 true
+
+  - name: Remember — 개발
+    provider: remember
+    careers_url: https://career.rememberapp.co.kr/job/postings
+    max_pages: 3
+    enabled: false   # robots.txt·이용약관·Cloudflare 확인 후 true
 ```
 
-⚠️ **이용약관:** MIT 라이선스 ≠ 잡코리아·사람인·원티드 자동 수집 허용. `enabled: true` 전 robots.txt·이용약관을 확인하세요.
+⚠️ **이용약관:** MIT 라이선스 ≠ 원티드·사람인·잡코리아·리멤버 자동 수집 허용. `enabled: true` 전 robots.txt·이용약관을 확인하세요. Cloudflare 챌린지는 우회하지 않습니다.
 
 ## 한국 포털 provider
 
@@ -62,6 +68,7 @@ job_boards:
 | **wanted** | 공개 JSON API (`/api/v4/jobs`) | `provider: wanted` + `searchKeywords` |
 | **saramin** | HTML 검색 파싱 | `provider: saramin` + `searchKeywords` |
 | **jobkorea** | HTML 검색 파싱 | `provider: jobkorea` + `searchKeywords` |
+| **remember** | 공개 `/job/postings` HTML stub | `provider: remember` — 기본 `enabled: false`. Cloudflare 우회 없음 |
 
 글로벌 ATS(Greenhouse, Ashby, Lever)에 올라온 **한국 지사 공고**는 기존 `tracked_companies` + API로 스캔 가능합니다.
 
@@ -69,7 +76,7 @@ job_boards:
 
 | Level | 방법 | 한국 맥락 |
 |-------|------|-----------|
-| **0** | `node scan.mjs` (provider API/HTML) | wanted·saramin·jobkorea + Greenhouse 등 |
+| **0** | `node scan.mjs` (provider API/HTML) | wanted·saramin·jobkorea·remember + Greenhouse 등 |
 | **1** | Playwright `careers_url` | 로그인 wall·SPA 보드 |
 | **2** | ATS public API | `tracked_companies[].api` |
 | **3** | WebSearch `site:` | 신규 회사 발견용 — **결과는 stale할 수 있음**, liveness 확인 필수 |
