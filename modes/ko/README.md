@@ -42,7 +42,7 @@ language:
 | 파일 | 번역 기준 | 역할 |
 |---------|----------------|------|
 | `_shared.md` | `modes/_shared.md` (EN) | 공통 컨텍스트, archetype, 전역 규칙, 한국 채용 시장 특화 맥락 |
-| `gonggo.md` | `modes/oferta.md` (ES) | 채용 공고 전체 평가 (블록 A-F) |
+| `gonggo.md` | `modes/oferta.md` (EN) | 채용 공고 전체 평가 (블록 A–G + H) |
 | `jiwon.md` | `modes/apply.md` (EN) | 지원서 입력 폼을 채우는 live assistant |
 | `pipeline.md` | `modes/pipeline.md` (ES) | 수집한 채용 공고 URL inbox / Second Brain |
 

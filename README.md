@@ -1,3 +1,5 @@
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/wordmark-dark.svg"><img src="docs/wordmark-light.svg" alt="채용옵스 Chaeyong Ops" width="320" height="86"></picture></p>
+
 # 채용옵스 (Chaeyong Ops)
 
 **한국 채용 시장을 위한 AI 구직 파이프라인**
