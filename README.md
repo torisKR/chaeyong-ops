@@ -1,12 +1,5 @@
 <p align="center">
-  <img src="assets/logo.svg" alt="채용옵스 로고" width="96" height="96">
-</p>
-
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/wordmark-dark.svg">
-    <img src="assets/wordmark-light.svg" alt="채용옵스 Chaeyong Ops" width="320" height="86">
-  </picture>
+  <img src="assets/icon.png" alt="채용옵스 로고" width="160" height="160">
 </p>
 
 <h1 align="center">채용옵스 (Chaeyong Ops)</h1>
@@ -25,6 +18,10 @@
   <img src="https://img.shields.io/badge/포털-원티드_·_사람인_·_잡코리아_·_리멤버-2563eb" alt="한국 포털">
   <img src="https://img.shields.io/badge/평가-A–H-111827" alt="A-H 평가">
   <a href="NOTICE.md"><img src="https://img.shields.io/badge/기반-career--ops-6b7280" alt="career-ops fork"></a>
+</p>
+
+<p align="center">
+  <img src="assets/banner.png" alt="채용옵스 — Korean AI Job Pipeline (Wanted, Saramin, JobKorea, Remember)" width="920">
 </p>
 
 > [career-ops](https://github.com/career-ops-hq/career-ops) 기반 포크 · MIT License · **채용옵스**라는 별도 제품명으로 배포합니다. `career-ops` 이름·로고는 원저작자 상표입니다.
