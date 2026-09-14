@@ -47,8 +47,12 @@ language:
 | `pipeline.md` | `modes/pipeline.md` (EN) | 수집한 채용 공고 URL inbox / Second Brain |
 | `auto-pipeline.md` | `modes/auto-pipeline.md` (EN) | JD/URL 붙여넣기 → 평가+PDF+tracker 전체 파이프라인 |
 | `scan.md` | `modes/scan.md` (EN) | 한국 포털 스캔 (원티드·잡코리아·사람인) |
+| `pdf.md` | `modes/pdf.md` (EN) | 한국어 PDF (`ko-standard`, A4, 섹션 제목) |
+| `triage.md` | `modes/triage.md` (EN) | 1차 빠른 go/no-go (`_brief.md`만 읽음) |
 
-다른 모드(`batch`, `pdf`, `tracker`, `deep`, `contacto`, `ofertas`, `project`, `training`)는 기존 EN 모드를 그대로 사용합니다. `pdf`·`tracker`는 `language.output: ko`로 한국어 출력이 가능합니다.
+`triage`용 brief 템플릿: `modes/_brief.template.ko.md` → `modes/_brief.md`로 복사 후 작성.
+
+다른 모드(`batch`, `tracker`, `deep`, `contacto`, `ofertas`, `project`, `training`)는 기존 EN 모드를 그대로 사용합니다. `tracker`는 `language.output: ko`로 한국어 출력이 가능합니다.
 
 ## 영어로 유지하는 것
 

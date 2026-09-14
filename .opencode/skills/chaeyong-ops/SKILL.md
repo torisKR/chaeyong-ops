@@ -35,6 +35,8 @@ license: MIT
 | `jiwon`, `apply` | `modes/ko/jiwon.md` | `modes/apply.md` |
 | `pipeline` | `modes/ko/pipeline.md` | `modes/pipeline.md` |
 | `scan` | `modes/ko/scan.md` | `modes/scan.md` |
+| `pdf` | `modes/ko/pdf.md` (+ `modes/pdf.md` pipeline) | `modes/pdf.md` |
+| `triage` | `modes/ko/triage.md` | `modes/triage.md` |
 
 `_shared.md`도 동일한 `modes_dir`에서 읽습니다 (`modes/ko/_shared.md`).
 

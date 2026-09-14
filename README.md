@@ -91,8 +91,10 @@ language:
 AI CLI에서:
 
 - 채용 URL 붙여넣기 → 자동 평가 + PDF + 트래커
-- `scan` 모드 → `portals.yml`에 설정한 한국 포털 스캔
-- `gonggo` 모드 → 한국어 채용 공고 A–F 평가
+- URL 붙여넣기 → **auto-pipeline** (평가 + PDF + tracker 자동)
+- `scan` 모드 → `node scan.mjs` / 원티드·잡코리아·사람인 스캔
+- `gonggo` 모드 → 한국어 채용 공고 A–G+H 평가
+- `pipeline` 모드 → `data/pipeline.md` 대기 URL 일괄 처리
 - `jiwon` 모드 → 지원서 폼 작성 도우미
 
 ## 한국 포털 설정
