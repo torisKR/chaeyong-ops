@@ -229,4 +229,4 @@ Issue와 PR을 환영합니다. 한국 포털 provider 개선, 평가 기준 보
 - [career-ops 상표 정책](https://raw.githubusercontent.com/career-ops-hq/career-ops/main/TRADEMARK.md)
 - [NOTICE.md](NOTICE.md) — 이 포크의 수정 사항
 - [docs/APPLY-KR.md](docs/APPLY-KR.md) — 한국 지원 워크플로 (scan → gonggo ≥4.0 → 수동 제출)
-- [assets/](assets/) — 채용옵스 로고·파비콘
+- [assets/](assets/) — 채용옵스 로고 (`icon.png`) · 히어로 배너 (`banner.png`)
