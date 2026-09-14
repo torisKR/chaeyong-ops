@@ -5,14 +5,14 @@
      상세 narrative는 `_profile.md` / `cv.md`에 두세요. -->
 
 ## Identity
-{한 줄: seniority, 분야, 경력 연수, 거주지/타임존, 체류·비자. 예: "시니어 백엔드 — 8년. 서울(재택 가능). 한국 근로 가능."}
+{한 줄: seniority, 분야, 경력 연수, 거주지/타임존, 체류·비자. 예: "주니어 백엔드 — 1년 7개월. 서울(하이브리드). 한국 근로 가능."}
 
 ## Target Archetypes
 
 | # | Archetype | 구매 가치 (proof) |
 |---|-----------|-------------------|
-| 1 | **{예: AI Platform Engineer}** | {metric·scope} |
-| 2 | **{예: Backend / Infra}** | {...} |
+| 1 | **{예: 백엔드 개발자 (NestJS)}** | {metric·scope} |
+| 2 | **{예: 풀스택 개발자}** | {...} |
 
 ## Proof Points (정확한 수치 사용)
 - {성과 — scope, impact}

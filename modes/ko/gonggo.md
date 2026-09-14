@@ -29,14 +29,14 @@ Block D·G 합산 **WebSearch 최대 5회**. `deep` 모드나 subagent 연구는
 
 ## Step 0 — Archetype 감지
 
-6개 archetype 중 하나로 분류(`_shared.md`). hybrid면 가장 가까운 2개를 표시합니다.
+`modes/_profile.md` (없으면 `modes/ko/_shared.md`)의 목표 archetype 중 하나로 분류합니다. 채용옵스 기본 예시는 **백엔드 / 풀스택 / 프론트엔드**. hybrid면 가장 가까운 2개를 표시합니다.
 
 ## Block A — 역할 요약
 
 | 항목 | 내용 |
 |------|------|
 | Archetype | 감지된 archetype |
-| Domain | platform / agentic / LLMOps / ML / enterprise |
+| Domain | backend / fullstack / frontend / platform / other |
 | Function | build / consult / manage / deploy |
 | Seniority | |
 | Remote | full / hybrid / onsite |

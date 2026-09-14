@@ -1,7 +1,7 @@
 ---
 name: chaeyong-ops
 description: >-
-  한국형 AI 구직 파이프라인 — 잡코리아·사람인·원티드 스캔, 채용 공고 A–G+H 평가,
+  한국형 AI 구직 파이프라인 — 잡코리아·사람인·원티드·리멤버 스캔, 채용 공고 A–G+H 평가,
   맞춤 이력서, 지원 추적. JD/URL 붙여넣기, scan, pdf, tracker, interview 등
   chaeyong-ops 모드 실행 시 사용. (career-ops 기반 포크)
 arguments: mode
@@ -63,7 +63,7 @@ license: MIT
 | JD text or URL | **auto-pipeline** |
 | `gonggo` / `oferta` | evaluation A–G+H |
 | `jiwon` / `apply` | application assistant |
-| `scan` | portal scan (wanted, jobkorea, saramin, …) |
+| `scan` | portal scan (wanted, jobkorea, saramin, remember, …) |
 | `pipeline` | process `data/pipeline.md` |
 | `pdf` | tailored CV PDF |
 | `tracker` | application status |
@@ -85,7 +85,7 @@ license: MIT
 채용옵스 (Chaeyong Ops) — Command Center
 
   /chaeyong-ops {JD or URL}  → 자동 평가 + report + PDF + tracker
-  /chaeyong-ops scan         → portals.yml 스캔 (원티드·잡코리아·사람인 등)
+  /chaeyong-ops scan         → portals.yml 스캔 (원티드·잡코리아·사람인·리멤버)
   /chaeyong-ops gonggo       → 채용 공고 A–G+H 평가만
   /chaeyong-ops triage       → 1차 빠른 점수 (go/no-go, 파일 없음)
   /chaeyong-ops pipeline     → pipeline.md inbox 처리
@@ -100,6 +100,7 @@ license: MIT
   /chaeyong-ops ofertas      → 여러 오퍼 비교
 
 개인 데이터(cv.md, profile.yml)는 공개 저장소에 커밋하지 마세요.
+지원 순서: docs/APPLY-KR.md (scan → gonggo ≥4.0 → 포털에서 직접 제출)
 ```
 
 ---

@@ -212,9 +212,9 @@ Fill in `config/profile.yml` (including `spend_tier`, default `standard`). Arche
 
 #### Step 3: Portals (recommended)
 If `portals.yml` is missing:
-> "I'll set up the job scanner with 45+ pre-configured companies. Want me to customize the search keywords for your target roles?"
+> "I'll set up the Korean job scanner (Wanted enabled; Saramin/JobKorea/Remember opt-in). Want me to customize the search keywords for your target roles?"
 
-Copy `templates/portals.example.yml` → `portals.yml`; if they gave target roles in Step 2, update `title_filter.positive`.
+Copy `templates/portals-kr.example.yml` → `portals.yml`; if they gave target roles in Step 2, update `title_filter.positive`. The global `templates/portals.example.yml` remains available for Greenhouse/Ashby/Lever company lists. See [docs/APPLY-KR.md](docs/APPLY-KR.md).
 
 #### Step 4: Tracker
 If `data/applications.md` doesn't exist, create it:

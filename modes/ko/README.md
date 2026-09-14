@@ -20,7 +20,7 @@ language:
 | `auto-pipeline.md` | `modes/auto-pipeline.md` | URL → 평가+PDF+tracker |
 | `jiwon.md` | `modes/apply.md` | 지원서 폼 assistant |
 | `pipeline.md` | `modes/pipeline.md` | `data/pipeline.md` inbox |
-| `scan.md` | `modes/scan.md` | 원티드·잡코리아·사람인 스캔 |
+| `scan.md` | `modes/scan.md` | 원티드·잡코리아·사람인·리멤버 스캔 |
 | `pdf.md` | `modes/pdf.md` | 한국어 PDF (`ko-standard`, A4) |
 | `triage.md` | `modes/triage.md` | 1차 go/no-go |
 | `batch.md` | `modes/batch.md` | 대량 처리 (`batch-prompt.ko.md`) |
