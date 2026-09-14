@@ -37,16 +37,18 @@ language:
 
 ## 어떤 모드가 번역되어 있나요?
 
-이번 첫 버전은 영향도가 가장 큰 네 가지 모드를 다룹니다.
+채용옵스 기본 설정(`language.modes_dir: modes/ko`)에서는 아래 네 모드가 한국 채용 맥락을 제공합니다. `gonggo.md`는 canonical A–G+H 평가 구조를 따릅니다.
 
 | 파일 | 번역 기준 | 역할 |
 |---------|----------------|------|
 | `_shared.md` | `modes/_shared.md` (EN) | 공통 컨텍스트, archetype, 전역 규칙, 한국 채용 시장 특화 맥락 |
 | `gonggo.md` | `modes/oferta.md` (EN) | 채용 공고 전체 평가 (블록 A–G + H) |
 | `jiwon.md` | `modes/apply.md` (EN) | 지원서 입력 폼을 채우는 live assistant |
-| `pipeline.md` | `modes/pipeline.md` (ES) | 수집한 채용 공고 URL inbox / Second Brain |
+| `pipeline.md` | `modes/pipeline.md` (EN) | 수집한 채용 공고 URL inbox / Second Brain |
+| `auto-pipeline.md` | `modes/auto-pipeline.md` (EN) | JD/URL 붙여넣기 → 평가+PDF+tracker 전체 파이프라인 |
+| `scan.md` | `modes/scan.md` (EN) | 한국 포털 스캔 (원티드·잡코리아·사람인) |
 
-다른 모드(`scan`, `batch`, `pdf`, `tracker`, `auto-pipeline`, `deep`, `contacto`, `ofertas`, `project`, `training`)는 기존 EN/ES 모드를 그대로 사용합니다. 해당 파일들은 주로 tooling, 경로, 명령어 중심이라 언어와 독립적으로 동작합니다.
+다른 모드(`batch`, `pdf`, `tracker`, `deep`, `contacto`, `ofertas`, `project`, `training`)는 기존 EN 모드를 그대로 사용합니다. `pdf`·`tracker`는 `language.output: ko`로 한국어 출력이 가능합니다.
 
 ## 영어로 유지하는 것
 

@@ -30,9 +30,11 @@ license: MIT
 
 | Router input | `modes/ko/` (default) | `modes/` (fallback) |
 |--------------|----------------------|---------------------|
-| `gonggo`, `oferta`, JD/URL auto | `modes/ko/gonggo.md` | `modes/oferta.md` |
+| JD/URL (no sub-command) | `modes/ko/auto-pipeline.md` | `modes/auto-pipeline.md` |
+| `gonggo`, `oferta` | `modes/ko/gonggo.md` | `modes/oferta.md` |
 | `jiwon`, `apply` | `modes/ko/jiwon.md` | `modes/apply.md` |
 | `pipeline` | `modes/ko/pipeline.md` | `modes/pipeline.md` |
+| `scan` | `modes/ko/scan.md` | `modes/scan.md` |
 
 `_shared.md`도 동일한 `modes_dir`에서 읽습니다 (`modes/ko/_shared.md`).
 

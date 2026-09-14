@@ -1,6 +1,6 @@
 # 모드: pipeline -- URL Inbox (Second Brain)
 
-`data/pipeline.md`에 쌓인 채용 공고 URL을 처리합니다. 후보자는 원할 때 URL을 추가하고, 이후 `/career-ops pipeline`을 실행해 한 번에 처리합니다.
+`data/pipeline.md`에 쌓인 채용 공고 URL을 처리합니다. 후보자는 원할 때 URL을 추가하고, 이후 `/chaeyong-ops pipeline`(또는 "pipeline 모드 실행")으로 한 번에 처리합니다.
 
 ## Workflow
 
@@ -9,7 +9,7 @@
    a. `node reserve-report-num.mjs`를 실행해 다음 sequential `REPORT_NUM`을 atomic하게 예약합니다(report 작성 후 `node reserve-report-num.mjs --release <num>`으로 sentinel 해제).
    b. **공고 추출**: Playwright(`browser_navigate` + `browser_snapshot`) -> WebFetch -> WebSearch
    c. URL에 접근할 수 없으면 note와 함께 `- [!]`로 표시하고 계속합니다.
-   d. **전체 auto-pipeline 실행**: Evaluation A-F -> Report .md -> PDF(score >= 3.0이면) -> Tracker
+   d. **전체 auto-pipeline 실행** (`modes/ko/auto-pipeline.md`): Evaluation A–G+H -> Report .md -> PDF(score >= 3.0이면) -> Tracker
    e. **"대기"에서 "처리 완료"로 이동**: `- [x] #NNN | URL | Company | Role | Score/5 | PDF yes/no`
 3. **대기 URL이 3개 이상이어도 Playwright-backed 처리는 직렬로 실행합니다.** Playwright browser instance를 공유하므로 여러 browser-backed agent를 동시에 띄우지 않습니다. 병렬화가 필요하면 Playwright를 쓰지 않는 non-browser 작업에만 제한합니다.
 4. **마지막에** 요약 표를 표시합니다.
