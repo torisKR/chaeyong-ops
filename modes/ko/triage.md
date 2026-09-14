@@ -14,7 +14,7 @@
 - `modes/_profile.md`
 - `modes/ko/gonggo.md`
 
-`_brief.md`는 `modes/_brief.template.md`에서 복사(`doctor.mjs` first run). 비어 있으면 triage 불가 → full eval로 fallback.
+`_brief.md`는 first run에 `doctor.mjs`가 자동 복사합니다 (`language.output: ko` → `modes/_brief.template.ko.md`, 그 외 EN 템플릿). 비어 있으면 triage 불가 → full eval로 fallback.
 
 한국 사용자는 `_brief.md`에 **한국 연봉 floor(세전)**, **재택/출근 정책**, **영어 필수 DQ** 등을 명시하세요.
 

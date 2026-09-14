@@ -37,8 +37,17 @@ license: MIT
 | `scan` | `modes/ko/scan.md` | `modes/scan.md` |
 | `pdf` | `modes/ko/pdf.md` (+ `modes/pdf.md` pipeline) | `modes/pdf.md` |
 | `triage` | `modes/ko/triage.md` | `modes/triage.md` |
+| `batch` | `modes/ko/batch.md` (+ `batch/batch-prompt.ko.md` workers) | `modes/batch.md` |
+| `cover` | `modes/ko/cover.md` (+ `modes/cover.md`) | `modes/cover.md` |
+| `email` | `modes/ko/email.md` (+ `modes/email.md`) | `modes/email.md` |
+| `tracker` | `modes/ko/tracker.md` (+ `modes/tracker.md`) | `modes/tracker.md` |
+| `deep` | `modes/ko/deep.md` (+ `modes/deep.md`) | `modes/deep.md` |
+| `contacto` | `modes/ko/contacto.md` (+ `modes/contacto.md`) | `modes/contacto.md` |
+| `ofertas` | `modes/ko/ofertas.md` (+ `modes/ofertas.md`) | `modes/ofertas.md` |
 
 `_shared.md`도 동일한 `modes_dir`에서 읽습니다 (`modes/ko/_shared.md`).
+
+`language.output: ko`이면 `doctor.mjs`가 `modes/_brief.template.ko.md` → `modes/_brief.md`를 자동 복사합니다.
 
 ## Invocation Notes
 
@@ -82,7 +91,13 @@ license: MIT
   /chaeyong-ops pipeline     → pipeline.md inbox 처리
   /chaeyong-ops pdf          → 맞춤 이력서 PDF (ko-standard)
   /chaeyong-ops jiwon        → 지원서 작성 도우미
+  /chaeyong-ops cover        → 자기소개서 / 커버레터
+  /chaeyong-ops email        → 지원 메일 초안
+  /chaeyong-ops batch        → 대량 평가 (batch-runner.sh)
   /chaeyong-ops tracker      → 지원 현황
+  /chaeyong-ops deep         → 회사 심층 리서치
+  /chaeyong-ops contacto     → LinkedIn 아웃리치
+  /chaeyong-ops ofertas      → 여러 오퍼 비교
 
 개인 데이터(cv.md, profile.yml)는 공개 저장소에 커밋하지 마세요.
 ```

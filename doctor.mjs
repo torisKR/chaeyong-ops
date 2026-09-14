@@ -18,6 +18,7 @@ import { resolveExtractorMode } from './browser-extract.mjs';
 import { parseConfigByExtension } from './jsonc-parse.mjs';
 import { validateFlags } from './lib/cli-flags.mjs';
 import { geminiNodeFloor } from './lib/gemini-node-floor.mjs';
+import { resolveBriefTemplatePath } from './profile-language.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const argv = process.argv.slice(2);
@@ -723,18 +724,20 @@ async function main() {
 //     instead of the candidate's archetypes, comp floor and hard DQ criteria.
 // doctor auto-copies both from their templates on first run, so "the file
 // exists" is guaranteed and tells us nothing — only its CONTENT does.
-const PERSONALIZATION_FILES = [
-  {
-    path: 'modes/_profile.md',
-    template: 'modes/_profile.template.md',
-    impact: 'evaluations score against the template author\'s targeting, not yours',
-  },
-  {
-    path: 'modes/_brief.md',
-    template: 'modes/_brief.template.md',
-    impact: 'triage reads literal {placeholders} instead of your archetypes',
-  },
-];
+function personalizationFiles(root) {
+  return [
+    {
+      path: 'modes/_profile.md',
+      template: 'modes/_profile.template.md',
+      impact: 'evaluations score against the template author\'s targeting, not yours',
+    },
+    {
+      path: 'modes/_brief.md',
+      template: resolveBriefTemplatePath(root),
+      impact: 'triage reads literal {placeholders} instead of your archetypes',
+    },
+  ];
+}
 
 // Placeholder tokens the template itself ships, e.g. `{Your Name}`. Comparing
 // against the template's own set (rather than any `{...}` run) keeps braces the
@@ -747,7 +750,7 @@ function templatePlaceholders(text) {
 // content. Missing files are NOT reported here — that is `missing`'s job.
 function unpersonalizedFiles(root) {
   const out = [];
-  for (const { path, template, impact } of PERSONALIZATION_FILES) {
+  for (const { path, template, impact } of personalizationFiles(root)) {
     const targetPath = join(root, ...path.split('/'));
     const templatePath = join(root, ...template.split('/'));
     if (!existsSync(targetPath) || !existsSync(templatePath)) continue;
@@ -796,7 +799,7 @@ function onboardingState(root) {
   const templates = [
     { target: 'modes/_profile.md', template: 'modes/_profile.template.md' },
     { target: 'modes/_custom.md', template: 'modes/_custom.template.md' },
-    { target: 'modes/_brief.md', template: 'modes/_brief.template.md' },
+    { target: 'modes/_brief.md', template: resolveBriefTemplatePath(root) },
     { target: 'voice-dna.md', template: 'voice-dna.template.md' },
   ];
   for (const { target, template } of templates) {
