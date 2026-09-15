@@ -15,6 +15,7 @@ import (
 	"github.com/santifer/career-ops/dashboard/internal/model"
 	"github.com/santifer/career-ops/dashboard/internal/theme"
 	"github.com/santifer/career-ops/dashboard/internal/ui/screens"
+	"github.com/santifer/career-ops/dashboard/internal/webui"
 )
 
 type viewState int
@@ -360,6 +361,8 @@ func main() {
 	}
 	pathFlag := flag.String("path", defaultPath, "Path to career-ops directory")
 	langFlag := flag.String("lang", "", "Language for UI (en, tr). Defaults to auto-detect/en.")
+	webFlag := flag.Bool("web", false, "Serve a local HTTP application-status board instead of the TUI")
+	addrFlag := flag.String("addr", webui.DefaultAddr, "Listen address for --web (loopback only)")
 	flag.Parse()
 
 	if *langFlag != "" {
@@ -369,6 +372,14 @@ func main() {
 	}
 
 	careerOpsPath := *pathFlag
+
+	if *webFlag {
+		if err := webui.ListenAndServe(*addrFlag, careerOpsPath); err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
 
 	// Load applications
 	apps := data.ParseApplications(careerOpsPath)
@@ -394,7 +405,7 @@ func main() {
 		theme:           t,
 		progressMetrics: progressMetrics,
 		statsMetrics:    statsMetrics,
-		evaluatedCount:  func() int {
+		evaluatedCount: func() int {
 			n := 0
 			for _, a := range apps {
 				if a.Score > 0 {

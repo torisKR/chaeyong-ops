@@ -457,6 +457,40 @@ func TestResolveTrackerColumnsVia(t *testing.T) {
 	}
 }
 
+func TestParseApplicationsReadsViaColumnAndNotesTag(t *testing.T) {
+	tempDir := t.TempDir()
+	dataDir := filepath.Join(tempDir, "data")
+	if err := os.MkdirAll(dataDir, 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+
+	applications := `# Applications Tracker
+
+| # | Date | Company | Via | Role | Score | Status | PDF | Report | Notes | URL |
+|---|------|---------|-----|------|-------|--------|-----|--------|-------|-----|
+| 1 | 2026-01-05 | 예시테크 | 원티드 | 백엔드 개발자 | 4.2/5 | Applied | ❌ | — | fictional fixture | https://www.wanted.co.kr/wd/00001 |
+| 2 | 2026-01-06 | 가상소프트 | | 풀스택 개발자 | 4.0/5 | Interview | ❌ | — | listing via=사람인 | https://www.saramin.co.kr/zf_user/jobs/relay/view?rec_idx=1 |
+`
+	path := filepath.Join(dataDir, "applications.md")
+	if err := os.WriteFile(path, []byte(applications), 0o644); err != nil {
+		t.Fatalf("write tracker: %v", err)
+	}
+
+	apps := ParseApplications(tempDir)
+	if len(apps) != 2 {
+		t.Fatalf("expected 2 applications, got %d", len(apps))
+	}
+	if apps[0].Via != "원티드" {
+		t.Errorf("via column = %q, want 원티드", apps[0].Via)
+	}
+	if apps[1].Via != "사람인" {
+		t.Errorf("via from notes tag = %q, want 사람인", apps[1].Via)
+	}
+	if TrackerPath(tempDir) != path {
+		t.Errorf("TrackerPath = %q, want %q", TrackerPath(tempDir), path)
+	}
+}
+
 // TestNormalizeStatus verifies that localized string variants map to the canonical English form.
 func TestNormalizeStatus(t *testing.T) {
 	tests := []struct {
