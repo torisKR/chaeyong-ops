@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>지원 현황 · 채용옵스</title>
+  <style>
+    :root {
+      --indigo: #2563eb;
+      --indigo-soft: #dbeafe;
+      --teal: #0f766e;
+      --teal-soft: #ccfbf1;
+      --ink: #111827;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --applied: #2563eb;
+      --screening: #0f766e;
+      --interview: #d97706;
+      --offer: #15803d;
+      --rejected: #e11d48;
+      --hold: #64748b;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", ui-sans-serif, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+    a { color: var(--indigo); }
+    header {
+      background: linear-gradient(120deg, #1e3a8a 0%, #0f766e 100%);
+      color: #fff;
+      padding: 1.5rem 1.25rem 1.75rem;
+    }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 1.25rem 3rem; }
+    header .wrap { padding-bottom: 0; }
+    .brand {
+      display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap;
+    }
+    .brand h1 { font-size: 1.5rem; margin: 0; letter-spacing: -0.02em; }
+    .brand p { margin: 0.2rem 0 0; opacity: 0.85; font-size: 0.9rem; }
+    .local-pill {
+      font-size: 0.75rem; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 999px; padding: 0.25rem 0.7rem; white-space: nowrap;
+    }
+    .tiles {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 0.6rem;
+      margin-top: 1.25rem;
+    }
+    .tile {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 12px;
+      padding: 0.7rem 0.75rem;
+      cursor: pointer;
+      color: #fff;
+      text-align: left;
+    }
+    .tile:hover, .tile:focus { background: rgba(255,255,255,0.22); outline: none; }
+    .tile.active { background: #fff; color: var(--ink); }
+    .tile .n { font-size: 1.4rem; font-weight: 700; display: block; }
+    .tile .l { font-size: 0.8rem; opacity: 0.9; }
+    .tile.active .l { opacity: 0.65; color: var(--muted); }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      margin-top: -0.75rem;
+      padding: 1rem;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    }
+    .filters {
+      display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center;
+    }
+    .filters input, .filters select {
+      border: 1px solid var(--line); border-radius: 10px; padding: 0.5rem 0.7rem;
+      font: inherit; background: #fff;
+    }
+    .filters input { min-width: min(100%, 16rem); flex: 1; }
+    .hint { color: var(--muted); font-size: 0.85rem; margin-left: auto; }
+    table { width: 100%; border-collapse: collapse; margin-top: 0.9rem; }
+    th, td { text-align: left; padding: 0.7rem 0.55rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { font-size: 0.75rem; letter-spacing: 0.04em; color: var(--muted); text-transform: none; }
+    tbody tr:hover { background: #f8fafc; }
+    .company { font-weight: 650; }
+    .role { color: var(--muted); font-size: 0.92rem; }
+    .chip {
+      display: inline-block; border-radius: 999px; padding: 0.15rem 0.55rem;
+      font-size: 0.78rem; font-weight: 600; background: #f1f5f9; color: var(--ink);
+    }
+    .chip.wanted, .chip.saramin, .chip.jobkorea, .chip.remember { background: var(--teal-soft); color: var(--teal); }
+    .st-applied { background: var(--indigo-soft); color: var(--applied); }
+    .st-responded, .st-screening { background: var(--teal-soft); color: var(--screening); }
+    .st-interview { background: #fef3c7; color: var(--interview); }
+    .st-offer, .st-hired { background: #dcfce7; color: var(--offer); }
+    .st-rejected { background: #ffe4e6; color: var(--rejected); }
+    .st-hold, .st-evaluated, .st-discarded, .st-skip { background: #f1f5f9; color: var(--hold); }
+    .score { font-variant-numeric: tabular-nums; font-weight: 650; }
+    .empty {
+      text-align: center; padding: 2.5rem 1rem; color: var(--muted);
+    }
+    .empty h2 { color: var(--ink); margin: 0 0 0.5rem; }
+    .empty ol { text-align: left; display: inline-block; margin: 1rem auto 0; }
+    footer {
+      margin-top: 1.25rem; color: var(--muted); font-size: 0.8rem;
+    }
+    footer code { font-size: 0.78rem; }
+    .hidden { display: none !important; }
+    @media (max-width: 860px) {
+      .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .hint { margin-left: 0; width: 100%; }
+      table { display: block; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="brand">
+        <div>
+          <h1>지원 현황</h1>
+          <p>채용옵스 · 이 컴퓨터의 트래커만 읽습니다</p>
+        </div>
+        <span class="local-pill">localhost 전용 · 클라우드 없음</span>
+      </div>
+      <div class="tiles" id="tiles">
+        {{range .Tiles}}
+        <button type="button" class="tile" data-status="{{.ID}}" title="{{.Hint}}">
+          <span class="n">{{.Count}}</span>
+          <span class="l">{{.Label}}</span>
+        </button>
+        {{end}}
+      </div>
+    </div>
+  </header>
+  <div class="wrap">
+    <div class="panel">
+      <div class="filters">
+        <input type="search" id="q" placeholder="회사, 포지션, 포털 검색" autocomplete="off">
+        <select id="portal" aria-label="포털 필터">
+          {{range .Portals}}
+          <option value="{{.ID}}">{{.Label}}</option>
+          {{end}}
+        </select>
+        <span class="hint" id="shown">전체 {{.Total}}건</span>
+      </div>
+
+      {{if eq .Total 0}}
+      <div class="empty" id="empty-default">
+        <h2>아직 지원 기록이 없습니다</h2>
+        {{if .Missing}}
+        <p>트래커 파일 <code>{{.TrackerRel}}</code> 이 없습니다. 평가는 이 경로에 행을 만듭니다.</p>
+        {{else}}
+        <p>트래커는 비어 있습니다. 데이터는 gitignored 이며 이 컴퓨터에만 있습니다.</p>
+        {{end}}
+        <ol>
+          <li>채용 공고 URL을 AI CLI에 붙여넣기 (auto-pipeline / gonggo)</li>
+          <li><code>tracker</code> 모드로 현황을 확인하거나 행을 추가</li>
+          <li><code>jiwon</code> / apply 로 지원서 초안을 만든 뒤 포털에서 <strong>직접</strong> 제출</li>
+        </ol>
+      </div>
+      {{else}}
+      <div class="empty hidden" id="empty-filter">
+        <h2>조건에 맞는 지원이 없습니다</h2>
+        <p>필터를 지우면 전체 목록이 다시 보입니다.</p>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>회사</th>
+            <th>포지션</th>
+            <th>포털</th>
+            <th>점수</th>
+            <th>상태</th>
+            <th>지원일</th>
+            <th>링크</th>
+          </tr>
+        </thead>
+        <tbody id="rows">
+          {{range .Rows}}
+          <tr data-bucket="{{.Bucket}}" data-portal="{{.PortalID}}" data-search="{{.SearchText}}">
+            <td>
+              <div class="company">{{.Company}}</div>
+            </td>
+            <td><div class="role">{{.Role}}</div></td>
+            <td><span class="chip {{.PortalID}}">{{.PortalLabel}}</span></td>
+            <td class="score">{{.Score}}</td>
+            <td><span class="chip st-{{.StatusID}}">{{.StatusLabel}}</span></td>
+            <td>{{.Date}}</td>
+            <td>
+              {{if .URL}}<a href="{{.URL}}" rel="noreferrer noopener" target="_blank">공고</a>{{else}}—{{end}}
+            </td>
+          </tr>
+          {{end}}
+        </tbody>
+      </table>
+      {{end}}
+    </div>
+    <footer>
+      <p>소스: <code>{{.TrackerRel}}</code> (gitignored 사용자 데이터). 이 서버는 <code>127.0.0.1</code> 에만 바인딩됩니다.</p>
+      <p>브라우저 보드: <code>npm run dashboard:web</code> · 터미널 UI: <code>npm run serve:dashboard</code></p>
+    </footer>
+  </div>
+  <script>
+    (function () {
+      var q = document.getElementById("q");
+      var portal = document.getElementById("portal");
+      var shown = document.getElementById("shown");
+      var rows = document.querySelectorAll("#rows tr");
+      var tiles = document.querySelectorAll(".tile");
+      var emptyFilter = document.getElementById("empty-filter");
+      var table = document.querySelector("table");
+      var status = "";
+      var total = rows.length;
+
+      function apply() {
+        var query = (q && q.value || "").trim().toLowerCase();
+        var p = portal ? portal.value : "";
+        var n = 0;
+        rows.forEach(function (row) {
+          var ok = true;
+          if (status && row.getAttribute("data-bucket") !== status) ok = false;
+          if (p && row.getAttribute("data-portal") !== p) ok = false;
+          if (query && (row.getAttribute("data-search") || "").indexOf(query) === -1) ok = false;
+          row.hidden = !ok;
+          if (ok) n++;
+        });
+        if (shown) shown.textContent = (status || p || query) ? (n + " / " + total + "건") : ("전체 " + total + "건");
+        if (emptyFilter && table) {
+          var none = total > 0 && n === 0;
+          emptyFilter.classList.toggle("hidden", !none);
+          table.classList.toggle("hidden", none);
+        }
+      }
+
+      tiles.forEach(function (tile) {
+        tile.addEventListener("click", function () {
+          var id = tile.getAttribute("data-status");
+          if (status === id) {
+            status = "";
+            tiles.forEach(function (t) { t.classList.remove("active"); });
+          } else {
+            status = id;
+            tiles.forEach(function (t) { t.classList.toggle("active", t === tile); });
+          }
+          apply();
+        });
+      });
+      if (q) q.addEventListener("input", apply);
+      if (portal) portal.addEventListener("change", apply);
+    })();
+  </script>
+</body>
+</html>

@@ -28,6 +28,7 @@ var (
 	reBatchID        = regexp.MustCompile(`(?m)^\*\*Batch ID:\*\*\s*(\d+)`)
 	reDiscardReasons = regexp.MustCompile(`(?s)discard_reasons:\s*\n((?:\s*-\s*.+?\n)+)`)
 	reDiscardItem    = regexp.MustCompile(`\s*-\s*([^\n]+)`)
+	reViaTag         = regexp.MustCompile(`(?i)(?:^|[;\s|])via=([^\s|;]+)`)
 )
 
 // resolveReportPath converts a report link from the tracker into a path
@@ -82,6 +83,19 @@ func resolveTrackerPath(careerOpsPath string) string {
 	return filepath.Clean(filepath.Join(careerOpsPath, "applications.md"))
 }
 
+// TrackerPath is the resolved applications.md path for careerOpsPath
+// (CAREER_OPS_TRACKER, then data/applications.md, then applications.md).
+func TrackerPath(careerOpsPath string) string {
+	return resolveTrackerPath(careerOpsPath)
+}
+
+func viaFromNotes(notes string) string {
+	if m := reViaTag.FindStringSubmatch(notes); m != nil {
+		return strings.TrimSpace(m[1])
+	}
+	return ""
+}
+
 // ParseApplications reads applications.md and returns parsed applications.
 func ParseApplications(careerOpsPath string) []model.CareerApplication {
 	filePath := resolveTrackerPath(careerOpsPath)
@@ -133,6 +147,7 @@ func ParseApplications(careerOpsPath string) []model.CareerApplication {
 			Role:    at("role"),
 			JobURL:  at("url"),
 			Status:  at("status"),
+			Via:     at("via"),
 			HasPDF:  strings.Contains(at("pdf"), "\u2705"),
 		}
 
@@ -155,6 +170,9 @@ func ParseApplications(careerOpsPath string) []model.CareerApplication {
 
 		// Notes column, when present.
 		app.Notes = at("notes")
+		if app.Via == "" {
+			app.Via = viaFromNotes(app.Notes)
+		}
 
 		// Lift location / work mode / pay / last-contact out of the notes free-text
 		deriveNoteFields(&app)
