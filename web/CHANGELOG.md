@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.0](https://github.com/torisKR/chaeyong-ops/compare/web-v0.10.0...web-v0.11.0) (2026-09-15)
+
+
+### Features
+
+* 한국형 구직 파이프인 채용옵스 초기 릴리스 ([2c90c53](https://github.com/torisKR/chaeyong-ops/commit/2c90c535d3631256453942cf3eea30b9c51da613))
+
 ## [0.10.0](https://github.com/career-ops-hq/career-ops/compare/web-v0.9.0...web-v0.10.0) (2026-09-03)
 
 

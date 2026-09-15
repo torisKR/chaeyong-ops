@@ -1,5 +1,39 @@
 # Changelog
 
+## [1.33.0](https://github.com/torisKR/chaeyong-ops/compare/career-ops-v1.32.0...career-ops-v1.33.0) (2026-09-15)
+
+
+### Features
+
+* add Korean junior experience-band filtering ([a7549fc](https://github.com/torisKR/chaeyong-ops/commit/a7549fc08690f6f8414858afcc8faae8361714c8))
+* add localhost Korean application status board ([91c5c14](https://github.com/torisKR/chaeyong-ops/commit/91c5c14e35ac2a86454e5af0b3f52707549517b1))
+* company blocklist + optional Slack/Discord/Telegram alerts ([3e87e68](https://github.com/torisKR/chaeyong-ops/commit/3e87e685e33bfac680ce1cb2d41af630ed77f21b))
+* drive Korean experience filters from profile.years ([2c1a571](https://github.com/torisKR/chaeyong-ops/commit/2c1a5715b7a9d39b5f7cc36f840b47ed4118ece5))
+* gonggo A–G+H 평가, 로고, chaeyong-ops 스킬 리브랜딩 ([670f053](https://github.com/torisKR/chaeyong-ops/commit/670f0536df6e2b5a413ab5744d47af1d06b52203))
+* Korean junior experience-band filtering (~1–2y) ([edebe48](https://github.com/torisKR/chaeyong-ops/commit/edebe4881e86e4c81b1c5ece8e0acf8efc1328b8))
+* localhost Korean application status board ([64377de](https://github.com/torisKR/chaeyong-ops/commit/64377de1502dc5b89c92470c5b54f289b101cd0b))
+* one-command Korean setup (clone → first scan) ([7dff616](https://github.com/torisKR/chaeyong-ops/commit/7dff616ab1627a6a64ce8a768bc0a0366d7e82a8))
+* one-command Korean setup for first-time contributors ([964fa87](https://github.com/torisKR/chaeyong-ops/commit/964fa8761fb3240e447bb74a22513a31e3028e53))
+* portals.yml company blocklist and optional hiring-ops alerts ([55dbc6a](https://github.com/torisKR/chaeyong-ops/commit/55dbc6af197d95d8c8dab46600dd6b1ec96d0e2b))
+* profile-driven experience filtering (not a fixed junior band) ([2847def](https://github.com/torisKR/chaeyong-ops/commit/2847def8ab9c2f96b513466ebfbcc8f426b7e7aa))
+* 한국 백엔드/풀스택 타깃 정리와 리멤버 provider stub ([d977a3e](https://github.com/torisKR/chaeyong-ops/commit/d977a3e2e64c7a337187ac6fb75e9321572cc4ff))
+* 한국어 auto-pipeline·scan 모드 추가 ([37a40c4](https://github.com/torisKR/chaeyong-ops/commit/37a40c4013f1621da71e179784c69c050fc8da27))
+* 한국어 pdf·triage 모드 및 brief 템플릿 ([3d4ffc5](https://github.com/torisKR/chaeyong-ops/commit/3d4ffc5815bd69a3f1ab2ef6f677ef3e20adab61))
+* 한국어 모드 전체 + batch 인프라 + doctor brief 자동화 ([88eae40](https://github.com/torisKR/chaeyong-ops/commit/88eae40ad15963fd3dc57356ee11455691bb786d))
+* 한국형 구직 파이프인 채용옵스 초기 릴리스 ([2c90c53](https://github.com/torisKR/chaeyong-ops/commit/2c90c535d3631256453942cf3eea30b9c51da613))
+
+
+### Bug Fixes
+
+* keep doctor --json warnings compatible with MCP CLI tests ([2dd52f4](https://github.com/torisKR/chaeyong-ops/commit/2dd52f469371b12d931e6f2d48f5989041c1ad4e))
+* keep web-board fixture tracked under test-fixtures ([7d8158c](https://github.com/torisKR/chaeyong-ops/commit/7d8158ccc557d430fc5ca2ce66729edeb5ac4336))
+* point TUI dashboard at repo-root tracker and Korean status tabs ([1efec8b](https://github.com/torisKR/chaeyong-ops/commit/1efec8b7d7e352af1b73c7fb4baf26991a4ebad0))
+* silence CodeQL URL-substring alerts and fail closed on bad YAML ([1606307](https://github.com/torisKR/chaeyong-ops/commit/1606307e04401d2c9985218a3066828207fce121))
+* silence favicon 404 on the localhost status board ([ee7f1dc](https://github.com/torisKR/chaeyong-ops/commit/ee7f1dcc01f12119409fc7da7fc45185138f6723))
+* unblock CI after chaeyong-ops skill rebrand and missing fixtures ([22fff82](https://github.com/torisKR/chaeyong-ops/commit/22fff820c6b78ab19bd1821478d1565ebcb49119))
+* unblock CI on chaeyong-ops fork paths and missing fixtures ([71e38b2](https://github.com/torisKR/chaeyong-ops/commit/71e38b245199a5260bfdd8ab527a80447004a79b))
+* 원티드 CloudFront 403 처리와 한국 지원 워크플로 ([7ded154](https://github.com/torisKR/chaeyong-ops/commit/7ded1540c5455031316c531bc80b3ee535841253))
+
 ## [1.32.0](https://github.com/career-ops-hq/career-ops/compare/career-ops-v1.31.0...career-ops-v1.32.0) (2026-09-03)
 
 
