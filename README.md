@@ -51,13 +51,14 @@ npm run scan:kr                    # 원티드 스캔 (기본 활성)
 
 Cursor / Claude Code에 **채용 공고 URL**을 붙여넣으면 평가가 시작됩니다.
 
-지원 현황을 브라우저에서 보려면 (Go 필요):
+지원 현황 뷰어는 **두 가지**입니다. 둘 다 **Go 1.24+** 가 필요하고, 같은 `data/applications.md` 를 읽습니다.
 
-```bash
-npm run dashboard:web          # http://127.0.0.1:3847  (로컬 전용)
-```
+| | 명령 | |
+|---|---|---|
+| **웹 보드** | `npm run dashboard:web` | 브라우저 `http://127.0.0.1:3847` (로컬 전용, 읽기 전용) |
+| **터미널 UI** | `npm run serve:dashboard` | TUI (필터 탭 · 리포트 · 상태 변경) |
 
-터미널 UI는 `npm run serve:dashboard` 입니다. 자세한 내용: **[docs/DASHBOARD-KR.md](docs/DASHBOARD-KR.md)**.
+자세한 내용: **[docs/DASHBOARD-KR.md](docs/DASHBOARD-KR.md)**. 허구 예시 트래커: [`examples/applications.example.md`](examples/applications.example.md).
 
 | | |
 |---|---|
@@ -198,7 +199,8 @@ AI CLI에서 `/chaeyong-ops` 또는 자연어로:
 | `cover` / `email` | 자기소개서·지원 메일 초안 |
 | `batch` | `batch/batch-runner.sh` 대량 평가 |
 | `tracker` | 지원 현황 |
-| `dashboard:web` | 브라우저 지원 현황 (`http://127.0.0.1:3847`, 로컬 전용) |
+| `dashboard:web` | 브라우저 지원 현황 (`http://127.0.0.1:3847`, 로컬 전용) — Go 1.24+ |
+| `serve:dashboard` | 터미널 TUI (같은 트래커) — Go 1.24+ |
 
 ```bash
 node scan.mjs              # 또는 npm run scan:kr

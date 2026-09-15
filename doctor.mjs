@@ -668,6 +668,27 @@ function checkPipelineFile() {
   }
 }
 
+function trackerPresent(root) {
+  return existsSync(join(root, 'data', 'applications.md'))
+    || existsSync(join(root, 'applications.md'));
+}
+
+// Warn-not-fail: the tracker is created by the first evaluation, so a fresh
+// setup is valid. Dashboard commands would otherwise open on an empty board.
+function checkApplicationsTracker(root) {
+  if (trackerPresent(root)) {
+    return { pass: true, label: 'data/applications.md 있음 / tracker ready' };
+  }
+  return {
+    warn: true,
+    label: 'data/applications.md 없음 — 대시보드가 비어 있습니다',
+    fix: [
+      '첫 공고 URL을 붙여넣으면 트래커가 생깁니다. 형식 예시: examples/applications.example.md (허구 행)',
+      '그 다음 npm run dashboard:web (http://127.0.0.1:3847) 또는 npm run serve:dashboard (TUI) — Go 1.24+',
+    ],
+  };
+}
+
 // Discover plugins + their non-secret config block, synchronously. Used by both
 // the human check and the --json onboarding state.
 // A parse failure is REPORTED, not folded into {}. An unreadable config and a
@@ -758,6 +779,7 @@ async function main() {
     checkPersonalization(projectRoot),
     checkAutoDir('data'),
     checkPipelineFile(),
+    checkApplicationsTracker(projectRoot),
     checkAutoDir('output'),
     checkAutoDir('reports'),
     checkPlugins(projectRoot),
@@ -806,6 +828,7 @@ async function main() {
     console.log(`결과 / Result: All checks passed${warnNote}. 준비됐습니다.`);
     console.log('');
     console.log('다음: npm run scan:kr    또는 채용 URL을 Cursor/Claude Code에 붙여넣기');
+    console.log('지원 현황: npm run dashboard:web (http://127.0.0.1:3847)  ·  npm run serve:dashboard (TUI) — Go 1.24+');
     console.log('문서: docs/GETTING-STARTED-KR.md  ·  docs/APPLY-KR.md');
     console.log('Join the community: https://discord.gg/8pRpHETxa4');
     console.log('Read the manifesto: `npm run manifesto` — a new way of job searching is taking shape, and you are now part of it.');
@@ -926,6 +949,7 @@ function onboardingState(root) {
   const bakCheck = checkTrackedBakFiles(root);
   const yearsCheck = checkExperienceYears(root);
   const wantedCheck = checkWantedEnabled(root);
+  const trackerCheck = checkApplicationsTracker(root);
   const profilePath = join(root, 'config', 'profile.yml');
   const experienceYears = existsSync(profilePath)
     ? resolveExperienceYears(loadExperienceBlock(profilePath))
@@ -937,6 +961,7 @@ function onboardingState(root) {
     ...(bakCheck.warn ? [`${bakCheck.label}\n→ ${[].concat(bakCheck.fix || []).join('\n  ')}`] : []),
     ...(yearsCheck?.warn ? [`${yearsCheck.label}\n→ ${[].concat(yearsCheck.fix || []).join('\n  ')}`] : []),
     ...(wantedCheck?.warn ? [`${wantedCheck.label}\n→ ${[].concat(wantedCheck.fix || []).join('\n  ')}`] : []),
+    ...(trackerCheck?.warn ? [`${trackerCheck.label}\n→ ${[].concat(trackerCheck.fix || []).join('\n  ')}`] : []),
     ...unpersonalized.map((u) => `${u.path} ${u.reason} — ${u.impact}\n→ Personalize it from cv.md before running evaluations.`),
   ];
 

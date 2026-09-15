@@ -4,12 +4,14 @@
 
 ## TUI vs 웹 localhost
 
+둘 다 **Go 1.24+** 가 필요합니다. `npm run serve:dashboard` 는 `--path ..` 로 저장소 루트의 `data/applications.md` 를 읽습니다 (`dashboard:web` 과 동일).
+
 | | 명령 | 무엇 |
 |---|---|---|
 | **웹 보드 (권장)** | `npm run dashboard:web` | 브라우저 `http://127.0.0.1:3847` — 한국어 지원 현황 |
-| 터미널 UI | `npm run serve:dashboard` | 기존 Go TUI (필터·리포트 뷰어·상태 변경) |
+| 터미널 UI | `npm run serve:dashboard` | Go TUI (한국어 상태 탭 · 리포트 뷰어 · 상태 변경) |
 
-둘 다 같은 소스 `data/applications.md` (없으면 루트 `applications.md`)를 읽습니다. 웹 보드는 **읽기 전용**입니다. 상태 변경은 `tracker` 모드, `node set-status.mjs`, 또는 터미널 UI를 쓰세요.
+둘 다 같은 소스 `data/applications.md` (없으면 루트 `applications.md`)를 읽습니다. 웹 보드는 **읽기 전용**입니다. 상태 변경은 `tracker` 모드, `node set-status.mjs`, 또는 터미널 UI를 쓰세요. 허구 예시 행: [`examples/applications.example.md`](../examples/applications.example.md).
 
 실험용 Next.js 앱(`web/`, `cd web && npm run dev`)은 별도 alpha 이며 이 보드와 다릅니다. 채용옵스 지원 현황은 `npm run dashboard:web` 이 정답입니다.
 
