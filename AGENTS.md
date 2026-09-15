@@ -175,7 +175,7 @@ Output: `{"onboardingNeeded": <bool>, "missing": [...], "unpersonalized": [...],
 
 `modes/_custom.md` is deliberately never reported — unedited house rules are a valid end state.
 
-**If `onboardingNeeded` is true, enter onboarding mode.** Do NOT proceed with evaluations, scans, or any other mode until the basics are in place. Guide the user step by step:
+**If `onboardingNeeded` is true, enter onboarding mode.** Prefer `node setup.mjs --defaults` (copies Korean `profile.yml`, `portals.yml`, `cv.md`) then ask the user to set `experience.years`. Do NOT proceed with evaluations, scans, or any other mode until the basics are in place. Guide the user step by step:
 
 #### Step 0: Free Tier Check
 
@@ -196,11 +196,12 @@ If `cv.md` is missing, ask:
 Create `cv.md` from whatever they provide — clean markdown with standard sections (Summary, Experience, Projects, Education, Skills).
 
 #### Step 2: Profile (required)
-If `config/profile.yml` is missing, copy from `config/profile.example.yml` and ask:
+If `config/profile.yml` is missing, run `node setup.mjs --defaults` (or copy from `config/profile.example.yml`) and ask:
 > "I need a few details to personalize the system:
 > - Your full name and email
+> - `experience.years` — years of professional experience as a number (본인 경력(년) 숫자)
 > - Your location and timezone
-> - What roles are you targeting? (e.g., 'Senior Backend Engineer', 'AI Product Manager')
+> - What roles are you targeting? (e.g., '백엔드 개발자', '풀스택 개발자')
 > - Your salary target range
 > - How much do you want to spend on model usage per evaluation? Three options:
 >   - **economy** — cheapest and fastest, good for scanning lots of offers quickly
@@ -215,7 +216,7 @@ Fill in `config/profile.yml` (including `spend_tier`, default `standard`). Arche
 If `portals.yml` is missing:
 > "I'll set up the Korean job scanner (Wanted enabled; Saramin/JobKorea/Remember opt-in). Want me to customize the search keywords for your target roles?"
 
-Copy `templates/portals-kr.example.yml` → `portals.yml`; if they gave target roles in Step 2, update `title_filter.positive`. The global `templates/portals.example.yml` remains available for Greenhouse/Ashby/Lever company lists. See [docs/APPLY-KR.md](docs/APPLY-KR.md).
+Run `node setup.mjs --defaults` or copy `templates/portals-kr.example.yml` → `portals.yml`; if they gave target roles in Step 2, update `title_filter.positive`. The global `templates/portals.example.yml` remains available for Greenhouse/Ashby/Lever company lists. See [docs/GETTING-STARTED-KR.md](docs/GETTING-STARTED-KR.md) and [docs/APPLY-KR.md](docs/APPLY-KR.md).
 
 #### Step 4: Tracker
 If `data/applications.md` doesn't exist, create it:

@@ -1,24 +1,23 @@
 # Chaeyong Ops (채용옵스) profile example — Korean backend / fullstack seeker
-# This file IS the Korean-market default (서울, KRW 4,000만원+, NestJS/Node/TS,
-# language.output: ko, modes_dir: modes/ko). Copy to config/profile.yml.
-# Replace EVERY placeholder with your own data.
-# Do NOT commit config/profile.yml (it is gitignored). Never put a real phone
-# or personal email in tracked example files.
+# 이 파일이 한국 시장 기본값입니다 (서울, KRW, language.output: ko, modes/ko).
+# 복사: node setup.mjs --defaults  또는  cp config/profile.example.yml config/profile.yml
+# 아래 placeholder를 본인 값으로 바꾸세요. config/profile.yml 은 gitignored 입니다.
+# 실명 전화번호·개인 이메일을 추적되는 예제 파일에 넣지 마세요.
 #
 # This is the single source of truth for identity + targeting across all modes.
 
 candidate:
-  full_name: "유주환"
-  email: "you.example@example.com"
+  full_name: "김예시"                 # 본인 이름. 예제 이름을 그대로 두지 마세요.
+  email: "you.example@example.com"  # 본인 이메일 (git 커밋 금지)
   # Optional. Any other mailboxes that are also you. Follow-up contact extraction uses these to
   # avoid reporting your own address as somebody to chase, when a tracker note happens to cite it.
   # alternate_emails:
   #   - "you.previous@example.com"
-  phone: "010-0000-0000"
+  phone: "010-0000-0000"            # placeholder. 실번호 커밋 금지
   # Optional. Used by `/career-ops email` contact blocks in markets where WeChat
   # is an expected recruiting channel. Omit or leave blank if not applicable.
   wechat: ""
-  location: "서울, 대한민국"
+  location: "서울, 대한민국"          # 거주지 (예: 서울, 부산, 원격)
   linkedin: "linkedin.com/in/example-user"
   portfolio_url: "https://example.com"
   github: "github.com/example-user"
@@ -33,11 +32,11 @@ candidate:
   photo_style: rounded
 
 target_roles:
-  # North Star — Korean backend / fullstack (edit to match YOU)
+  # 목표 직무 — 본인이 지원할 직군 (North Star)
   primary:
     - "풀스택 개발자"
     - "백엔드 개발자"
-  # Archetypes help the evaluation system score fit
+  # 평가 시스템이 핏을 매길 때 쓰는 아키타입
   archetypes:
     - name: "백엔드 개발자 (NestJS/Node.js)"
       level: "주니어 (1–3년)"
@@ -49,13 +48,12 @@ target_roles:
       level: "주니어"
       fit: "secondary"
 
-# Total professional experience. Scan and gonggo read THIS — not a hardcoded
-# junior band. Replace the example number with yours.
+# 총 경력. 스캔 제목 필터와 gonggo SKIP이 이 숫자를 읽습니다 (고정 주니어 밴드 아님).
 #
-#   years  — preferred. Decimal OK (1.7 ≈ 1 year 8 months; 19 months → years: 1.58 or months: 19).
-#   months — used only when `years` is omitted (months / 12).
-#   skip_tolerance_years — JD hard-min may exceed years by this much (default 0.5).
-#   senior_min_years — below this, must-have 시니어/리드/아키텍트/팀장 → SKIP (default 5).
+#   years  — 권장. 소수 가능 (1.7 ≈ 1년 8개월).
+#   months — years 가 없을 때만 사용 (months / 12).
+#   skip_tolerance_years — JD 필수 최소 연차가 years 를 이만큼까지 넘어도 SKIP 아님 (기본 0.5).
+#   senior_min_years — 이보다 낮은데 시니어/리드/아키텍트/팀장 필수면 SKIP (기본 5).
 #
 # Scan adds title_filter.negative bands from years (experience-band.mjs):
 #   years < 3  → 3년+/시니어/Lead/팀장 titles dropped
@@ -63,7 +61,7 @@ target_roles:
 #   years >= 5 → no tenure title negatives added
 # Missing years → no invented band (scan/eval do not assume junior).
 experience:
-  years: 1.7
+  years: 1.7   # 본인 경력(년) 숫자. 출시 프로젝트는 넣지 마세요.
   # months: 20
   # skip_tolerance_years: 0.5
   # senior_min_years: 5
@@ -100,7 +98,7 @@ compensation:
 
 location:
   country: "대한민국"
-  city: "서울"
+  city: "서울"                       # 근무 희망 도시
   timezone: "Asia/Seoul"
   visa_status: "한국 내 근로 가능"
   # Countries/regions where you ALREADY hold work authorization (no sponsorship
@@ -116,11 +114,8 @@ location:
   # onsite_availability: "주 1–2회 서울 출근 가능"
 
 language:
-  # Human-facing output language for reports, tracker notes, PDFs, cover
-  # letters, outreach, and form answers. Use an ISO language code such as
-  # `en`, `ko`, or `zh-CN`; `ko` enables Korean PDF typography rules.
-  # This is separate from language.modes_dir: modes_dir selects market
-  # vocabulary/rules, while output selects the prose language.
+  # 리포트·이력서·메일 등 사람이 읽는 출력 언어. 한국 지원이면 ko.
+  # modes_dir 는 시장 용어(정규직, 포괄임금제), output 은 문장 언어.
   output: ko
   modes_dir: modes/ko
 
