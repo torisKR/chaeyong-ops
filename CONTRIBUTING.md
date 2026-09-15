@@ -164,7 +164,7 @@ node cv-sync-check.mjs        # Config check
 
 # Dashboard
 npm run build:dashboard       # go build with platform-correct binary name
-npm run serve:dashboard       # launch the TUI against the repo root
+npm run serve:dashboard       # TUI (go run . --path .. against the repo root)
 npm run dashboard:web         # localhost Korean status board (http://127.0.0.1:3847)
 
 # Tests

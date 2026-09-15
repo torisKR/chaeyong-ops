@@ -100,6 +100,25 @@ try {
     } else {
       fail(`ready JSON: ${JSON.stringify({ onboardingNeeded: s.onboardingNeeded, experienceYears: s.experienceYears, wantedEnabled: s.wantedEnabled, missing: s.missing })}`);
     }
+    if ((s.warnings || []).some((w) => /applications\.md/.test(String(w)) && /대시보드/.test(String(w)))) {
+      pass('missing tracker warns before suggesting dashboard');
+    } else {
+      fail(`tracker dashboard warning missing: ${JSON.stringify(s.warnings)}`);
+    }
+  }
+
+  {
+    const dir = fixture('with-tracker', {
+      ...PREREQS,
+      'data/applications.md': '# Applications Tracker\n\n| # | Date | Company | Role | Score | Status | PDF | Report | Notes |\n|---|------|---------|------|-------|--------|-----|--------|-------|\n| 1 | 2026-03-02 | 예시테크 | 백엔드 개발자 | 4.2/5 | Applied | ❌ | — | 허구 |\n',
+    });
+    const s = runDoctor(dir);
+    if (s._error) fail(`with-tracker crashed: ${s._error}`);
+    else if (!(s.warnings || []).some((w) => /applications\.md/.test(String(w)))) {
+      pass('existing tracker does not warn about empty dashboard');
+    } else {
+      fail(`unexpected tracker warning: ${JSON.stringify(s.warnings)}`);
+    }
   }
 
   {

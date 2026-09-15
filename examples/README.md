@@ -7,6 +7,7 @@ Reference files that demonstrate career-ops data formats and conventions. None o
 | File | Demonstrates |
 |------|-------------|
 | `../cv.example.md` | Korean fullstack/backend CV skeleton (fictional placeholders — copy to `cv.md`) |
+| `applications.example.md` | Fictional tracker rows for the web + TUI dashboards — documents canonical Status values (`Evaluated` … `Hired`) |
 | `cv-example.md` | How to structure `cv.md` -- sections, metrics formatting, and proof-point style for a fictional AI engineer (Alex Chen) |
 | `resume-example.md` | Resume variant of `cv-example.md` -- same content, branded as "Resume" for US/industry markets. Use this as a structural guide when writing a resume (1–2 page targeted format) vs a CV (longer academic format) |
 | `article-digest-example.md` | How to write `article-digest.md` -- compact proof points with hero metrics, architecture summaries, and key decisions per project |

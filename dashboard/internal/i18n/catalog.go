@@ -775,14 +775,169 @@ var Es = Catalog{
 	ViewFlat:     "plano",
 }
 
-// Current points to the active language catalog. Defaults to English (&En).
+// Ko is the static Korean translation catalog (chaeyong-ops default).
+// Status tab / chip labels match the localhost web board (docs/DASHBOARD-KR.md).
+var Ko = Catalog{
+	AppTitle:       "지원 현황",
+	OffersSummary:  "%d건 | 평균 %s/5",
+	NoOffersMatch:  "이 필터에 맞는 공고가 없습니다",
+	LoadingPreview: "미리보기 불러오는 중...",
+
+	TabAll:       "전체",
+	TabEvaluated: "평가완료",
+	TabApplied:   "지원완료",
+	TabInterview: "면접",
+	TabResponded: "서류통과",
+	TabTop:       "TOP ≥4",
+	TabSkip:      "스킵",
+	TabRejected:  "불합격",
+	TabDiscarded: "폐기",
+
+	ColFit:      "적합",
+	ColApplied:  "지원일",
+	ColCompany:  "회사",
+	ColRole:     "포지션",
+	ColStatus:   "상태",
+	ColLocation: "지역",
+	ColPay:      "연봉",
+	ColPosted:   "게시",
+	ColLast:     "최근",
+
+	LabelLoc:     "지역: ",
+	LabelPay:     "연봉: ",
+	LabelLast:    "최근 연락: ",
+	LabelRemote:  "근무: ",
+	LabelOutcome: "결과: ",
+
+	ModeRemote:     "원격",
+	ModeRemoteFlex: "원격(유연)",
+	ModeHybrid:     "하이브리드",
+	ModeFull:       "출근",
+
+	ProgressTitle:   "검색 진행",
+	ProgressSummary: "%d건 평가 | 평균 %.1f점",
+	FunnelTitle:     "파이프라인 퍼널",
+	ScoresTitle:     "점수 분포",
+	RatesTitle:      "전환율",
+	WeeklyTitle:     "주간 활동",
+	ActiveInfo:      "진행 중 %d건 | 전체 %d건",
+
+	StatsTitle:             "검색 통계",
+	StatsSummary:           "%d건 평가 | 아키타입 %d",
+	StatsStrategicInsights: "인사이트",
+	FitQualityDistribution: "적합도 분포",
+	SeniorityMix:           "연차 구성",
+	QualityBreakdown:       "품질 분해:",
+	MeetQualityBar:         "✓ %.0f%%가 ≥4.0 기준 충족",
+	SalaryBandDist:         "연봉 밴드 분포:",
+	ArchetypeTitle:         "아키타입별",
+	WorkModeTitle:          "근무형태별",
+	LocationTitle:          "지역별",
+	PayTitle:               "연봉 범위 (공고 상한, $)",
+	ColArchetype:           "아키타입",
+	ColCount:               "건수",
+	ColAvgScore:            "평균 적합",
+	PayCount:               "데이터: ",
+	PayAvg:                 "평균: ",
+	PayMedian:              "중앙: ",
+	PayMax:                 "최대: ",
+	PaySourceSplit:         "공고 %d · 추정 %d",
+	InsightVolumeFit:       "가장 많은 건은 %s (%d건, %.0f%%) · 최고 적합은 %s (평균 %.1f/5)",
+	InsightVolumePrimary:   "주 아키타입은 %s (%d건, 평가 파이프라인의 %.0f%%)",
+	InsightWorkMode:        "근무 분포: 공고의 %.0f%%가 %s",
+	InsightPayBenchmark:    "연봉 기준: 상한 중앙값 $%.0fK (최고 $%.0fK) — %d건",
+
+	SeniorityExecutive:      "임원",
+	SeniorityStaffPrincipal: "스태프 / 프린시펄",
+	SeniorityLeadManager:    "리드 / 매니저",
+	SenioritySenior:         "시니어",
+	SeniorityMidLevel:       "미들",
+	SeniorityJuniorEntry:    "주니어 / 신입",
+
+	TimeToday:     "오늘",
+	TimeYesterday: "어제",
+	TimeDaysAgo:   "%d일 전",
+
+	StatusEvaluated: "평가완료",
+	StatusApplied:   "지원완료",
+	StatusResponded: "서류통과",
+	StatusInterview: "면접",
+	StatusOffer:     "합격",
+	StatusRejected:  "불합격",
+	StatusDiscarded: "폐기",
+	StatusSkip:      "스킵",
+	StatusHired:     "입사",
+
+	NoData:        "데이터 없음",
+	EmptyFile:     "(빈 파일)",
+	RateResponse:  "서류통과율: ",
+	RateInterview: "면접률: ",
+	RateOffer:     "합격률: ",
+
+	HelpNav:        " 이동  ",
+	HelpTabs:       " 탭  ",
+	HelpSearch:     " 검색  ",
+	HelpSort:       " 정렬  ",
+	HelpRefresh:    " 새로고침  ",
+	HelpReport:     " 리포트  ",
+	HelpOpenURL:    " URL  ",
+	HelpOpenPDF:    " PDF  ",
+	HelpRegenPDF:   " PDF 재생성  ",
+	HelpChange:     " 상태  ",
+	HelpColumns:    " 열  ",
+	HelpView:       " 보기  ",
+	HelpProgress:   " 진행  ",
+	HelpStats:      " 통계  ",
+	HelpQuit:       " 종료",
+	HelpScroll:     " 스크롤  ",
+	HelpPage:       " 페이지  ",
+	HelpTopEnd:     " 처음/끝  ",
+	HelpLanguage:   " 언어  ",
+	HelpManifesto:  " 선언  ",
+	HelpBack:       " 뒤로",
+	HelpNavigate:   " 이동  ",
+	HelpToggle:     " 전환  ",
+	HelpClose:      " 닫기",
+	HelpConfirm:    " 확인  ",
+	HelpCancel:     " 취소",
+	HelpFilterLive: " 실시간 필터  ",
+	HelpKeep:       " 유지  ",
+	HelpClear:      " 지우기  ",
+
+	PickerChangeStatus: "상태 변경:",
+	PickerColumnsTitle: "─── 열 (SPACE 전환 · ESC 닫기) ───",
+	SearchHintInput:    "   Enter: 유지   Esc: 취소   Ctrl+U: 지우기",
+	SearchHintNormal:   "   Esc: 지우기   /: 편집",
+	SearchMatching:     "  %d/%d 일치",
+	SortLabel:          "[정렬: %s]",
+	ViewLabel:          "[보기: %s]",
+	ShownCount:         "%d건",
+	ColReport:          "리포트",
+	ColPDF:             "PDF",
+
+	SortScore:    "점수",
+	SortDate:     "날짜",
+	SortCompany:  "회사",
+	SortStatus:   "상태",
+	SortLocation: "지역",
+	SortPay:      "연봉",
+	SortLast:     "최근",
+	ViewGrouped:  "그룹",
+	ViewFlat:     "목록",
+}
+
+// Current points to the active language catalog. Defaults to English (&En)
+// so unit tests that never call SetLang stay stable; main() defaults the TUI to ko.
 var Current = &En
 
 // SetLang sets the active catalog based on language code prefix
-// (e.g., "tr", "tr_TR" -> &Tr; "es", "es_ES" -> &Es; anything else -> &En).
+// (e.g., "ko", "ko_KR" -> &Ko; "tr", "tr_TR" -> &Tr; "es", "es_ES" -> &Es;
+// "en" -> &En; anything else -> &En).
 func SetLang(lang string) {
 	l := strings.ToLower(strings.TrimSpace(lang))
 	switch {
+	case strings.HasPrefix(l, "ko"):
+		Current = &Ko
 	case strings.HasPrefix(l, "tr"):
 		Current = &Tr
 	case strings.HasPrefix(l, "es"):
@@ -792,18 +947,20 @@ func SetLang(lang string) {
 	}
 }
 
-// ToggleLang switches Current between &En and &Tr.
+// ToggleLang switches Current between Korean and English (TUI `t` key).
 func ToggleLang() {
-	if Current == &En {
-		Current = &Tr
-	} else {
+	if Current == &Ko {
 		Current = &En
+	} else {
+		Current = &Ko
 	}
 }
 
-// GetLang returns the active language code ("tr" if Current == &Tr, "es" if
-// Current == &Es, else "en").
+// GetLang returns the active language code ("ko", "tr", "es", or "en").
 func GetLang() string {
+	if Current == &Ko {
+		return "ko"
+	}
 	if Current == &Tr {
 		return "tr"
 	}

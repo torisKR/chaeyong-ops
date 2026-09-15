@@ -11,17 +11,18 @@ func TestStatusLabel(t *testing.T) {
 		en   string
 		tr   string
 		es   string
+		ko   string
 	}{
-		{"interview", "Interview", "Mülakat", "Entrevista"},
-		{"offer", "Offer", "Teklif", "Oferta"},
-		{"hired", "Hired", "İşe Alındı", "Contratada"},
-		{"responded", "Responded", "Yanıt Verildi", "Respondida"},
-		{"applied", "Applied", "Başvuruldu", "Aplicada"},
-		{"evaluated", "Evaluated", "Değerlendirildi", "Evaluada"},
-		{"skip", "SKIP", "Uygun Değil", "OMITIR"},
-		{"rejected", "Rejected", "Reddedildi", "Rechazada"},
-		{"discarded", "Discarded", "İptal Edildi", "Descartada"},
-		{"unknown", "unknown", "unknown", "unknown"},
+		{"interview", "Interview", "Mülakat", "Entrevista", "면접"},
+		{"offer", "Offer", "Teklif", "Oferta", "합격"},
+		{"hired", "Hired", "İşe Alındı", "Contratada", "입사"},
+		{"responded", "Responded", "Yanıt Verildi", "Respondida", "서류통과"},
+		{"applied", "Applied", "Başvuruldu", "Aplicada", "지원완료"},
+		{"evaluated", "Evaluated", "Değerlendirildi", "Evaluada", "평가완료"},
+		{"skip", "SKIP", "Uygun Değil", "OMITIR", "스킵"},
+		{"rejected", "Rejected", "Reddedildi", "Rechazada", "불합격"},
+		{"discarded", "Discarded", "İptal Edildi", "Descartada", "폐기"},
+		{"unknown", "unknown", "unknown", "unknown", "unknown"},
 	}
 
 	for _, tt := range tests {
@@ -36,6 +37,9 @@ func TestStatusLabel(t *testing.T) {
 			}
 			if got := Es.StatusLabel(tt.norm); got != tt.es {
 				t.Fatalf("Es.StatusLabel(%q) = %q, expected %q", tt.norm, got, tt.es)
+			}
+			if got := Ko.StatusLabel(tt.norm); got != tt.ko {
+				t.Fatalf("Ko.StatusLabel(%q) = %q, expected %q", tt.norm, got, tt.ko)
 			}
 		})
 	}
@@ -103,6 +107,16 @@ func TestFormatTimeAgo(t *testing.T) {
 	if got := Es.FormatTimeAgo("not-a-date"); got != "not-a-date" {
 		t.Errorf("Es.FormatTimeAgo(invalid) = %q; want \"not-a-date\"", got)
 	}
+
+	if got := Ko.FormatTimeAgo(today); got != "오늘" {
+		t.Errorf("Ko.FormatTimeAgo(today) = %q; want \"오늘\"", got)
+	}
+	if got := Ko.FormatTimeAgo(yesterday); got != "어제" {
+		t.Errorf("Ko.FormatTimeAgo(yesterday) = %q; want \"어제\"", got)
+	}
+	if got := Ko.FormatTimeAgo(threeDaysAgo); got != "3일 전" {
+		t.Errorf("Ko.FormatTimeAgo(3d ago) = %q; want \"3일 전\"", got)
+	}
 }
 
 func TestRuntimeLanguageManagement(t *testing.T) {
@@ -133,6 +147,16 @@ func TestRuntimeLanguageManagement(t *testing.T) {
 		t.Errorf("after SetLang(\"es_ES\"), GetLang() = %q; want \"es\"", GetLang())
 	}
 
+	SetLang("ko")
+	if Current != &Ko || GetLang() != "ko" {
+		t.Errorf("after SetLang(\"ko\"), GetLang() = %q; want \"ko\"", GetLang())
+	}
+
+	SetLang("ko_KR")
+	if Current != &Ko || GetLang() != "ko" {
+		t.Errorf("after SetLang(\"ko_KR\"), GetLang() = %q; want \"ko\"", GetLang())
+	}
+
 	SetLang("en")
 	if Current != &En || GetLang() != "en" {
 		t.Errorf("after SetLang(\"en\"), GetLang() = %q; want \"en\"", GetLang())
@@ -143,15 +167,16 @@ func TestRuntimeLanguageManagement(t *testing.T) {
 		t.Errorf("after SetLang(\"fr\"), GetLang() = %q; want \"en\"", GetLang())
 	}
 
-	// Test ToggleLang
+	// Test ToggleLang — Korean-first: En <-> Ko
+	SetLang("en")
 	ToggleLang()
-	if Current != &Tr || GetLang() != "tr" {
-		t.Errorf("after ToggleLang() from En, GetLang() = %q; want \"tr\"", GetLang())
+	if Current != &Ko || GetLang() != "ko" {
+		t.Errorf("after ToggleLang() from En, GetLang() = %q; want \"ko\"", GetLang())
 	}
 
 	ToggleLang()
 	if Current != &En || GetLang() != "en" {
-		t.Errorf("after ToggleLang() from Tr, GetLang() = %q; want \"en\"", GetLang())
+		t.Errorf("after ToggleLang() from Ko, GetLang() = %q; want \"en\"", GetLang())
 	}
 }
 
@@ -218,6 +243,34 @@ func TestSortModeLabel(t *testing.T) {
 			}
 		})
 	}
+
+	koCases := []sortTestCase{
+		{name: "score", mode: "score", want: "점수"},
+		{name: "date", mode: "date", want: "날짜"},
+		{name: "company", mode: "company", want: "회사"},
+		{name: "status", mode: "status", want: "상태"},
+		{name: "location", mode: "location", want: "지역"},
+		{name: "pay", mode: "pay", want: "연봉"},
+		{name: "last", mode: "last", want: "최근"},
+		{name: "unknown", mode: "unknown", want: "unknown"},
+	}
+
+	for _, tc := range koCases {
+		t.Run("Ko/"+tc.name, func(t *testing.T) {
+			if got := Ko.SortModeLabel(tc.mode); got != tc.want {
+				t.Errorf("Ko.SortModeLabel(%q) = %q; want %q", tc.mode, got, tc.want)
+			}
+		})
+	}
+}
+
+func TestKoreanStatusTabs(t *testing.T) {
+	if Ko.TabApplied != "지원완료" || Ko.TabResponded != "서류통과" || Ko.TabInterview != "면접" {
+		t.Errorf("Korean status tabs = %q / %q / %q", Ko.TabApplied, Ko.TabResponded, Ko.TabInterview)
+	}
+	if Ko.TabEvaluated != "평가완료" || Ko.TabRejected != "불합격" || Ko.TabSkip != "스킵" || Ko.TabDiscarded != "폐기" {
+		t.Errorf("Korean hold/reject tabs missing")
+	}
 }
 
 func TestViewModeLabel(t *testing.T) {
@@ -265,6 +318,20 @@ func TestViewModeLabel(t *testing.T) {
 		t.Run("Es/"+tc.name, func(t *testing.T) {
 			if got := Es.ViewModeLabel(tc.mode); got != tc.want {
 				t.Errorf("Es.ViewModeLabel(%q) = %q; want %q", tc.mode, got, tc.want)
+			}
+		})
+	}
+
+	koCases := []viewTestCase{
+		{name: "grouped", mode: "grouped", want: "그룹"},
+		{name: "flat", mode: "flat", want: "목록"},
+		{name: "unknown", mode: "unknown", want: "unknown"},
+	}
+
+	for _, tc := range koCases {
+		t.Run("Ko/"+tc.name, func(t *testing.T) {
+			if got := Ko.ViewModeLabel(tc.mode); got != tc.want {
+				t.Errorf("Ko.ViewModeLabel(%q) = %q; want %q", tc.mode, got, tc.want)
 			}
 		})
 	}

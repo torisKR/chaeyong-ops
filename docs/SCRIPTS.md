@@ -56,7 +56,7 @@ All scripts live in the project root as `.mjs` modules. Most are exposed via
 | `npm run archive` | `archive-posting.mjs` | Save a live job posting as PDF before it disappears |
 | `npm run prepare:application` | `prepare-application.mjs` | Print an ATS prefill summary (read-only, never POSTs) |
 | `npm run build:dashboard` | `build-dashboard.mjs` | Build the Go TUI dashboard binary cross-platform |
-| `npm run serve:dashboard` | `cd dashboard && go run .` | Launch the Go TUI against the repo root |
+| `npm run serve:dashboard` | `cd dashboard && go run . --path ..` | Launch the Go TUI against the repo root (`data/applications.md`) |
 | `npm run dashboard:web` | `cd dashboard && go run . --web --path ..` | Localhost Korean status board at `http://127.0.0.1:3847` |
 | `node upgrade-tests.mjs --pr-gate` | `upgrade-tests.mjs` | Upgrade an install seeded from the newest old release to this commit and prove user data survived (CI gate; `--canary` proves the gate can fail) |
 | `node linkedin-join.mjs` | `linkedin-join.mjs` | Warm-intro finder — join a LinkedIn `Connections.csv` export against tracker + `portals.yml` companies to answer "do I know anyone here?" (offline, zero-token, read-only; see [LINKEDIN_JOIN.md](LINKEDIN_JOIN.md)) |
