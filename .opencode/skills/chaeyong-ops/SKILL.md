@@ -136,6 +136,7 @@ If your CLI supports `/chaeyong-ops`, show this menu. In Codex, surface the same
   /chaeyong-ops email        → 지원 메일 초안
   /chaeyong-ops batch        → 대량 평가 (batch-runner.sh)
   /chaeyong-ops tracker      → 지원 현황
+  npm run dashboard:web      → 브라우저 지원 현황 (http://127.0.0.1:3847, 로컬 전용)
   /chaeyong-ops deep         → 회사 심층 리서치
   /chaeyong-ops contacto     → LinkedIn 아웃리치
   /chaeyong-ops ofertas      → 여러 오퍼 비교

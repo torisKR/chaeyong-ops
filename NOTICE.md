@@ -17,6 +17,7 @@
 - 영어 필수 공고 필터 예시 (`templates/portals-kr.example.yml`)
 - 프로필 연차 필터 (`experience.years` → 스캔 제목 밴드 + 평가 SKIP)
 - 한국 지원 워크플로 (`docs/APPLY-KR.md`, `docs/GETTING-STARTED-KR.md`)
+- localhost 지원 현황 보드 (`npm run dashboard:web` → `http://127.0.0.1:3847`)
 - 원커맨드 설정 (`setup.mjs` — `npm run setup`)
 - `portals.yml` `blocked_companies` 스캔 스킵 + Slack/Discord/Telegram 알림 (`notify.mjs`)
 - 채용옵스 브랜드 에셋 (`assets/` — README 히어로 `icon.png` · `banner.png`)

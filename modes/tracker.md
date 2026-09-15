@@ -56,3 +56,5 @@ coverage, follow-up compliance), run `node stats.mjs --summary` and present its
 output. Zero tokens — never recompute these numbers manually.
 
 If any company in the tracker shows a `silent-on-you` responsiveness label, also offer `node company-history.mjs --summary` — the per-company evidence cards (hygiene nudge first, then silent-first) give the user the underlying facts before they decide how to prioritize.
+
+**Localhost status board:** `npm run dashboard:web` serves a read-only Korean board at `http://127.0.0.1:3847` from this tracker. The TUI is `npm run serve:dashboard`. See `docs/DASHBOARD-KR.md`.

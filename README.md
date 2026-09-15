@@ -51,6 +51,14 @@ npm run scan:kr                    # 원티드 스캔 (기본 활성)
 
 Cursor / Claude Code에 **채용 공고 URL**을 붙여넣으면 평가가 시작됩니다.
 
+지원 현황을 브라우저에서 보려면 (Go 필요):
+
+```bash
+npm run dashboard:web          # http://127.0.0.1:3847  (로컬 전용)
+```
+
+터미널 UI는 `npm run serve:dashboard` 입니다. 자세한 내용: **[docs/DASHBOARD-KR.md](docs/DASHBOARD-KR.md)**.
+
 | | |
 |---|---|
 | 처음 쓰는 순서 | [docs/GETTING-STARTED-KR.md](docs/GETTING-STARTED-KR.md) |
@@ -190,6 +198,7 @@ AI CLI에서 `/chaeyong-ops` 또는 자연어로:
 | `cover` / `email` | 자기소개서·지원 메일 초안 |
 | `batch` | `batch/batch-runner.sh` 대량 평가 |
 | `tracker` | 지원 현황 |
+| `dashboard:web` | 브라우저 지원 현황 (`http://127.0.0.1:3847`, 로컬 전용) |
 
 ```bash
 node scan.mjs              # 또는 npm run scan:kr
@@ -283,5 +292,6 @@ Issue와 PR을 환영합니다. 한국 포털 provider 개선, 평가 기준 보
 - [NOTICE.md](NOTICE.md) — 이 포크의 수정 사항
 - [docs/GETTING-STARTED-KR.md](docs/GETTING-STARTED-KR.md) — 클론부터 첫 스캔 (Cursor / Claude Code)
 - [docs/APPLY-KR.md](docs/APPLY-KR.md) — 한국 지원 워크플로 (scan → gonggo ≥4.0 → 수동 제출)
+- [docs/DASHBOARD-KR.md](docs/DASHBOARD-KR.md) — localhost 지원 현황 보드 (TUI vs 웹)
 - [docs/INTEGRATIONS.md](docs/INTEGRATIONS.md) — Slack / Discord / Telegram 알림
 - [assets/](assets/) — 채용옵스 로고 (`icon.png`) · 히어로 배너 (`banner.png`)
