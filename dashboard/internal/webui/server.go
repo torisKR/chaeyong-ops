@@ -80,6 +80,9 @@ func withSecurityHeaders(h http.Handler) http.Handler {
 // NewHandler serves the read-only status board for careerOpsPath.
 func NewHandler(careerOpsPath string) http.Handler {
 	mux := http.NewServeMux()
+	mux.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	})
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" {
 			http.NotFound(w, r)

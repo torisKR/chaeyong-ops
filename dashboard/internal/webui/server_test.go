@@ -95,6 +95,15 @@ func TestHandlerJSONAndFilters(t *testing.T) {
 	if res3.StatusCode != 404 {
 		t.Errorf("unknown path status %d", res3.StatusCode)
 	}
+
+	fav, err := http.Get(srv.URL + "/favicon.ico")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer fav.Body.Close()
+	if fav.StatusCode != http.StatusNoContent {
+		t.Errorf("favicon status %d, want 204", fav.StatusCode)
+	}
 }
 
 func TestHandlerEmptyTracker(t *testing.T) {
