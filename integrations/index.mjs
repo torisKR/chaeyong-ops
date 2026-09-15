@@ -43,14 +43,20 @@ export function loadIntegrationsConfig(root = getCareerOpsRoot()) {
   if (!existsSync(path)) return { ...DEFAULTS, channels: {} };
   try {
     const parsed = yaml.load(readFileSync(path, 'utf-8')) || {};
-    if (typeof parsed !== 'object' || Array.isArray(parsed)) return { ...DEFAULTS, channels: {} };
+    if (typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return { ...DEFAULTS, enabled: false, channels: {}, parseError: true };
+    }
+    if (parsed.channels != null && (typeof parsed.channels !== 'object' || Array.isArray(parsed.channels))) {
+      return { ...DEFAULTS, enabled: false, channels: {}, parseError: true };
+    }
     return {
       ...DEFAULTS,
       ...parsed,
       channels: parsed.channels && typeof parsed.channels === 'object' ? parsed.channels : {},
     };
   } catch {
-    return { ...DEFAULTS, channels: {}, parseError: true };
+    // Refuse to notify: a broken file may have been an attempt to disable channels.
+    return { ...DEFAULTS, enabled: false, channels: {}, parseError: true };
   }
 }
 
@@ -62,7 +68,7 @@ export function loadIntegrationsConfig(root = getCareerOpsRoot()) {
  * @returns {boolean}
  */
 export function channelEnabledInConfig(cfg, id) {
-  if (cfg?.enabled === false) return false;
+  if (cfg?.parseError || cfg?.enabled === false) return false;
   const ch = cfg?.channels?.[id];
   if (ch && typeof ch === 'object' && ch.enabled === false) return false;
   return true;

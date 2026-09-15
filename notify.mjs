@@ -110,7 +110,7 @@ export async function deliver(text, opts = {}) {
       fetchImpl: opts.fetchImpl,
     }));
   }
-  const sent = results.filter((r) => r.ok && !r.skipped).length;
+  const sent = results.filter((r) => r.ok && !r.skipped && !r.dryRun).length;
   return { sent, results };
 }
 

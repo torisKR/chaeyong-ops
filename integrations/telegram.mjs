@@ -27,9 +27,10 @@ export async function send(payload, opts = {}) {
   }
   if (opts.dryRun) return { ok: true, channel: id, dryRun: true };
   const url = `https://api.telegram.org/bot${token}/sendMessage`;
+  const text = String(payload.text || '').slice(0, 4096);
   const result = await postJson(url, {
     chat_id: chatId,
-    text: payload.text,
+    text,
     disable_web_page_preview: true,
   }, { fetchImpl: opts.fetchImpl });
   return { ...result, channel: id };
