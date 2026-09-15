@@ -85,7 +85,7 @@ node scan.mjs --company Wanted
 
 **4.0/5 미만이면 지원하지 않는 것을 권장합니다.** 제출 버튼은 항상 사람이 누릅니다. 이어서 [APPLY-KR.md](APPLY-KR.md).
 
-지원 현황을 브라우저에서 보려면 `npm run dashboard:web` → `http://127.0.0.1:3847`. 터미널 UI는 `npm run serve:dashboard`. [DASHBOARD-KR.md](DASHBOARD-KR.md).
+지원 현황 뷰어는 두 가지입니다 (둘 다 Go 1.24+): `npm run dashboard:web` → `http://127.0.0.1:3847` (브라우저), `npm run serve:dashboard` (TUI). [DASHBOARD-KR.md](DASHBOARD-KR.md).
 
 ## 6. 커밋하면 안 되는 것
 
@@ -104,7 +104,7 @@ node scan.mjs --company Wanted
 | `interview-prep/*` (README·`.gitkeep` 제외) | 면접 노트 |
 | `.env` | 비밀 |
 
-추적되는 것은 예제뿐입니다: `config/profile.example.yml`, `cv.example.md`, `templates/portals-kr.example.yml`, `config/integrations.example.yml`.
+추적되는 것은 예제뿐입니다: `config/profile.example.yml`, `cv.example.md`, `templates/portals-kr.example.yml`, `config/integrations.example.yml`, `examples/applications.example.md`.
 
 실명 전화번호·개인 이메일을 예제 파일에 넣지 마세요. 개인 검색은 **비공개 저장소**가 안전합니다.
 
@@ -130,6 +130,6 @@ Clone, `npm install`, `node setup.mjs --defaults`. Edit `config/profile.yml`: na
 
 Do not commit `cv.md`, `config/profile.yml`, `portals.yml`, or `data/*` — they are gitignored. Wanted is the only board enabled by default; check each site’s terms before enabling others. MIT does not replace job-board ToS. The tool never submits an application.
 
-Application status in the browser: `npm run dashboard:web` → http://127.0.0.1:3847 (loopback only). Terminal UI: `npm run serve:dashboard`. See [DASHBOARD-KR.md](DASHBOARD-KR.md).
+Application status viewers (Go 1.24+): `npm run dashboard:web` → http://127.0.0.1:3847 (loopback only) or `npm run serve:dashboard` (TUI). See [DASHBOARD-KR.md](DASHBOARD-KR.md).
 
 List companies you will never apply to in `portals.yml` as `blocked_companies` (fictional example: `ExampleCorp` — former employers belong only on your machine). Optional Slack/Discord/Telegram alerts: [INTEGRATIONS.md](INTEGRATIONS.md) (`node notify.mjs --test`).

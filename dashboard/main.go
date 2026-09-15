@@ -360,15 +360,16 @@ func main() {
 		}
 	}
 	pathFlag := flag.String("path", defaultPath, "Path to career-ops directory")
-	langFlag := flag.String("lang", "", "Language for UI (en, tr). Defaults to auto-detect/en.")
+	langFlag := flag.String("lang", "", "Language for UI (ko, en, tr, es). Defaults to ko.")
 	webFlag := flag.Bool("web", false, "Serve a local HTTP application-status board instead of the TUI")
 	addrFlag := flag.String("addr", webui.DefaultAddr, "Listen address for --web (loopback only)")
 	flag.Parse()
 
 	if *langFlag != "" {
 		i18n.SetLang(*langFlag)
-	} else if os.Getenv("LANG") != "" {
-		i18n.SetLang(os.Getenv("LANG"))
+	} else {
+		// Korean-first fork: do not inherit LANG=en_US, which made status tabs English.
+		i18n.SetLang("ko")
 	}
 
 	careerOpsPath := *pathFlag

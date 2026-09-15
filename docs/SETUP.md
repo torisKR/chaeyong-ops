@@ -147,6 +147,7 @@ node verify-pipeline.mjs     # Check pipeline integrity
 ## Build Dashboard (Optional)
 
 ```bash
-npm run serve:dashboard     # Opens TUI pipeline viewer
+npm run dashboard:web       # Localhost board (http://127.0.0.1:3847) — Go 1.24+
+npm run serve:dashboard     # TUI against repo-root data/applications.md
 npm run build:dashboard     # Optional: build the standalone binary
 ```

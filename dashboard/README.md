@@ -26,7 +26,7 @@ empty state. No extra JS framework.
 
 ## Prerequisites and running
 
-Requires Go 1.24+ (`go.mod`). From the repo root:
+Requires **Go 1.24+** (`go.mod`). From the repo root both viewers pass `--path ..` so they read `data/applications.md` (not `dashboard/data/`):
 
 ```bash
 npm run dashboard:web      # localhost Korean status board (http://127.0.0.1:3847)
