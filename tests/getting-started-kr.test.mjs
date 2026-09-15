@@ -34,10 +34,10 @@ if (existsSync(getting)) {
   fail('docs/GETTING-STARTED-KR.md is missing');
 }
 
-if (/setup\.mjs --defaults/.test(applyKr) && /GETTING-STARTED-KR/.test(applyKr)) {
-  pass('docs/APPLY-KR.md links setup.mjs and GETTING-STARTED-KR');
+if (/setup\.mjs --defaults/.test(applyKr) && /GETTING-STARTED-KR/.test(applyKr) && /blocked_companies/.test(applyKr)) {
+  pass('docs/APPLY-KR.md links setup.mjs and GETTING-STARTED-KR and documents blocked_companies');
 } else {
-  fail('APPLY-KR.md does not point at setup / getting-started');
+  fail('APPLY-KR.md does not point at setup / getting-started / blocked_companies');
 }
 
 if (/본인 경력\(년\) 숫자/.test(profileEx) && /years:\s*1\.7/.test(profileEx)
@@ -57,8 +57,8 @@ const ignored = ['cv.md', 'config/profile.yml', 'portals.yml'].every((p) => {
 if (ignored && /data\/\*/.test(gitignore)) pass('.gitignore still covers profile, cv, portals, data/*');
 else fail('.gitignore no longer covers user-layer PII paths');
 
-if (pkg.scripts?.setup === 'node setup.mjs --defaults' && pkg.scripts?.['scan:kr'] === 'node scan.mjs' && pkg.scripts?.doctor) {
-  pass('package.json scripts: setup, scan:kr, doctor');
+if (pkg.scripts?.setup === 'node setup.mjs --defaults' && pkg.scripts?.['scan:kr'] === 'node scan.mjs' && pkg.scripts?.doctor && pkg.scripts?.notify === 'node notify.mjs') {
+  pass('package.json scripts: setup, scan:kr, doctor, notify');
 } else {
-  fail(`package.json scripts missing: ${JSON.stringify({ setup: pkg.scripts?.setup, scanKr: pkg.scripts?.['scan:kr'], doctor: pkg.scripts?.doctor })}`);
+  fail(`package.json scripts missing: ${JSON.stringify({ setup: pkg.scripts?.setup, scanKr: pkg.scripts?.['scan:kr'], doctor: pkg.scripts?.doctor, notify: pkg.scripts?.notify })}`);
 }

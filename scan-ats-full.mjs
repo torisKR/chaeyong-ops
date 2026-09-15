@@ -55,6 +55,7 @@ import ashby from './providers/ashby.mjs';
 import workday from './providers/workday.mjs';
 import icims from './providers/icims.mjs';
 import { buildTitleFilter, buildTitleFilterOverrides, buildTitleFilterWithOverrides, buildLocationFilter, buildContentFilter, matchedTitleKeywords, loadSeenUrls, normalizeUrlForDedup, appendToPipeline, appendToScanHistory, loadBlacklist, parseSinceDays, PORTALS_PATH, PIPELINE_PATH } from './scan.mjs';
+import { parsePortalsBlockedCompanies, mergeCompanyBlocklists } from './blocked-companies.mjs';
 import { applyProfileExperienceToTitleFilter, defaultProfilePath } from './experience-band.mjs';
 import { localToday } from './lib/local-today.mjs';
 import { printScanSummaryHeader } from './lib/scan-summary-marker.mjs';
@@ -751,7 +752,7 @@ async function main() {
   const { seen: seenUrls } = loadSeenUrls({}, {
     extraTokensFor: (url, portal) => providerForSource(portal)?.dedupKey?.({ url }),
   });
-  const blacklist = loadBlacklist();
+  const blacklist = mergeCompanyBlocklists(loadBlacklist(), parsePortalsBlockedCompanies(config));
   // sinceMs and includeUndated let providers (currently only workday.mjs)
   // stop paginating a tenant early instead of always walking to max_pages:
   // sinceMs once postings are confidently past the --since window, and
@@ -1139,6 +1140,13 @@ async function main() {
     await appendToScanHistory(offers, date);
     saved = true;
     log(`\nResults saved to ${PIPELINE_PATH} and data/scan-history.tsv`);
+
+    try {
+      const { notifyScanResults } = await import('./notify.mjs');
+      await notifyScanResults({ offers, date });
+    } catch (err) {
+      console.error(`notify: ${err.message}`);
+    }
 
     if (opts.mdOut) {
       try {

@@ -67,11 +67,16 @@ The checker classifies each numeric claim as `existing`, `supportedByResume`, `d
 
 ## How do I stop a company from showing up in scans?
 
-Copy `templates/blacklist.example.md` to `data/blacklist.md`, then list one company per line.
+Add names to `blocked_companies` in `portals.yml` (see `templates/portals-kr.example.yml`). Matching is case- and punctuation-insensitive (`ExampleCorp` catches `Example Corp.`). Skips are counted in the scan summary, never silent.
 
-If a listed company is encountered, the scan reports that it was skipped (never silently). You can bypass the filter with `--include-blacklisted` if you want to audit matching postings.
+```yaml
+blocked_companies:
+  - ExampleCorp
+```
 
-See the Company blacklist section in `docs/SCRIPTS.md` for the full behavior and supported workflow.
+Or copy `templates/blacklist.example.md` to `data/blacklist.md` and list companies there. Both sources are unioned. Bypass with `--include-blacklisted` to audit matching postings.
+
+See the Company blacklist section in `docs/SCRIPTS.md` for the full behavior. Do not put real personal names in example files.
 
 ## What's the difference between `Discarded` and `SKIP`?
 

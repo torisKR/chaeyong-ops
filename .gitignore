@@ -73,6 +73,7 @@ voice-dna.md
 
 # Plugin layer — opt-in toggles + user-installed plugins + integrity lock (never auto-updated)
 config/plugins.yml
+config/integrations.yml
 plugins.local/
 plugins.lock
 
