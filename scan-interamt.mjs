@@ -22,6 +22,7 @@ import { readFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import * as yaml from 'js-yaml';
 import { appendToPipeline, appendToScanHistory, loadSeenUrls, PORTALS_PATH, SCAN_HISTORY_PATH } from './scan.mjs';
+import { applyProfileExperienceToTitleFilter, defaultProfilePath } from './experience-band.mjs';
 import { getCareerOpsRoot } from './path-resolver.mjs';
 import { localToday } from './lib/local-today.mjs';
 import { printScanSummaryHeader } from './lib/scan-summary-marker.mjs';
@@ -82,7 +83,7 @@ const keywords = SINGLE_KEYWORD
 
 // ── Filters ──────────────────────────────────────────────────────────
 
-const titleFilter = config.title_filter || {};
+const titleFilter = applyProfileExperienceToTitleFilter(config.title_filter || {}, defaultProfilePath()) || {};
 const positiveKw = (titleFilter.positive || []).map(k => k.toLowerCase());
 const negativeKw = (titleFilter.negative || []).map(k => k.toLowerCase());
 

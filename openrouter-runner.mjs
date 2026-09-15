@@ -31,6 +31,7 @@ import {
 import { TokenAccumulator, formatBreakdown, normalizeOpenAIUsage } from './utils/token-tracker.mjs';
 import { DEFAULT_USER_AGENT } from './user-agent.mjs';
 import { buildTitleFilter } from './title-keywords.mjs';
+import { applyProfileExperienceToTitleFilter, defaultProfilePath } from './experience-band.mjs';
 import { appendToPipeline, appendToScanHistory } from './scan.mjs';
 import { localToday } from './lib/local-today.mjs';
 import { getCareerOpsRoot } from './path-resolver.mjs';
@@ -486,7 +487,12 @@ export function parsePortals(rawOverride) {
   // real titles that moves one verdict, and it moves it the permissive way —
   // the negative "iOS" had been matching inside "Biosamples". Nothing becomes
   // newly rejected.
-  const titleMatches = buildTitleFilter(config.title_filter);
+  // Tests feed raw YAML via rawOverride and must see that filter only.
+  // A live scan merges tenure negatives from profile.yml experience.years.
+  const titleFilter = rawOverride
+    ? config.title_filter
+    : applyProfileExperienceToTitleFilter(config.title_filter, defaultProfilePath());
+  const titleMatches = buildTitleFilter(titleFilter);
 
   // Companies with a direct JSON `api:` endpoint (the no-CLI scan path).
   const tracked = Array.isArray(config.tracked_companies) ? config.tracked_companies : [];

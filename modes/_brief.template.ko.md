@@ -5,7 +5,7 @@
      상세 narrative는 `_profile.md` / `cv.md`에 두세요. -->
 
 ## Identity
-{한 줄: seniority, 분야, 경력 연수, 거주지/타임존, 체류·비자. 예: "주니어 백엔드 — 1년 7개월. 서울(하이브리드). 한국 근로 가능."}
+{한 줄: seniority, 분야, config/profile.yml experience.years, 거주지/타임존, 체류·비자. 예: "백엔드 — experience.years: 1.7. 서울(하이브리드). 한국 근로 가능."}
 
 ## Target Archetypes
 
@@ -39,7 +39,7 @@
 - {예: 공고 연봉 상한이 floor 미만}
 - {예: 계약직만 / 프리랜서만 — 정규직만 지원}
 - {예: 필수 stack {Java only} — brief에 없음}
-- {예: 문서 경력 2년 미만인데 JD 필수 3년+ 또는 시니어 리드/아키텍트 — 출시 프로젝트로 연차 충족 처리 금지}
+- {예: JD 필수 연차 > experience.years + tolerance, 또는 시니어 리드 필수인데 years < senior_min_years — 출시 프로젝트로 연차 충족 처리 금지}
 
 ## Priority Override List
 - {지원 우선 회사 — 있으면 triage 무관 PASS}

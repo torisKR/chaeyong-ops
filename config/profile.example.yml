@@ -49,6 +49,25 @@ target_roles:
       level: "주니어"
       fit: "secondary"
 
+# Total professional experience. Scan and gonggo read THIS — not a hardcoded
+# junior band. Replace the example number with yours.
+#
+#   years  — preferred. Decimal OK (1.7 ≈ 1 year 8 months; 19 months → years: 1.58 or months: 19).
+#   months — used only when `years` is omitted (months / 12).
+#   skip_tolerance_years — JD hard-min may exceed years by this much (default 0.5).
+#   senior_min_years — below this, must-have 시니어/리드/아키텍트/팀장 → SKIP (default 5).
+#
+# Scan adds title_filter.negative bands from years (experience-band.mjs):
+#   years < 3  → 3년+/시니어/Lead/팀장 titles dropped
+#   3–5        → 5년+/시니어 titles dropped; 3년+ kept
+#   years >= 5 → no tenure title negatives added
+# Missing years → no invented band (scan/eval do not assume junior).
+experience:
+  years: 1.7
+  # months: 20
+  # skip_tolerance_years: 0.5
+  # senior_min_years: 5
+
 narrative:
   # Your professional headline (1 line)
   headline: "TypeScript 풀스택 — NestJS 백엔드와 React/Next.js"
