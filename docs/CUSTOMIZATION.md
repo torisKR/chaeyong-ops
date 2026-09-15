@@ -30,7 +30,7 @@ Also update the "Adaptive Framing" table to map YOUR specific projects to each a
 Copy from `templates/portals.example.yml` and customize:
 
 1. **title_filter.positive**: Keywords matching your target roles
-2. **title_filter.negative**: Tech stacks or domains to exclude
+2. **title_filter.negative**: Tech stacks or domains to exclude. Korean junior targeting (~1–2 years) also lists high-tenure title bands (`3~5년`, `시니어`, `Lead`, `팀장`, …) in `templates/portals-kr.example.yml` — see [APPLY-KR.md](APPLY-KR.md) filters.
 3. **search_queries**: WebSearch queries for job boards (Ashby, Greenhouse, Lever)
 4. **tracked_companies**: Companies to check directly
 

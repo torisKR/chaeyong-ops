@@ -77,6 +77,7 @@ Block D·G 합산 **WebSearch 최대 5회**. `deep` 모드나 subagent 연구는
 - **Match:** ✅ Strong / ⚠️ Partial / ❌ Missing / ➖ N/A
 - **Row budget:** 최대 12행. `critical`·`high`는 budget보다 우선.
 - **영어 필수:** `원어민`, `native English`, `영어 회화 필수`, OPIC/TOEIC threshold → `critical (stated)`. primary file에 증거 없으면 `❌ Missing` + Gaps에 hard gap 명시.
+- **주니어 경력 밴드 (`_shared.md` § 주니어 경력 밴드 게이트):** 문서 경력 2년 미만인데 JD가 **필수**로 3년+ 경력 또는 시니어 단독 리드/아키텍트/팀장 소유권을 요구하면 N년차(또는 시니어티) 행은 `critical (stated)` + `❌ Missing`. 개인 출시 프로젝트는 Evidence에 스킬 근거로만 쓰고, 연차를 부풀리지 않는다. 우대 3년+는 `preferred` gap이지 SKIP이 아니다.
 
 **한국 시장 추가 행:** 정규직/계약직, 수습기간, 포괄임금제, N년차, 필수 스택은 JD에 있으면 반드시 행으로 포함.
 
@@ -86,11 +87,14 @@ Archetype별 우선순위는 `_shared.md` 및 기존 gonggo 가이드를 따릅�
 
 각 gap에 mitigation. `critical`/`high`에서 `❌`/`⚠️`이면 interview-risk + mitigation **필수**.
 
+경력 밴드 게이트에 걸리면 Gaps에 hard gap을 명시하고, 권고는 **SKIP** (`4.0/5` 미만, 트래커 `SKIP`). 출시 프로젝트로 점수를 끌어올리지 않는다.
+
 ## Block C — 레벨과 전략
 
-1. JD 레벨 vs 후보자 natural level
-2. 거짓 없이 senior 포지셔닝 계획
+1. JD 레벨 vs 후보자 natural level (`cv.md` 재직 연차. 프로젝트 기간 ≠ 경력 연차)
+2. 거짓 없이 senior 포지셔닝 계획 — 2년 미만 후보자를 시니어/리드로 포장하지 않음
 3. downlevel 시 대응(보상, 6개월 리뷰, 승진 기준)
+4. **경력 밴드 게이트 hit:** 경력 핏 ≤ 2/5, 지원 SKIP 권고. 우대 시니어티만 있으면 이 조항을 적용하지 않음
 
 ## Block D — 보상과 시장 수요
 
