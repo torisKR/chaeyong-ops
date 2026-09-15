@@ -84,6 +84,18 @@ node scan.mjs --company "Wanted — 백엔드"
 
 MIT 라이선스 ≠ 원티드·사람인·잡코리아·리멤버 이용약관. `enabled: true` 전에 각 사이트 약관을 확인하세요.
 
+### 필터
+
+스캔과 평가가 **둘 다** 게이트입니다. **경력 연차 + 프로젝트 시니어티 둘 다 게이트.**
+
+| 단계 | 무엇을 거르나 |
+|------|----------------|
+| `title_filter.negative` | 제목 밴드: `3~5년`, `3년 이상`, `4~7년`, `5년 이상`, `시니어`, `Senior`, `리드`, `Lead`, `팀장` (`templates/portals-kr.example.yml`) |
+| `content_filter.negative` | 본문: 영어 회화 필수, 원어민 등 |
+| `gonggo` 경력 핏 | JD가 **필수**로 3년+ 경력 또는 시니어 리드/아키텍트 소유권을 요구하면, 문서 경력 2년 미만은 저점수 / **SKIP** |
+
+개인 출시 프로젝트는 스킬 핏을 보강할 수 있지만 **연차로 치지 않습니다.** 중·시니어를 노리면 `portals.yml` negative와 `modes/_profile.md` 밴드를 바꾸세요.
+
 `portals.yml` 이 없으면:
 
 ```text
