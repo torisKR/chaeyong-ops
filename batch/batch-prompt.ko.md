@@ -34,7 +34,7 @@
 - 연봉: JD verbatim (`advertised_comp`), KRW·만원 단위 유지
 - 정규직 vs 계약직/프리랜서, 포괄임금제·야근 문구, 수습기간
 - 출근(재택/하이브리드/상시 출근) vs `modes/_profile.md` location policy
-- **주니어 경력 밴드:** 문서 경력 2년 미만 + JD 필수 3년+ 또는 시니어 리드/아키텍트 소유권 → 경력 핏 ≤2/5, SKIP. 출시 프로젝트로 연차 부풀리기 금지 (`modes/ko/_shared.md`)
+- **경력 밴드:** `experience.years` vs JD 필수 최소 연차(+ tolerance). 시니어 리드/아키텍트 필수인데 years < senior_min_years → 경력 핏 ≤2/5, SKIP. 출시 프로젝트로 연차 부풀리기 금지 (`modes/ko/_shared.md`)
 
 Block G(공고 진위)·Risk Summary·Machine Summary `risk_summary` 키는 `gonggo.md` + `batch/batch-prompt.md` 스키마를 동시에 만족.
 

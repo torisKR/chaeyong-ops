@@ -7,6 +7,7 @@ This is the single source of truth for your identity. All modes read from here.
 Key sections:
 - **candidate**: Name, email, phone, location, LinkedIn, portfolio
 - **target_roles**: Your North Star roles and archetypes
+- **experience**: `years` (or `months`) — drives Korean title-band scan negatives and gonggo SKIP when a JD hard-min exceeds your years. See [APPLY-KR.md](APPLY-KR.md). Not a hardcoded junior band.
 - **narrative**: Your headline, exit story, superpowers, proof points
 - **compensation**: Target range, minimum, currency
 - **location**: Country, timezone, visa status, on-site availability, and structured work authorization (`authorized_in`, `needs_sponsorship`) that drives the Work-Auth signal in job evaluation (flags an explicit no-sponsorship JD as a hard blocker)
@@ -30,7 +31,7 @@ Also update the "Adaptive Framing" table to map YOUR specific projects to each a
 Copy from `templates/portals.example.yml` and customize:
 
 1. **title_filter.positive**: Keywords matching your target roles
-2. **title_filter.negative**: Tech stacks or domains to exclude. Korean junior targeting (~1–2 years) also lists high-tenure title bands (`3~5년`, `시니어`, `Lead`, `팀장`, …) in `templates/portals-kr.example.yml` — see [APPLY-KR.md](APPLY-KR.md) filters.
+2. **title_filter.negative**: Tech stacks or domains to exclude. Korean high-tenure title bands (`3~5년`, `시니어`, `Lead`, …) are appended at scan time from `config/profile.yml` → `experience.years` — see [APPLY-KR.md](APPLY-KR.md).
 3. **search_queries**: WebSearch queries for job boards (Ashby, Greenhouse, Lever)
 4. **tracked_companies**: Companies to check directly
 
