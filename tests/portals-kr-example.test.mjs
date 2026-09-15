@@ -13,7 +13,7 @@ const raw = readFileSync(path, 'utf-8');
 const doc = yaml.load(raw);
 const boards = Array.isArray(doc?.job_boards) ? doc.job_boards : [];
 
-const JUNIOR_TENURE_NEGATIVES = [
+const PROFILE_DERIVED_TENURE = [
   '3~5년',
   '3년 이상',
   '4~7년',
@@ -59,51 +59,44 @@ if (required.every((k) => titlePos.includes(k) || titlePos.some((t) => String(t)
 }
 
 const titleNeg = (doc?.title_filter?.negative || []).map((k) => String(k));
-const missingTenure = JUNIOR_TENURE_NEGATIVES.filter((k) => !titleNeg.includes(k));
-if (missingTenure.length === 0) {
-  pass('title_filter.negative documents high-tenure title bands for junior targeting');
+const hardcodedTenure = PROFILE_DERIVED_TENURE.filter((k) => titleNeg.includes(k));
+if (hardcodedTenure.length === 0) {
+  pass('example title_filter does not hardcode tenure bands (profile.years selects them)');
 } else {
-  fail(`title_filter.negative missing tenure bands ${JSON.stringify(missingTenure)}; have ${JSON.stringify(titleNeg)}`);
+  fail(`portals-kr.example.yml still hardcodes tenure negatives: ${JSON.stringify(hardcodedTenure)}`);
+}
+
+if (/experience\.years/.test(raw) && /experience-band/.test(raw)) {
+  pass('portals-kr.example.yml documents profile-driven tenure negatives');
+} else {
+  fail('portals-kr.example.yml should point title-band negatives at experience.years');
 }
 
 const titleFilter = buildTitleFilter(doc.title_filter);
-const rejectedTitles = [
-  '백엔드 개발자 (3~5년)',
-  '백엔드 (3년 이상)',
-  '풀스택 개발자 (4~7년)',
-  'Node.js 개발자 (5년 이상)',
-  '시니어 백엔드',
-  'Senior Backend Engineer',
-  '백엔드 리드',
-  'Tech Lead',
-  '개발 팀장',
-];
-const leaked = rejectedTitles.filter((t) => titleFilter(t));
-if (leaked.length === 0) {
-  pass('example title_filter rejects high-tenure / senior title bands');
+if (titleFilter('시니어 백엔드') && titleFilter('백엔드 (3년 이상)') && titleFilter('백엔드 개발자')) {
+  pass('shipped example without a profile keeps senior / 3년+ titles (no invented junior band)');
 } else {
-  fail(`tenure negatives leaked through: ${JSON.stringify(leaked)}`);
+  fail('example title_filter vetoed a title it should leave for experience.years');
 }
 
-const keepers = ['백엔드 개발자', '주니어 풀스택', 'NestJS 개발자 (1~2년)'];
-const dropped = keepers.filter((t) => !titleFilter(t));
-if (dropped.length === 0) {
-  pass('example title_filter keeps junior / unbanded backend titles');
+const profileEx = yaml.load(readFileSync(join(ROOT, 'config', 'profile.example.yml'), 'utf-8'));
+const expYears = profileEx?.experience?.years;
+if (typeof expYears === 'number' && Number.isFinite(expYears)) {
+  pass(`config/profile.example.yml documents experience.years (${expYears})`);
 } else {
-  fail(`junior titles were vetoed: ${JSON.stringify(dropped)}`);
+  fail(`profile.example.yml missing experience.years: ${JSON.stringify(profileEx?.experience)}`);
 }
 
 const shared = readFileSync(join(ROOT, 'modes', 'ko', '_shared.md'), 'utf-8');
 const gonggo = readFileSync(join(ROOT, 'modes', 'ko', 'gonggo.md'), 'utf-8');
 const applyKr = readFileSync(join(ROOT, 'docs', 'APPLY-KR.md'), 'utf-8');
-const hasYearGate = /2년 미만/.test(shared) && /3년/.test(shared) && /연차를 부풀리지|연차에 더하지/.test(shared);
-const hasSeniorityGate = /리드|아키텍트|팀장/.test(shared) && /SKIP/.test(shared);
-const gonggoSkip = /경력 밴드 게이트/.test(gonggo) && /SKIP/.test(gonggo);
-const docsDualGate = /경력 연차 \+ 프로젝트 시니어티 둘 다 게이트/.test(applyKr);
-if (hasYearGate && hasSeniorityGate && gonggoSkip && docsDualGate) {
-  pass('scoring + APPLY-KR docs gate both career years and project seniority');
+const profileDriven = /experience\.years/.test(shared) && !/주니어 경력 밴드 게이트 \(~1–2년\)/.test(shared);
+const gonggoSkip = /experience\.years/.test(gonggo) && /SKIP/.test(gonggo);
+const docsProfile = /experience\.years/.test(applyKr) && /고정 주니어/.test(applyKr);
+if (profileDriven && gonggoSkip && docsProfile) {
+  pass('scoring + APPLY-KR docs are profile-driven (not a fixed under-2y band)');
 } else {
-  fail(`junior-band docs incomplete: year=${hasYearGate} seniority=${hasSeniorityGate} gonggo=${gonggoSkip} apply=${docsDualGate}`);
+  fail(`profile-driven docs incomplete: shared=${profileDriven} gonggo=${gonggoSkip} apply=${docsProfile}`);
 }
 
 const validated = spawnSync(process.execPath, ['validate-portals.mjs', '--file', 'templates/portals-kr.example.yml'], {

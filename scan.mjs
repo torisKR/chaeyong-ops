@@ -69,6 +69,7 @@ import { normalizeCompany } from './tracker-utils.mjs';
 import { normalizeCompanyName } from './invite-match.mjs';
 import { withPipelineLock } from './pipeline-lock.mjs';
 import { compileKeyword, compilePositiveKeyword, compileContentKeyword, buildTitleFilter } from './title-keywords.mjs';
+import { applyProfileExperienceToTitleFilter } from './experience-band.mjs';
 import { flagValue, hasFlag, validateFlags } from './lib/cli-flags.mjs';
 import { withPortalHealthLock } from './portal-health-lock.mjs';
 import { localToday } from './lib/local-today.mjs';
@@ -2890,7 +2891,8 @@ async function main() {
   const config = rawConfig && typeof rawConfig === 'object' ? rawConfig : {};
   const companies = Array.isArray(config.tracked_companies) ? config.tracked_companies : [];
   const boards = Array.isArray(config.job_boards) ? config.job_boards : [];
-  const titleFilter = buildTitleFilter(config.title_filter);
+  const titleFilterConfig = applyProfileExperienceToTitleFilter(config.title_filter, PROFILE_PATH);
+  const titleFilter = buildTitleFilter(titleFilterConfig);
 
   // Seniority tier classifier integration
   let classifyTier = null;
@@ -3142,7 +3144,7 @@ async function main() {
           totalFilteredSalary++;
           continue;
         }
-        if (!contentFilter(job.description, matchedTitleKeywords(job.title, config.title_filter))) {
+        if (!contentFilter(job.description, matchedTitleKeywords(job.title, titleFilterConfig))) {
           totalFilteredContent++;
           continue;
         }

@@ -27,7 +27,7 @@ cp config/profile.example.yml config/profile.yml
 | 언어 | `language.output: ko`, `language.modes_dir: modes/ko` |
 | PDF | `cv.template: ko-standard`, `auto_pdf_score_threshold: 4.0` |
 
-이름·이메일·전화·연봉 범위를 **본인 값**으로 바꿉니다. 예제 이름 `유주환` 을 그대로 두지 마세요.
+이름·이메일·전화·연봉 범위·**`experience.years`** 를 **본인 값**으로 바꿉니다. 예제 이름 `유주환` 을 그대로 두지 마세요. 경력 연차가 스캔 제목 필터와 `gonggo` SKIP을 결정합니다.
 
 확인:
 
@@ -86,15 +86,23 @@ MIT 라이선스 ≠ 원티드·사람인·잡코리아·리멤버 이용약관.
 
 ### 필터
 
-스캔과 평가가 **둘 다** 게이트입니다. **경력 연차 + 프로젝트 시니어티 둘 다 게이트.**
+스캔과 평가가 **둘 다** 게이트입니다. **경력 연차 + 프로젝트 시니어티는 `config/profile.yml` → `experience.years`를 따릅니다.** 고정 주니어 밴드가 아닙니다.
+
+```yaml
+# config/profile.yml
+experience:
+  years: 1.7          # 본인 총 경력(년). 소수 가능. 또는 months: 19
+  # skip_tolerance_years: 0.5
+  # senior_min_years: 5
+```
 
 | 단계 | 무엇을 거르나 |
 |------|----------------|
-| `title_filter.negative` | 제목 밴드: `3~5년`, `3년 이상`, `4~7년`, `5년 이상`, `시니어`, `Senior`, `리드`, `Lead`, `팀장` (`templates/portals-kr.example.yml`) |
+| 스캔 title negatives | `experience.years`로 고름 (`experience-band.mjs`). `years < 3` → `3~5년`/`3년 이상`/`시니어`/`Lead`/`팀장` 등. `years ≥ 5` → 연차 제목 negative 없음. `portals.yml`에 하드코딩할 필요 없음 |
 | `content_filter.negative` | 본문: 영어 회화 필수, 원어민 등 |
-| `gonggo` 경력 핏 | JD가 **필수**로 3년+ 경력 또는 시니어 리드/아키텍트 소유권을 요구하면, 문서 경력 2년 미만은 저점수 / **SKIP** |
+| `gonggo` 경력 핏 | JD **필수** 최소 연차 > `years + tolerance` 이거나, 시니어 리드/아키텍트 소유권이 필수인데 `years < senior_min_years`이면 저점수 / **SKIP** |
 
-개인 출시 프로젝트는 스킬 핏을 보강할 수 있지만 **연차로 치지 않습니다.** 중·시니어를 노리면 `portals.yml` negative와 `modes/_profile.md` 밴드를 바꾸세요.
+개인 출시 프로젝트는 스킬 핏을 보강할 수 있지만 **연차로 치지 않습니다.** `years`를 바꾸면 필터가 따라갑니다.
 
 `portals.yml` 이 없으면:
 

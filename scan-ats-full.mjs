@@ -55,6 +55,7 @@ import ashby from './providers/ashby.mjs';
 import workday from './providers/workday.mjs';
 import icims from './providers/icims.mjs';
 import { buildTitleFilter, buildTitleFilterOverrides, buildTitleFilterWithOverrides, buildLocationFilter, buildContentFilter, matchedTitleKeywords, loadSeenUrls, normalizeUrlForDedup, appendToPipeline, appendToScanHistory, loadBlacklist, parseSinceDays, PORTALS_PATH, PIPELINE_PATH } from './scan.mjs';
+import { applyProfileExperienceToTitleFilter, defaultProfilePath } from './experience-band.mjs';
 import { localToday } from './lib/local-today.mjs';
 import { printScanSummaryHeader } from './lib/scan-summary-marker.mjs';
 import { SEED_SOURCES, toPortalEntry } from './seeds/vc-portfolios.mjs';
@@ -709,7 +710,10 @@ async function main() {
     process.exit(1);
   }
   const config = yaml.load(readFileSync(PORTALS_PATH, 'utf-8'));
-  const fullTitleFilterConfig = resolveTitleFilterConfig(config);
+  const fullTitleFilterConfig = applyProfileExperienceToTitleFilter(
+    resolveTitleFilterConfig(config),
+    defaultProfilePath(),
+  );
   // title_filter_overrides is independent of title_filter_full: it broadens
   // the net for specific companies on top of whichever title filter config
   // (title_filter or title_filter_full) this run is already using.

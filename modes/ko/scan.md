@@ -31,7 +31,8 @@ content_filter:
 
 title_filter:
   positive: ["백엔드", "풀스택", "NestJS", "Node.js", "TypeScript", "frontend"]
-  negative: ["인턴", "영업", "마케팅", "3~5년", "3년 이상", "4~7년", "5년 이상", "시니어", "Senior", "리드", "Lead", "팀장"]
+  negative: ["인턴", "영업", "마케팅"]
+  # 3년+/시니어/Lead/팀장 제목은 profile.yml experience.years 가 스캔에 붙임
 
 job_boards:
   - name: Wanted — 백엔드
