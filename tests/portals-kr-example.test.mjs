@@ -99,10 +99,15 @@ if (profileDriven && gonggoSkip && docsProfile) {
   fail(`profile-driven docs incomplete: shared=${profileDriven} gonggo=${gonggoSkip} apply=${docsProfile}`);
 }
 
-const validated = spawnSync(process.execPath, ['validate-portals.mjs', '--file', 'templates/portals-kr.example.yml'], {
+const validatedBad = spawnSync(process.execPath, ['validate-portals.mjs', '--file', 'templates/portals-kr.example.yml'], {
   cwd: ROOT,
   encoding: 'utf-8',
   timeout: 30_000,
 });
-if (validated.status === 0) pass('validate-portals accepts templates/portals-kr.example.yml');
-else fail(`validate-portals.kr exit ${validated.status}: ${(validated.stderr || validated.stdout || '').slice(0, 400)}`);
+if (validatedBad.status === 0) pass('validate-portals accepts templates/portals-kr.example.yml');
+else fail(`validate-portals.kr exit ${validatedBad.status}: ${(validatedBad.stderr || validatedBad.stdout || '').slice(0, 400)}`);
+
+const blocked = Array.isArray(doc?.blocked_companies) ? doc.blocked_companies : [];
+if (blocked.includes('ExampleCorp') && blocked.every((n) => typeof n === 'string' && !/@/.test(n))) {
+  pass('blocked_companies example is fictional ExampleCorp (no emails)');
+} else fail(`blocked_companies = ${JSON.stringify(blocked)}`);

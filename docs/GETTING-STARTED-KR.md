@@ -65,6 +65,8 @@ node doctor.mjs
 
 기본 `portals.yml` 은 **원티드만** `enabled: true` 입니다. 사람인·잡코리아·리멤버는 각 사이트 [이용약관](https://www.wanted.co.kr/)·robots.txt 확인 후에만 켜세요. MIT 라이선스가 채용 사이트 약관을 대체하지 않습니다.
 
+이전 직장처럼 **절대 지원하지 않을 회사**는 `portals.yml` 의 `blocked_companies` 에 적습니다 (예제 이름은 `ExampleCorp` — 실명·개인정보를 예제 파일에 넣지 마세요). 스캔이 해당 회사 공고를 pipeline에 넣지 않습니다. `data/blacklist.md` 도 같은 역할입니다.
+
 ```bash
 npm run scan:kr          # = node scan.mjs
 # 원티드만:
@@ -93,12 +95,14 @@ node scan.mjs --company Wanted
 | `config/profile.yml` | 이름·이메일·연봉·연차 |
 | `portals.yml` | 개인 검색 설정 |
 | `modes/_profile.md`, `modes/_custom.md`, `modes/_brief.md` | 개인 타깃 |
+| `config/plugins.yml` | 플러그인 토글 |
+| `config/integrations.yml` | 알림 토글 (토큰은 `.env`) |
 | `data/*` | 트래커, 스캔 기록, 연락처 |
 | `reports/*.md`, `output/*`, `jds/*` | 평가·PDF·공고 원문 |
 | `interview-prep/*` (README·`.gitkeep` 제외) | 면접 노트 |
 | `.env` | 비밀 |
 
-추적되는 것은 예제뿐입니다: `config/profile.example.yml`, `cv.example.md`, `templates/portals-kr.example.yml`.
+추적되는 것은 예제뿐입니다: `config/profile.example.yml`, `cv.example.md`, `templates/portals-kr.example.yml`, `config/integrations.example.yml`.
 
 실명 전화번호·개인 이메일을 예제 파일에 넣지 마세요. 개인 검색은 **비공개 저장소**가 안전합니다.
 
@@ -111,6 +115,7 @@ setup → experience.years 수정 → scan → gonggo ≥ 4.0 → pdf / jiwon �
 ```
 
 - [APPLY-KR.md](APPLY-KR.md) — 4.0 필터, PDF, `jiwon`, 트래커
+- [INTEGRATIONS.md](INTEGRATIONS.md) — Slack / Discord / Telegram 알림 (`node notify.mjs --test`)
 - [SETUP.md](SETUP.md) — 업스트림 career-ops 설치 노트
 - [CUSTOMIZATION.md](CUSTOMIZATION.md) — 아키타입·키워드
 
@@ -121,3 +126,5 @@ setup → experience.years 수정 → scan → gonggo ≥ 4.0 → pdf / jiwon �
 Clone, `npm install`, `node setup.mjs --defaults`. Edit `config/profile.yml`: name, email, and `experience.years` (your years of experience as a number). Then `node doctor.mjs` and `npm run scan:kr`. Paste a job URL in Cursor or Claude Code.
 
 Do not commit `cv.md`, `config/profile.yml`, `portals.yml`, or `data/*` — they are gitignored. Wanted is the only board enabled by default; check each site’s terms before enabling others. MIT does not replace job-board ToS. The tool never submits an application.
+
+List companies you will never apply to in `portals.yml` as `blocked_companies` (fictional example: `ExampleCorp` — former employers belong only on your machine). Optional Slack/Discord/Telegram alerts: [INTEGRATIONS.md](INTEGRATIONS.md) (`node notify.mjs --test`).

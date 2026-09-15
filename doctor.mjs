@@ -20,6 +20,7 @@ import { validateFlags } from './lib/cli-flags.mjs';
 import { geminiNodeFloor } from './lib/gemini-node-floor.mjs';
 import { resolveBriefTemplatePath } from './profile-language.mjs';
 import { loadExperienceBlock, resolveExperienceYears } from './experience-band.mjs';
+import { integrationStatus } from './integrations/index.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const argv = process.argv.slice(2);
@@ -713,6 +714,26 @@ function checkPlugins(root) {
   return fixes.length ? { warn: true, label, fix: fixes } : { pass: true, label };
 }
 
+// Optional Slack/Discord/Telegram/Notion/Jira alerts. Never fail setup; never print secrets.
+function checkIntegrations(root) {
+  try {
+    const rows = integrationStatus({ root });
+    const labels = rows.map((r) => {
+      if (!r.configured) return `${r.id}=off`;
+      if (r.stub) return `${r.id}=stub`;
+      if (!r.enabled) return `${r.id}=disabled`;
+      return `${r.id}=yes`;
+    });
+    return {
+      pass: true,
+      label: `Integrations: ${labels.join(' ')}`,
+      fix: ['Secrets stay in .env. Test: node notify.mjs --test  ·  docs/INTEGRATIONS.md'],
+    };
+  } catch {
+    return { pass: true, label: 'Integrations: (not loaded)' };
+  }
+}
+
 async function main() {
   console.log('\n채용옵스 doctor');
   console.log('===============\n');
@@ -740,6 +761,7 @@ async function main() {
     checkAutoDir('output'),
     checkAutoDir('reports'),
     checkPlugins(projectRoot),
+    checkIntegrations(projectRoot),
   ].filter(Boolean);
 
   // Network-bound portals.yml reachability probe — only under --strict.
@@ -953,6 +975,19 @@ function onboardingState(root) {
     cli_source: cliSource,
     experienceYears,
     wantedEnabled,
+    integrations: (() => {
+      try {
+        return Object.fromEntries(
+          integrationStatus({ root }).map((r) => [r.id, {
+            configured: r.configured,
+            enabled: r.enabled,
+            stub: r.stub,
+          }]),
+        );
+      } catch {
+        return {};
+      }
+    })(),
   };
 }
 

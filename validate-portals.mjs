@@ -224,6 +224,23 @@ export async function validatePortalsConfig(config, { providerIds = new Set() } 
     add(errors, 'search_queries', 'search_queries must be an array when set');
   }
 
+  const validateCompanySkipList = (value, key) => {
+    if (value === undefined || value === null) return;
+    if (!Array.isArray(value)) {
+      add(errors, key, `${key} must be an array of company name strings`);
+      return;
+    }
+    for (const [idx, item] of value.entries()) {
+      if (typeof item !== 'string') {
+        add(errors, `${key}[${idx}]`, 'company name must be a string');
+      } else if (item.trim() === '') {
+        add(errors, `${key}[${idx}]`, 'company name must not be empty');
+      }
+    }
+  };
+  validateCompanySkipList(config.blocked_companies, 'blocked_companies');
+  validateCompanySkipList(config.exclude_companies, 'exclude_companies');
+
   // tracked_companies and job_boards share one entry schema (name / careers_url /
   // api / provider / parser) and one dedup namespace downstream, so validate them
   // in a single pass. seenEnabledNames spans both lists: a board and a company

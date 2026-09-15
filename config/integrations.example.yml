@@ -1,0 +1,33 @@
+# Optional hiring-ops alerts. Copy to config/integrations.yml (gitignored).
+#
+#   cp config/integrations.example.yml config/integrations.yml
+#
+# Secrets NEVER go in this file. Put tokens in .env (see .env.example):
+#   SLACK_WEBHOOK_URL
+#   DISCORD_WEBHOOK_URL
+#   TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID
+#   NOTION_TOKEN (or NOTION_ACCESS_TOKEN) — stub / MCP / plugins/notion
+#   JIRA_BASE_URL + JIRA_EMAIL + JIRA_API_TOKEN — stub
+#
+# Absent this file: a set env var is enough. This YAML is for thresholds and
+# for turning a channel off without deleting the secret.
+#
+# Test:  node notify.mjs --test
+# Docs:  docs/INTEGRATIONS.md
+
+enabled: true
+score_threshold: 4.0    # high-score event; scan jobs have no score so they still notify when on_new_jobs is true
+on_new_jobs: true       # after node scan.mjs adds new pipeline rows
+on_high_score: true     # node notify.mjs --event high-score --score 4.2 ...
+
+channels:
+  slack:
+    enabled: true       # requires SLACK_WEBHOOK_URL
+  discord:
+    enabled: true       # requires DISCORD_WEBHOOK_URL
+  telegram:
+    enabled: true       # requires TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID
+  notion:
+    enabled: false      # stub — Cursor Notion MCP or plugins/notion
+  jira:
+    enabled: false      # stub — see docs/INTEGRATIONS.md
