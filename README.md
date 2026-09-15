@@ -31,6 +31,33 @@
 **지금 지원하려면 → [docs/APPLY-KR.md](docs/APPLY-KR.md)**  
 프로필 → `cv.md` → `node scan.mjs` → `gonggo` **≥ 4.0** → `pdf` / `jiwon` → 포털에서 **직접** 제출.
 
+## 5분 시작 · 5-minute start
+
+클론부터 첫 스캔까지. 개인 데이터는 gitignored 입니다.
+
+```bash
+git clone https://github.com/torisKR/chaeyong-ops.git
+cd chaeyong-ops
+npm install
+node setup.mjs --defaults          # 또는 npm run setup
+```
+
+`config/profile.yml`에서 **이름, 이메일, `experience.years`(본인 경력(년) 숫자)** 를 고칩니다.
+
+```bash
+node doctor.mjs                    # 설정 확인
+npm run scan:kr                    # 원티드 스캔 (기본 활성)
+```
+
+Cursor / Claude Code에 **채용 공고 URL**을 붙여넣으면 평가가 시작됩니다.
+
+| | |
+|---|---|
+| 처음 쓰는 순서 | [docs/GETTING-STARTED-KR.md](docs/GETTING-STARTED-KR.md) |
+| 지원 워크플로 (4.0 필터 → 수동 제출) | [docs/APPLY-KR.md](docs/APPLY-KR.md) |
+| 라이선스 | [NOTICE.md](NOTICE.md) · [LICENSE](LICENSE) (MIT) |
+| 이용약관 | 아래 **채용 사이트 이용약관** — MIT ≠ 원티드·사람인·잡코리아 ToS |
+
 ## 출처 및 라이선스
 
 | 항목 | 내용 |
@@ -105,7 +132,7 @@ MIT 라이선스가 원티드·사람인·잡코리아·리멤버의 이용약�
 
 ## 빠른 시작
 
-전체 지원 순서(스캔 → 4.0 필터 → PDF → 수동 제출)는 **[docs/APPLY-KR.md](docs/APPLY-KR.md)** 입니다.
+위 **[5분 시작](#5분-시작--5-minute-start)** 과 **[docs/GETTING-STARTED-KR.md](docs/GETTING-STARTED-KR.md)** 가 짧은 경로입니다. 전체 지원 순서(스캔 → 4.0 필터 → PDF → 수동 제출)는 **[docs/APPLY-KR.md](docs/APPLY-KR.md)** 입니다.
 
 ### 1. 클론
 
@@ -113,9 +140,12 @@ MIT 라이선스가 원티드·사람인·잡코리아·리멤버의 이용약�
 git clone https://github.com/torisKR/chaeyong-ops.git
 cd chaeyong-ops
 npm install
+node setup.mjs --defaults          # profile.yml · portals.yml · cv.md 복사
 ```
 
 ### 2. 프로필 · 포털
+
+`node setup.mjs --defaults` 가 아래를 대신합니다. 이미 있으면 덮어쓰지 않습니다.
 
 ```bash
 cp config/profile.example.yml config/profile.yml
@@ -123,12 +153,15 @@ cp templates/portals-kr.example.yml portals.yml
 cp cv.example.md cv.md   # 구조만 참고. 숫자·회사명은 본인 사실로 교체
 ```
 
-`config/profile.yml`에서 이름, 이메일, 목표 역할, 세전 연봉 범위를 입력합니다. 기본값:
+`config/profile.yml`에서 이름, 이메일, **`experience.years`(본인 경력(년) 숫자)**, 목표 역할, 세전 연봉 범위를 입력합니다. 기본값:
 
 ```yaml
 language:
   output: ko
   modes_dir: modes/ko
+
+experience:
+  years: 1.7   # 본인 경력(년) 숫자
 
 target_roles:
   primary:
@@ -158,8 +191,9 @@ AI CLI에서 `/chaeyong-ops` 또는 자연어로:
 | `tracker` | 지원 현황 |
 
 ```bash
-node scan.mjs
+node scan.mjs              # 또는 npm run scan:kr
 node doctor.mjs --json
+node setup.mjs --defaults  # 첫 설정
 ```
 
 ## 한국 포털 설정
@@ -246,5 +280,6 @@ Issue와 PR을 환영합니다. 한국 포털 provider 개선, 평가 기준 보
 - [career-ops MIT 라이선스](https://raw.githubusercontent.com/career-ops-hq/career-ops/main/LICENSE)
 - [career-ops 상표 정책](https://raw.githubusercontent.com/career-ops-hq/career-ops/main/TRADEMARK.md)
 - [NOTICE.md](NOTICE.md) — 이 포크의 수정 사항
+- [docs/GETTING-STARTED-KR.md](docs/GETTING-STARTED-KR.md) — 클론부터 첫 스캔 (Cursor / Claude Code)
 - [docs/APPLY-KR.md](docs/APPLY-KR.md) — 한국 지원 워크플로 (scan → gonggo ≥4.0 → 수동 제출)
 - [assets/](assets/) — 채용옵스 로고 (`icon.png`) · 히어로 배너 (`banner.png`)

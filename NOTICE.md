@@ -16,7 +16,8 @@
 - 한국어 이력서 템플릿 (`templates/cv-template.ko-standard.html`)
 - 영어 필수 공고 필터 예시 (`templates/portals-kr.example.yml`)
 - 프로필 연차 필터 (`experience.years` → 스캔 제목 밴드 + 평가 SKIP)
-- 한국 지원 워크플로 (`docs/APPLY-KR.md`)
+- 한국 지원 워크플로 (`docs/APPLY-KR.md`, `docs/GETTING-STARTED-KR.md`)
+- 원커맨드 설정 (`setup.mjs` — `npm run setup`)
 - 채용옵스 브랜드 에셋 (`assets/` — README 히어로 `icon.png` · `banner.png`)
 
 ## 라이선스

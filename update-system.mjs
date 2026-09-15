@@ -300,6 +300,7 @@ const SYSTEM_PATHS = [
   'tests/',
   'user-agent.mjs',
   'doctor.mjs',
+  'setup.mjs',
   'jsonc-parse.mjs',
   'check-liveness.mjs',
   'liveness-core.mjs',
