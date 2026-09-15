@@ -1,6 +1,6 @@
 // tests/doctor-kr-setup.test.mjs — Korean onboarding checks on this fork.
 import { pass, fail, ROOT, NODE, rmSync } from './helpers.mjs';
-import { execFileSync } from 'child_process';
+import { execFileSync, spawnSync } from 'child_process';
 import { mkdirSync, mkdtempSync, writeFileSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
@@ -46,9 +46,16 @@ try {
     const dir = fixture('missing');
     const s = runDoctor(dir);
     if (s._error) fail(`missing: crashed ${s._error}`);
-    else if (s.onboardingNeeded === true && (s.missing || []).includes('config/profile.yml')
-      && (s.warnings || []).some((w) => /setup\.mjs/.test(String(w)))) {
-      pass('missing profile: onboardingNeeded + Korean setup.mjs hint');
+    else if (s.onboardingNeeded === true && (s.missing || []).includes('config/profile.yml')) {
+      const human = spawnSync(NODE, [DOCTOR, '--target', dir], {
+        cwd: ROOT, encoding: 'utf-8', timeout: 20_000, stdio: ['ignore', 'pipe', 'pipe'],
+      });
+      const all = `${human.stdout || ''}${human.stderr || ''}`;
+      if (/setup\.mjs/.test(all) && /없음/.test(all)) {
+        pass('missing profile: onboardingNeeded + Korean setup.mjs hint in human output');
+      } else {
+        fail(`human doctor missing Korean setup hint: ${all.slice(0, 400)}`);
+      }
     } else {
       fail(`missing hint absent: ${JSON.stringify(s)}`);
     }

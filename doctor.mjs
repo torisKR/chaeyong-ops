@@ -910,9 +910,6 @@ function onboardingState(root) {
     : null;
   const wantedEnabled = wantedCheck ? wantedCheck.pass === true : null;
   const warnings = [
-    ...(missing.length > 0
-      ? ['설정 파일이 없습니다. node setup.mjs --defaults 를 실행하세요. / Missing setup files — run node setup.mjs --defaults']
-      : []),
     ...(cliWarning ? [cliWarning] : []),
     ...(mcpCheck?.warn ? [`${mcpCheck.label}\n→ ${[].concat(mcpCheck.fix || []).join('\n  ')}`] : []),
     ...(bakCheck.warn ? [`${bakCheck.label}\n→ ${[].concat(bakCheck.fix || []).join('\n  ')}`] : []),
