@@ -8,7 +8,9 @@ All scripts live in the project root as `.mjs` modules. Most are exposed via
 
 | Command | Script | Purpose |
 |---------|--------|---------|
+| `npm run setup` | `setup.mjs --defaults` | Copy Korean profile/portals/cv examples if missing |
 | `npm run doctor` | `doctor.mjs` | Validate setup prerequisites |
+| `npm run scan:kr` | `scan.mjs` | Scan enabled Korean boards (Wanted on by default) |
 | `npm run verify` | `verify-pipeline.mjs` | Check pipeline data integrity |
 | `npm run normalize` | `normalize-statuses.mjs` | Fix non-canonical statuses |
 | `npm run dedup` | `dedup-tracker.mjs` | Remove duplicate tracker entries |
@@ -61,13 +63,27 @@ All scripts live in the project root as `.mjs` modules. Most are exposed via
 
 ## doctor
 
-Validates that all prerequisites are in place: Node.js >= 18, dependencies installed, Playwright chromium, required files (`cv.md`, `config/profile.yml`, `portals.yml`), fonts directory, and auto-creates `data/`, `output/`, `reports/` if missing.
+Validates that all prerequisites are in place: Node.js >= 18, dependencies installed, Playwright chromium, required files (`cv.md`, `config/profile.yml`, `portals.yml`), `experience.years`, Wanted-enabled note, fonts directory, and auto-creates `data/`, `output/`, `reports/` if missing. Korean-first messages on this fork.
 
 ```bash
 npm run doctor
 ```
 
 **Exit codes:** `0` all checks passed, `1` one or more checks failed (fix messages printed).
+
+---
+
+## setup
+
+Copies Korean user-layer examples when missing (`profile.yml`, `portals.yml`, `cv.md`, `modes/_profile.md`). Never overwrites existing files. `--defaults` is the CI / non-interactive path; a TTY without flags prompts for name, email, `experience.years`, roles, location.
+
+```bash
+npm run setup                 # node setup.mjs --defaults
+node setup.mjs                # interactive on a TTY
+node setup.mjs --help
+```
+
+See [GETTING-STARTED-KR.md](GETTING-STARTED-KR.md).
 
 ---
 

@@ -6,6 +6,12 @@
 
 ## 0. 개인 데이터
 
+처음 클론했다면 [GETTING-STARTED-KR.md](GETTING-STARTED-KR.md) 의 5분 경로를 먼저 보세요. 이 문서는 **실제로 지원에 쓰는** 순서입니다.
+
+```bash
+node setup.mjs --defaults
+```
+
 `cv.md`, `config/profile.yml`, `portals.yml`, `data/*` 는 **gitignored** 입니다. 예제만 커밋되어 있습니다.
 
 - 공개 저장소에 실명 전화번호·개인 이메일을 넣지 마세요.
@@ -14,6 +20,8 @@
 ## 1. 프로필
 
 ```bash
+node setup.mjs --defaults
+# 또는
 cp config/profile.example.yml config/profile.yml
 ```
 
@@ -27,7 +35,7 @@ cp config/profile.example.yml config/profile.yml
 | 언어 | `language.output: ko`, `language.modes_dir: modes/ko` |
 | PDF | `cv.template: ko-standard`, `auto_pdf_score_threshold: 4.0` |
 
-이름·이메일·전화·연봉 범위·**`experience.years`** 를 **본인 값**으로 바꿉니다. 예제 이름 `유주환` 을 그대로 두지 마세요. 경력 연차가 스캔 제목 필터와 `gonggo` SKIP을 결정합니다.
+이름·이메일·전화·연봉 범위·**`experience.years`** 를 **본인 값**으로 바꿉니다. 예제 이름 `김예시` 를 그대로 두지 마세요. 경력 연차가 스캔 제목 필터와 `gonggo` SKIP을 결정합니다.
 
 확인:
 
@@ -54,6 +62,8 @@ cp modes/_profile.template.md modes/_profile.md
 ## 3. 포털 스캔
 
 ```bash
+node setup.mjs --defaults
+# 또는
 cp templates/portals-kr.example.yml portals.yml
 node scan.mjs
 ```
@@ -107,7 +117,7 @@ experience:
 `portals.yml` 이 없으면:
 
 ```text
-Error: portals.yml not found. Run onboarding first.
+Error: portals.yml not found. Run: node setup.mjs --defaults
 Korean boards: cp templates/portals-kr.example.yml portals.yml
 ```
 
@@ -156,7 +166,7 @@ node set-status.mjs <report번호> Applied --note "원티드에서 직접 제출
 
 ```text
 profile.yml + cv.md
-  → cp templates/portals-kr.example.yml portals.yml
+  → node setup.mjs --defaults
   → node scan.mjs
   → gonggo 점수 ≥ 4.0 만
   → pdf / jiwon 초안

@@ -142,6 +142,7 @@ If your CLI supports `/chaeyong-ops`, show this menu. In Codex, surface the same
   /chaeyong-ops offer-prep   → Read a received offer/contract (clause walk + lawyer questions)
   /chaeyong-ops titles       → Suggest adjacent job titles from your CV to broaden the search
 
+첫 설정: node setup.mjs --defaults  →  config/profile.yml 의 experience.years 수정  →  npm run scan:kr
 개인 데이터(cv.md, profile.yml)는 공개 저장소에 커밋하지 마세요.
 ```
 

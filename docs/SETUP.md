@@ -1,5 +1,7 @@
 # Setup Guide
 
+Korean-market first run (clone → scan in a few minutes): **[GETTING-STARTED-KR.md](GETTING-STARTED-KR.md)**.
+
 ## Prerequisites
 
 - An AI coding CLI — [Claude Code](https://claude.ai/code), Gemini CLI, Codex, Qwen Code, OpenCode, GitHub Copilot CLI, Antigravity CLI, or Grok Build CLI (see [Supported CLIs](SUPPORTED_CLIS.md))

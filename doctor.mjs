@@ -19,6 +19,7 @@ import { parseConfigByExtension } from './jsonc-parse.mjs';
 import { validateFlags } from './lib/cli-flags.mjs';
 import { geminiNodeFloor } from './lib/gemini-node-floor.mjs';
 import { resolveBriefTemplatePath } from './profile-language.mjs';
+import { loadExperienceBlock, resolveExperienceYears } from './experience-band.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const argv = process.argv.slice(2);
@@ -37,13 +38,14 @@ const KNOWN_FLAGS = ['--target', '--json', '--strict', '--cli', '--help', '-h'];
 const VALUE_FLAGS = ['--target', '--cli'];
 
 const USAGE = `Usage:
-  node doctor.mjs                    # run the setup diagnostic
+  node doctor.mjs                    # 설정 진단 / run the setup diagnostic
   node doctor.mjs --json             # machine-readable onboarding state
   node doctor.mjs --strict           # also probe portals.yml entries (network)
   node doctor.mjs --target <path>    # diagnose another career-ops checkout
   node doctor.mjs --cli <name>       # check a specific CLI's integration
   node doctor.mjs --help             # show this message
 
+빠진 파일이 있으면: node setup.mjs --defaults
 CLIs: ${VALID_CLIS.join(', ')}`;
 
 // requireOperand: without it, `--target --json` reads --json as the target
@@ -436,29 +438,33 @@ const USER_LAYER_PREREQS = [
   {
     path: 'cv.md',
     fix: [
-      'Run: cp cv.example.md cv.md',
-      'Then replace placeholders with your own facts (never invent metrics)',
+      '없음: node setup.mjs --defaults  (또는 cp cv.example.md cv.md)',
+      '숫자·회사명은 본인 사실만. 없는 성과를 만들지 마세요.',
+      'Run: node setup.mjs --defaults',
     ],
   },
   {
     path: 'config/profile.yml',
     fix: [
-      'Run: cp config/profile.example.yml config/profile.yml',
-      'Then edit it with your details',
+      '없음: node setup.mjs --defaults  (또는 cp config/profile.example.yml config/profile.yml)',
+      '이름, 이메일, experience.years(본인 경력(년) 숫자)를 본인 값으로 수정하세요.',
+      'Run: node setup.mjs --defaults',
     ],
   },
   {
     path: 'modes/_profile.md',
     fix: [
-      'Run: cp modes/_profile.template.md modes/_profile.md',
-      'Then customize your archetypes / targeting narrative',
+      '없음: node setup.mjs --defaults  (또는 cp modes/_profile.template.md modes/_profile.md)',
+      '아키타입·타깃을 본인 이야기로 고치세요.',
+      'Run: node setup.mjs --defaults',
     ],
   },
   {
     path: 'portals.yml',
     fix: [
-      'Run: cp templates/portals-kr.example.yml portals.yml',
-      'Then enable Saramin/JobKorea/Remember only after checking each site\'s terms',
+      '없음: node setup.mjs --defaults  (또는 cp templates/portals-kr.example.yml portals.yml)',
+      '원티드는 기본 활성. 사람인·잡코리아·리멤버는 이용약관 확인 후에만 enabled: true',
+      'Run: node setup.mjs --defaults',
     ],
   },
 ];
@@ -469,9 +475,75 @@ function prereqPresent(root, path) {
 
 function checkPrereq({ path, fix }) {
   if (prereqPresent(projectRoot, path)) {
-    return { pass: true, label: `${path} found` };
+    return { pass: true, label: `${path} 있음 / found` };
   }
-  return { warn: true, label: `${path} not found (user setup required)`, fix };
+  return { warn: true, label: `${path} 없음 (설정 필요) / not found (user setup required)`, fix };
+}
+
+function checkExperienceYears(root) {
+  const profilePath = join(root, 'config', 'profile.yml');
+  if (!existsSync(profilePath)) return null; // USER_LAYER_PREREQS already covers the missing file
+  const years = resolveExperienceYears(loadExperienceBlock(profilePath));
+  if (years != null) {
+    return { pass: true, label: `experience.years 설정됨 (${years}) / set` };
+  }
+  return {
+    warn: true,
+    label: 'experience.years 없음 — 스캔·평가 경력 밴드가 비활성',
+    fix: [
+      'config/profile.yml 에 본인 경력(년) 숫자를 적으세요. 예: experience.years: 1.7',
+      '없으면 3년+/시니어 제목을 걸러 주지 않습니다 (invented junior band 없음).',
+    ],
+  };
+}
+
+function checkWantedEnabled(root) {
+  const portalsPath = join(root, 'portals.yml');
+  if (!existsSync(portalsPath)) return null; // USER_LAYER_PREREQS already covers the missing file
+  let doc;
+  try {
+    doc = yaml.load(readFileSync(portalsPath, 'utf-8'));
+  } catch (err) {
+    return {
+      warn: true,
+      label: `portals.yml 파싱 실패 / parse error (${String(err.message).split('\n')[0]})`,
+      fix: ['YAML 문법을 고치거나 node setup.mjs --defaults 로 예제를 다시 복사하세요 (기존 파일은 덮어쓰지 않음).'],
+    };
+  }
+  if (!doc || typeof doc !== 'object' || Array.isArray(doc)) {
+    return {
+      warn: true,
+      label: 'portals.yml 형식이 올바르지 않습니다 / not a mapping',
+      fix: ['node setup.mjs --defaults 로 한국 포털 예제를 복사하세요 (기존 파일은 덮어쓰지 않음).'],
+    };
+  }
+  const boards = Array.isArray(doc.job_boards) ? doc.job_boards : [];
+  const wantedOn = boards.filter((b) => b?.provider === 'wanted' && b?.enabled === true);
+  if (wantedOn.length > 0) {
+    return {
+      pass: true,
+      label: `원티드 스캔 활성 / Wanted enabled (${wantedOn.length} board${wantedOn.length === 1 ? '' : 's'})`,
+    };
+  }
+  const wantedOff = boards.filter((b) => b?.provider === 'wanted');
+  if (wantedOff.length > 0) {
+    return {
+      warn: true,
+      label: '원티드가 꺼져 있습니다 / Wanted boards are disabled',
+      fix: [
+        'templates/portals-kr.example.yml 기본은 원티드만 enabled: true 입니다.',
+        'portals.yml 에서 provider: wanted 항목을 enabled: true 로 바꾸세요. 이용약관을 먼저 확인하세요.',
+      ],
+    };
+  }
+  return {
+    warn: true,
+    label: '원티드 보드가 없습니다 / no Wanted job_boards',
+    fix: [
+      '한국 스캔: cp templates/portals-kr.example.yml portals.yml',
+      '사람인·잡코리아는 기본 비활성 — 이용약관 확인 후 켜세요.',
+    ],
+  };
 }
 
 function checkFonts() {
@@ -642,8 +714,8 @@ function checkPlugins(root) {
 }
 
 async function main() {
-  console.log('\ncareer-ops doctor');
-  console.log('================\n');
+  console.log('\n채용옵스 doctor');
+  console.log('===============\n');
 
   const { cli: activeCli, source: cliSource, warning: cliWarning } = resolveActiveCli();
 
@@ -659,6 +731,8 @@ async function main() {
     checkPlaywrightMcp(projectRoot, activeCli),
     checkScanExtractor(projectRoot),
     ...USER_LAYER_PREREQS.map(checkPrereq),
+    checkExperienceYears(projectRoot),
+    checkWantedEnabled(projectRoot),
     checkFonts(),
     checkPersonalization(projectRoot),
     checkAutoDir('data'),
@@ -702,12 +776,15 @@ async function main() {
 
   console.log('');
   if (failures > 0) {
-    console.log(`Result: ${failures} issue${failures === 1 ? '' : 's'} found. Fix them and run \`npm run doctor\` again.`);
+    console.log(`결과 / Result: ${failures} issue${failures === 1 ? '' : 's'} found. \`node setup.mjs --defaults\` 후 \`npm run doctor\` 를 다시 실행하세요.`);
+    console.log('문서: docs/GETTING-STARTED-KR.md');
     process.exit(1);
   } else {
     const warnNote = warnings > 0 ? ` (${warnings} warning${warnings === 1 ? '' : 's'} — see above)` : '';
-    console.log(`Result: All checks passed${warnNote}. You're ready to go! Run \`claude\` (or \`opencode\`) to start.`);
+    console.log(`결과 / Result: All checks passed${warnNote}. 준비됐습니다.`);
     console.log('');
+    console.log('다음: npm run scan:kr    또는 채용 URL을 Cursor/Claude Code에 붙여넣기');
+    console.log('문서: docs/GETTING-STARTED-KR.md  ·  docs/APPLY-KR.md');
     console.log('Join the community: https://discord.gg/8pRpHETxa4');
     console.log('Read the manifesto: `npm run manifesto` — a new way of job searching is taking shape, and you are now part of it.');
     process.exit(0);
@@ -825,10 +902,22 @@ function onboardingState(root) {
   const mcpCheck = checkPlaywrightMcp(root, activeCli);
   const unpersonalized = unpersonalizedFiles(root);
   const bakCheck = checkTrackedBakFiles(root);
+  const yearsCheck = checkExperienceYears(root);
+  const wantedCheck = checkWantedEnabled(root);
+  const profilePath = join(root, 'config', 'profile.yml');
+  const experienceYears = existsSync(profilePath)
+    ? resolveExperienceYears(loadExperienceBlock(profilePath))
+    : null;
+  const wantedEnabled = wantedCheck ? wantedCheck.pass === true : null;
   const warnings = [
+    ...(missing.length > 0
+      ? ['설정 파일이 없습니다. node setup.mjs --defaults 를 실행하세요. / Missing setup files — run node setup.mjs --defaults']
+      : []),
     ...(cliWarning ? [cliWarning] : []),
     ...(mcpCheck?.warn ? [`${mcpCheck.label}\n→ ${[].concat(mcpCheck.fix || []).join('\n  ')}`] : []),
     ...(bakCheck.warn ? [`${bakCheck.label}\n→ ${[].concat(bakCheck.fix || []).join('\n  ')}`] : []),
+    ...(yearsCheck?.warn ? [`${yearsCheck.label}\n→ ${[].concat(yearsCheck.fix || []).join('\n  ')}`] : []),
+    ...(wantedCheck?.warn ? [`${wantedCheck.label}\n→ ${[].concat(wantedCheck.fix || []).join('\n  ')}`] : []),
     ...unpersonalized.map((u) => `${u.path} ${u.reason} — ${u.impact}\n→ Personalize it from cv.md before running evaluations.`),
   ];
 
@@ -865,6 +954,8 @@ function onboardingState(root) {
     playwright_mcp: playwrightMcp,
     active_cli: activeCli,
     cli_source: cliSource,
+    experienceYears,
+    wantedEnabled,
   };
 }
 
