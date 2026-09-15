@@ -10,6 +10,8 @@
     "doctor": "node doctor.mjs",
     "setup": "node setup.mjs --defaults",
     "scan:kr": "node scan.mjs",
+    "notify": "node notify.mjs",
+    "notify:test": "node notify.mjs --test",
     "or": "node openrouter-runner.mjs",
     "or:scan": "node openrouter-runner.mjs scan",
     "or:pipeline": "node openrouter-runner.mjs pipeline",

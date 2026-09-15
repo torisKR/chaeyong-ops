@@ -34,6 +34,9 @@ title_filter:
   negative: ["인턴", "영업", "마케팅"]
   # 3년+/시니어/Lead/팀장 제목은 profile.yml experience.years 가 스캔에 붙임
 
+blocked_companies:     # 이전 직장 등 — 스캔에서 건너뜀 (실명 예제 금지)
+  - ExampleCorp
+
 job_boards:
   - name: Wanted — 백엔드
     provider: wanted
