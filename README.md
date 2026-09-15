@@ -77,7 +77,7 @@ flowchart LR
 | **A–H 평가** | 역할 요약부터 공고 진위(Block G)와 지원서 초안(Block H)까지 |
 | **한국어 모드** | 정규직 / 수습 / 포괄임금제 / 4대 보험 등 한국 채용 맥락 (`modes/ko/`) |
 | **영어 필수 필터** | `content_filter.negative`로 원어민·영어 회화 필수 공고 제외 |
-| **주니어 경력 밴드** | 제목 `title_filter.negative`(3년+/시니어/리드/팀장) + 평가 시 3년+ 필수·시니어 소유권은 2년 미만 SKIP |
+| **경력 밴드** | `profile.yml` → `experience.years`로 스캔 제목 제외와 `gonggo` SKIP을 정함. 고정 주니어 밴드 아님 |
 | **맞춤 PDF** | `cv-template.ko-standard.html` — 한글 타이포 + 한국어 섹션 |
 | **Human-in-the-Loop** | AI가 평가하고 추천하면, 당신이 판단하고 행동합니다. 시스템은 절대 지원서를 제출하지 않습니다 — the system never submits an application. 최종 결정은 항상 당신의 몫입니다. <!-- hitl: absolute guarantee. Do not add "automatically", "by itself", "without your permission" or any other hedge when translating this row. --> |
 | **파이프라인 무결성** | 트래커 병합, 중복 제거, 상태 정규화, 헬스 체크 |
@@ -203,25 +203,20 @@ content_filter:
 
 영어 필수 역할을 지원하려면 해당 키워드를 제거하세요.
 
-## 주니어 경력 밴드 (~1–2년)
+## 경력 밴드 (`experience.years`)
 
-기본 타깃이 주니어면 고연차·시니어 제목을 스캔에서 빼세요. **경력 연차 + 프로젝트 시니어티 둘 다 게이트**입니다.
+연차는 `config/profile.yml`에 적습니다. 스캔 제목 필터와 평가 SKIP이 그 숫자를 따릅니다.
 
 ```yaml
-title_filter:
-  negative:
-    - "3~5년"
-    - "3년 이상"
-    - "4~7년"
-    - "5년 이상"
-    - "시니어"
-    - "Senior"
-    - "리드"
-    - "Lead"
-    - "팀장"
+experience:
+  years: 1.7   # 본인 총 경력. 또는 months: 19
 ```
 
-JD가 3년+ 또는 시니어 리드/아키텍트 책임을 **필수**로 요구하면, 문서 경력 2년 미만은 `gonggo`에서 저점수 / SKIP. 출시 프로젝트는 연차로 치지 않습니다. 자세한 워크플로는 [docs/APPLY-KR.md](docs/APPLY-KR.md) 필터 절.
+- `years < 3` → 스캔이 `3년 이상`/`시니어`/`Lead`/`팀장` 제목을 제외
+- `years ≥ 5` → 연차 제목 negative를 넣지 않음
+- JD 필수 최소 연차 > `years + 0.5`(기본 허용)이면 `gonggo` SKIP
+
+`portals.yml`에 고연차 키워드를 하드코딩할 필요는 없습니다. 출시 프로젝트는 연차로 치지 않습니다. [docs/APPLY-KR.md](docs/APPLY-KR.md) 필터 절.
 
 ## 한국어 모드
 
@@ -229,7 +224,7 @@ JD가 3년+ 또는 시니어 리드/아키텍트 책임을 **필수**로 요구�
 
 | 파일 | 역할 |
 |------|------|
-| `_shared.md` | 한국 채용 용어, 경력 평가 기준, 주니어 경력 밴드 게이트, 영어 필수 처리 |
+| `_shared.md` | 한국 채용 용어, `experience.years` 경력 밴드 게이트, 영어 필수 처리 |
 | `gonggo.md` | 채용 공고 A–H 평가 |
 | `jiwon.md` | 지원서 작성 |
 | `scan.md` | 포털 스캔 |

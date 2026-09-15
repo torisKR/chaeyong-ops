@@ -337,6 +337,7 @@ const SYSTEM_PATHS = [
   'followup-seed-tests.mjs',
   'profile-language.mjs',
   'title-keywords.mjs',
+  'experience-band.mjs',
   'gemini-eval.mjs',
   'ollama-eval.mjs',
   'openai-eval.mjs',
