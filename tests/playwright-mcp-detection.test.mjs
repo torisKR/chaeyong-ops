@@ -252,8 +252,9 @@ try {
   }
 
   // 10. --cli vim (typo) → resolveActiveCli returns cli='unknown', source='flag'
-  //     and emits one warning naming the bad value. MCP check is silent (the
-  //     CLI-resolution layer already warned; MCP has nothing to add).
+  //     and emits a warning naming the bad value. MCP check is silent (the
+  //     CLI-resolution layer already warned; MCP has nothing to add). Extra
+  //     setup warnings (e.g. missing applications.md) may also appear.
   {
     const dir = mkdtempSync(join(tmpdir(), 'co-mcp-10-'));
     try {
@@ -263,9 +264,8 @@ try {
           && state.cli_source === 'flag'
           && Object.keys(state.playwright_mcp || {}).length === 0
           && Array.isArray(state.warnings)
-          && state.warnings.length === 1
           && /Unknown --cli "vim"/.test(state.warnings[0])) {
-        pass('--cli vim → unknown sentinel, one warning naming the bad value');
+        pass('--cli vim → unknown sentinel, warning naming the bad value');
       } else {
         fail(`#10 unexpected state: ${JSON.stringify(state)}`);
       }
@@ -273,7 +273,7 @@ try {
   }
 
   // 11. CAREER_OPS_CLI=vim (invalid env) → same as #10 but via env path.
-  //     active_cli='unknown', cli_source='env', one warning with the env path.
+  //     active_cli='unknown', cli_source='env', warning with the env path.
   {
     const dir = mkdtempSync(join(tmpdir(), 'co-mcp-11-'));
     try {
@@ -283,9 +283,8 @@ try {
           && state.cli_source === 'env'
           && Object.keys(state.playwright_mcp || {}).length === 0
           && Array.isArray(state.warnings)
-          && state.warnings.length === 1
           && /CAREER_OPS_CLI="vim"/.test(state.warnings[0])) {
-        pass('CAREER_OPS_CLI="vim" (invalid) → unknown sentinel, one warning via env path');
+        pass('CAREER_OPS_CLI="vim" (invalid) → unknown sentinel, warning via env path');
       } else {
         fail(`#11 unexpected state: ${JSON.stringify(state)}`);
       }
