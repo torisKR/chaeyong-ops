@@ -30,3 +30,5 @@ node funnel-velocity.mjs --summary
 ```
 
 상태 변경은 hand-edit 금지 — `set-status.mjs`만 사용.
+
+브라우저에서 현황을 보려면 `npm run dashboard:web` (`http://127.0.0.1:3847`, 읽기 전용). 터미널 UI는 `npm run serve:dashboard`. [docs/DASHBOARD-KR.md](../../docs/DASHBOARD-KR.md).

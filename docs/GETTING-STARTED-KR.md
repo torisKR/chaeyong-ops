@@ -85,6 +85,8 @@ node scan.mjs --company Wanted
 
 **4.0/5 미만이면 지원하지 않는 것을 권장합니다.** 제출 버튼은 항상 사람이 누릅니다. 이어서 [APPLY-KR.md](APPLY-KR.md).
 
+지원 현황을 브라우저에서 보려면 `npm run dashboard:web` → `http://127.0.0.1:3847`. 터미널 UI는 `npm run serve:dashboard`. [DASHBOARD-KR.md](DASHBOARD-KR.md).
+
 ## 6. 커밋하면 안 되는 것
 
 개인 데이터는 **이미 `.gitignore`에 있습니다.** `git add .` 해도 아래는 스테이징되지 않아야 합니다.
@@ -115,6 +117,7 @@ setup → experience.years 수정 → scan → gonggo ≥ 4.0 → pdf / jiwon �
 ```
 
 - [APPLY-KR.md](APPLY-KR.md) — 4.0 필터, PDF, `jiwon`, 트래커
+- [DASHBOARD-KR.md](DASHBOARD-KR.md) — localhost 지원 현황 (`npm run dashboard:web`)
 - [INTEGRATIONS.md](INTEGRATIONS.md) — Slack / Discord / Telegram 알림 (`node notify.mjs --test`)
 - [SETUP.md](SETUP.md) — 업스트림 career-ops 설치 노트
 - [CUSTOMIZATION.md](CUSTOMIZATION.md) — 아키타입·키워드
@@ -126,5 +129,7 @@ setup → experience.years 수정 → scan → gonggo ≥ 4.0 → pdf / jiwon �
 Clone, `npm install`, `node setup.mjs --defaults`. Edit `config/profile.yml`: name, email, and `experience.years` (your years of experience as a number). Then `node doctor.mjs` and `npm run scan:kr`. Paste a job URL in Cursor or Claude Code.
 
 Do not commit `cv.md`, `config/profile.yml`, `portals.yml`, or `data/*` — they are gitignored. Wanted is the only board enabled by default; check each site’s terms before enabling others. MIT does not replace job-board ToS. The tool never submits an application.
+
+Application status in the browser: `npm run dashboard:web` → http://127.0.0.1:3847 (loopback only). Terminal UI: `npm run serve:dashboard`. See [DASHBOARD-KR.md](DASHBOARD-KR.md).
 
 List companies you will never apply to in `portals.yml` as `blocked_companies` (fictional example: `ExampleCorp` — former employers belong only on your machine). Optional Slack/Discord/Telegram alerts: [INTEGRATIONS.md](INTEGRATIONS.md) (`node notify.mjs --test`).
