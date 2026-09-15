@@ -110,9 +110,21 @@ experience:
 |------|----------------|
 | 스캔 title negatives | `experience.years`로 고름 (`experience-band.mjs`). `years < 3` → `3~5년`/`3년 이상`/`시니어`/`Lead`/`팀장` 등. `years ≥ 5` → 연차 제목 negative 없음. `portals.yml`에 하드코딩할 필요 없음 |
 | `content_filter.negative` | 본문: 영어 회화 필수, 원어민 등 |
+| `blocked_companies` | 지원하지 않을 회사 (이전 직장 등). 스캔에서 건너뜀. 예제: `ExampleCorp` |
 | `gonggo` 경력 핏 | JD **필수** 최소 연차 > `years + tolerance` 이거나, 시니어 리드/아키텍트 소유권이 필수인데 `years < senior_min_years`이면 저점수 / **SKIP** |
 
 개인 출시 프로젝트는 스킬 핏을 보강할 수 있지만 **연차로 치지 않습니다.** `years`를 바꾸면 필터가 따라갑니다.
+
+`portals.yml` 에 절대 지원하지 않을 회사를 적습니다 (이전 직장 등). 실명 예제는 저장소에 넣지 마세요:
+
+```yaml
+# portals.yml — copy from templates/portals-kr.example.yml
+blocked_companies:
+  - ExampleCorp
+  - "Example Agency"
+```
+
+스캔이 회사명을 대소문자·구두점 무시하고 맞추면 pipeline에 **넣지 않습니다.** `data/blacklist.md` 와 같이 쓰면 합집합입니다. `--include-blacklisted` 로 감사(audit)할 수 있습니다.
 
 `portals.yml` 이 없으면:
 

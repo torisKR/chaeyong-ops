@@ -55,6 +55,7 @@ Cursor / Claude Code에 **채용 공고 URL**을 붙여넣으면 평가가 시�
 |---|---|
 | 처음 쓰는 순서 | [docs/GETTING-STARTED-KR.md](docs/GETTING-STARTED-KR.md) |
 | 지원 워크플로 (4.0 필터 → 수동 제출) | [docs/APPLY-KR.md](docs/APPLY-KR.md) |
+| 알림 (Slack / Discord / Telegram) | [docs/INTEGRATIONS.md](docs/INTEGRATIONS.md) |
 | 라이선스 | [NOTICE.md](NOTICE.md) · [LICENSE](LICENSE) (MIT) |
 | 이용약관 | 아래 **채용 사이트 이용약관** — MIT ≠ 원티드·사람인·잡코리아 ToS |
 
@@ -282,4 +283,5 @@ Issue와 PR을 환영합니다. 한국 포털 provider 개선, 평가 기준 보
 - [NOTICE.md](NOTICE.md) — 이 포크의 수정 사항
 - [docs/GETTING-STARTED-KR.md](docs/GETTING-STARTED-KR.md) — 클론부터 첫 스캔 (Cursor / Claude Code)
 - [docs/APPLY-KR.md](docs/APPLY-KR.md) — 한국 지원 워크플로 (scan → gonggo ≥4.0 → 수동 제출)
+- [docs/INTEGRATIONS.md](docs/INTEGRATIONS.md) — Slack / Discord / Telegram 알림
 - [assets/](assets/) — 채용옵스 로고 (`icon.png`) · 히어로 배너 (`banner.png`)

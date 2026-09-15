@@ -73,6 +73,15 @@ location_filter:
 
 tracked_companies: []
 
+# ── 지원하지 않을 회사 (선택) ────────────────────────────────
+# 이전 직장, 절대 지원하지 않을 곳. 스캔에서 회사명이 일치하면
+# pipeline에 넣지 않습니다 (대소문자·구두점 무시).
+# 실명 회사는 예제에 넣지 마세요. 자세한 목록은 data/blacklist.md 도 됩니다.
+# Users: list companies you never want (e.g. former employers). Fictional examples only.
+blocked_companies:
+  - ExampleCorp
+  - "Example Agency"
+
 job_boards:
   # ── 원티드 (public JSON API) ─────────────────────────────────
   - name: Wanted — 백엔드

@@ -28,7 +28,7 @@
  *   node scan.mjs --verify --headed-fallback  # retry anti-bot-blocked URLs in a headed browser (needs a display)
  *   node scan.mjs --verify --throttle          # jittered ~5-10s gap between checks (stay under rate limits)
  *   node scan.mjs --verify --throttle=8000     # custom base gap in ms (waits base..2*base)
- *   node scan.mjs --include-blacklisted        # let data/blacklist.md matches through (annotated)
+ *   node scan.mjs --include-blacklisted        # let blacklist.md / portals.yml blocked_companies through (annotated)
  *   node scan.mjs --since 7                    # postings from the last 7 days
  *   node scan.mjs --posted-after 2026-07-01    # absolute lower bound on posting date
  *   node scan.mjs --posted-before 2026-08-01   # absolute upper bound on posting date
@@ -76,6 +76,7 @@ import { localToday } from './lib/local-today.mjs';
 import { printScanSummaryHeader } from './lib/scan-summary-marker.mjs';
 import { isMainModule } from './lib/is-main-module.mjs';
 import { promoteKnownFragmentIdentity } from './url-key.mjs';
+import { parsePortalsBlockedCompanies, mergeCompanyBlocklists } from './blocked-companies.mjs';
 
 try {
   const { config } = await import('dotenv');
@@ -2771,7 +2772,7 @@ const USAGE = `Usage:
   node scan.mjs --verify --throttle          # jittered ~5-10s gap between checks (stay under rate limits)
   node scan.mjs --verify --throttle=8000     # custom base gap in ms (waits base..2*base)
   node scan.mjs --rediscover-404             # re-verify tracked URLs that 404/410 (rides on --verify)
-  node scan.mjs --include-blacklisted        # let data/blacklist.md matches through (annotated)
+  node scan.mjs --include-blacklisted        # let blacklist.md / portals.yml blocked_companies through (annotated)
   node scan.mjs --since 7                    # postings from the last 7 days
   node scan.mjs --posted-after 2026-07-01    # absolute lower bound on posting date
   node scan.mjs --posted-before 2026-08-01   # absolute upper bound on posting date
@@ -2977,9 +2978,10 @@ async function main() {
   console.log(`Scanning ${parts.join('; ')} via providers`);
   if (dryRun) console.log('(dry run — no files will be written)\n');
 
-  // 3.5. Load the user's do-not-apply list (#1742). Opt-in: absent file =
-  // empty Map = the filter below never fires.
-  const blacklist = loadBlacklist();
+  // 3.5. Load the user's do-not-apply list (#1742) and union portals.yml
+  // blocked_companies / exclude_companies. Both are opt-in: empty = the
+  // filter below never fires.
+  const blacklist = mergeCompanyBlocklists(loadBlacklist(), parsePortalsBlockedCompanies(config));
 
   // 4. Load dedup sets — one read per source file for the whole run (#2382).
   const historyPolicy = scanHistoryPolicy(config);
@@ -3533,6 +3535,19 @@ async function main() {
       filteredCountryEligibility: totalFilteredCountryEligibility,
     });
   }
+
+  if (!dryRun && verifiedOffers.length > 0) {
+    try {
+      const { notifyScanResults } = await import('./notify.mjs');
+      const nr = await notifyScanResults({ offers: verifiedOffers, date });
+      if (nr.sent > 0) {
+        console.log(`Notify:                ${nr.sent} channel${nr.sent === 1 ? '' : 's'}`);
+      }
+    } catch (err) {
+      console.error(`notify: ${err.message}`);
+    }
+  }
+
   // The run completed (or was a dry run) — disarm the failure row.
   registerRunFailureSnapshot(null);
 
