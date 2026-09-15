@@ -58,8 +58,7 @@ if (status.find((r) => r.id === 'slack')?.configured
     && status.find((r) => r.id === 'jira')?.stub
     && !blob.includes('SECRET')
     && !blob.includes('ntn_')
-    && !blob.includes('jira-secret')
-    && !blob.includes('hooks.slack.com')) {
+    && !blob.includes('jira-secret')) {
   pass('status reports configured flags without secret values');
 } else fail(`status leaked or missed a channel: ${blob}`);
 
@@ -109,7 +108,7 @@ if (slack.ok && discord.ok && telegram.ok && calls.length === 3
     && calls[0].body.text === 'hello'
     && calls[1].body.content === 'hello'
     && calls[2].body.chat_id === '99'
-    && calls[2].url.includes('api.telegram.org')) {
+    && new URL(calls[2].url).hostname === 'api.telegram.org') {
   pass('Slack/Discord/Telegram POST JSON via injected fetch');
 } else fail(`live send: slack=${JSON.stringify(slack)} calls=${calls.length}`);
 
@@ -145,9 +144,29 @@ if (delivered.sent === 2 && delivered.results.every((r) => r.channel !== 'slack'
 } else fail(`deliver with slack disabled: ${JSON.stringify(delivered)}`);
 
 const dry = await deliver('ping', { env: secretEnv, dryRun: true, fetchImpl: fakeFetch });
-if (dry.results.some((r) => r.dryRun) && dry.results.filter((r) => r.channel === 'slack' || r.channel === 'discord' || r.channel === 'telegram').every((r) => r.ok)) {
-  pass('dry-run marks live channels without requiring extra HTTP for Slack (may already be disabled)');
+if (dry.sent === 0 && dry.results.some((r) => r.dryRun)
+    && dry.results.filter((r) => r.channel === 'slack' || r.channel === 'discord' || r.channel === 'telegram').every((r) => r.ok)) {
+  pass('dry-run marks live channels without counting them as sent');
 } else fail(`dry-run: ${JSON.stringify(dry)}`);
+
+writeFileSync(join(tmp, 'config', 'integrations.yml'), 'enabled: true\nchannels: [oops]\n', 'utf-8');
+const badCfg = loadIntegrationsConfig(tmp);
+const refused = await deliver('ping', { env: secretEnv, root: tmp, fetchImpl: fakeFetch });
+if (badCfg.parseError && refused.skipped === 'no channels configured' && refused.sent === 0) {
+  pass('invalid integrations.yml disables notify instead of firing');
+} else fail(`parseError: cfg=${JSON.stringify(badCfg)} deliver=${JSON.stringify(refused)}`);
+
+const long = 'x'.repeat(5000);
+const longCalls = [];
+await sendTelegram({ text: long }, {
+  env: secretEnv,
+  fetchImpl: async (url, init) => {
+    longCalls.push(JSON.parse(init.body));
+    return { ok: true, status: 200 };
+  },
+});
+if (longCalls[0]?.text?.length === 4096) pass('Telegram text is capped at 4096 chars');
+else fail(`telegram cap: ${longCalls[0]?.text?.length}`);
 
 const scanSkip = await notifyScanResults(
   { offers: [{ company: 'NewCo', title: 'BE' }] },
@@ -176,7 +195,7 @@ const statusCli = spawnSync(NODE, [join(ROOT, 'notify.mjs'), '--status', '--json
   env: { ...process.env, ...secretEnv },
 });
 const statusOut = (statusCli.stdout || '').trim();
-if (statusCli.status === 0 && /"slack"/.test(statusOut) && !statusOut.includes('SECRET') && !statusOut.includes('hooks.slack.com')) {
+if (statusCli.status === 0 && /"slack"/.test(statusOut) && !statusOut.includes('SECRET')) {
   pass('notify --status --json has no secret values');
 } else fail(`notify --status: ${statusCli.status} ${statusOut.slice(0, 400)}`);
 

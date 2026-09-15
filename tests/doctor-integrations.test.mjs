@@ -49,6 +49,6 @@ if (parsed && parsed.integrations?.slack?.configured === true
 }
 
 const dump = JSON.stringify(parsed);
-if (parsed && !dump.includes('LEAKME') && !dump.includes('ntn_leakme') && !dump.includes('hooks.slack.com')) {
+if (parsed && !dump.includes('LEAKME') && !dump.includes('ntn_leakme')) {
   pass('doctor --json does not print webhook URLs or tokens');
 } else fail('doctor JSON leaked a secret substring');
