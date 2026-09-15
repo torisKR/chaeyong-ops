@@ -50,6 +50,7 @@ Hard DQ Criteria 중 하나라도 hit → score ≤ 2.5, Step 3 생략.
 - 주 4–5일 필수 출근인데 brief는 full remote only
 - 계약직/프리랜서만 가능한데 brief는 정규직만
 - 필수 자격증·보안등급 미보유
+- brief 경력 2년 미만인데 JD가 **필수**로 3년+ 또는 시니어 리드/아키텍트/팀장 소유권을 요구 (우대는 DQ 아님. 프로젝트로 연차 충족 처리 금지)
 
 ### 3. Quick score
 
