@@ -80,7 +80,7 @@ cd dashboard && go run . --web --addr 127.0.0.1:4000 --path ..
 
 - 서버는 루프백 전용입니다. 클라우드 호스팅을 하지 마세요.
 - 지원 기록·이력서·이메일은 사용자 레이어입니다. 공개 저장소에 커밋하지 마세요.
-- 테스트 픽스처(`dashboard/internal/webui/testdata/`)는 허구 회사명만 들어 있습니다.
+- 테스트 픽스처(`test-fixtures/dashboard-web/`)는 허구 회사명만 들어 있습니다.
 
 ## 왜 localhost 인가
 
