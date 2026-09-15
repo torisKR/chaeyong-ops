@@ -45,7 +45,7 @@ if (main.includes('webFlag') && main.includes('webui.ListenAndServe')) {
   fail('dashboard/main.go does not wire --web to webui.ListenAndServe');
 }
 
-const fixture = join(ROOT, 'dashboard', 'internal', 'webui', 'testdata', 'data', 'applications.md');
+const fixture = join(ROOT, 'test-fixtures', 'dashboard-web', 'data', 'applications.md');
 const fixtureText = existsSync(fixture) ? readFileSync(fixture, 'utf8') : '';
 if (fixtureText.includes('예시테크') && fixtureText.includes('테스트 픽스처')) {
   pass('webui testdata is a fictional tracker fixture');

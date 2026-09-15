@@ -69,4 +69,4 @@ side; it only reads the tracker files.
 Go tests live next to their packages (`*_test.go`). The Node suite builds
 the dashboard as part of `node test-all.mjs` (skipped with `--quick`).
 CI also runs `go test ./...` in `dashboard/`. Web-board fixtures under
-`internal/webui/testdata/` are fictional companies only.
+`test-fixtures/dashboard-web/` are fictional companies only.

@@ -14,7 +14,8 @@ func fixtureRoot(t *testing.T) string {
 	if !ok {
 		t.Fatal("runtime.Caller failed")
 	}
-	return filepath.Join(filepath.Dir(file), "testdata")
+	// testdata lives under test-fixtures/ so applications.md is not gitignored.
+	return filepath.Clean(filepath.Join(filepath.Dir(file), "..", "..", "..", "test-fixtures", "dashboard-web"))
 }
 
 func TestCanonicalStatusKoreanFallback(t *testing.T) {
