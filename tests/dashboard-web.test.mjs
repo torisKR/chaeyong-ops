@@ -18,10 +18,10 @@ if (pkg.scripts?.dashboard === 'npm run dashboard:web') {
   fail(`package.json dashboard alias = ${pkg.scripts?.dashboard}`);
 }
 
-if (pkg.scripts?.['serve:dashboard'] && !pkg.scripts['serve:dashboard'].includes('--web')) {
-  pass('serve:dashboard remains the TUI');
+if (pkg.scripts?.['serve:dashboard']?.includes('--path ..') && !pkg.scripts['serve:dashboard'].includes('--web')) {
+  pass('serve:dashboard is the TUI with --path ..');
 } else {
-  fail('serve:dashboard should stay the Bubble Tea TUI (no --web)');
+  fail(`serve:dashboard should stay the Bubble Tea TUI with --path ..: ${pkg.scripts?.['serve:dashboard']}`);
 }
 
 const docs = join(ROOT, 'docs', 'DASHBOARD-KR.md');
@@ -32,10 +32,11 @@ if (existsSync(docs) && readFileSync(docs, 'utf8').includes('127.0.0.1:3847')) {
 }
 
 const readme = readFileSync(join(ROOT, 'README.md'), 'utf8');
-if (readme.includes('npm run dashboard:web') && readme.includes('127.0.0.1:3847')) {
-  pass('README 5분 시작 points at the localhost board');
+if (readme.includes('npm run dashboard:web') && readme.includes('127.0.0.1:3847')
+    && readme.includes('npm run serve:dashboard') && readme.includes('Go 1.24+')) {
+  pass('README documents both viewers and Go 1.24+');
 } else {
-  fail('README.md does not mention dashboard:web / 127.0.0.1:3847');
+  fail('README.md should mention dashboard:web, serve:dashboard, 127.0.0.1:3847, and Go 1.24+');
 }
 
 const main = readFileSync(join(ROOT, 'dashboard', 'main.go'), 'utf8');
@@ -43,6 +44,23 @@ if (main.includes('webFlag') && main.includes('webui.ListenAndServe')) {
   pass('dashboard/main.go --web serves the HTTP board');
 } else {
   fail('dashboard/main.go does not wire --web to webui.ListenAndServe');
+}
+
+if (main.includes('SetLang("ko")') && main.includes('Defaults to ko')) {
+  pass('TUI defaults to Korean labels (not LANG=en_US)');
+} else {
+  fail('dashboard/main.go should default --lang / SetLang to ko');
+}
+
+const example = join(ROOT, 'examples', 'applications.example.md');
+const exampleText = existsSync(example) ? readFileSync(example, 'utf8') : '';
+const statuses = ['Evaluated', 'Applied', 'Responded', 'Interview', 'Offer', 'Hired', 'Rejected', 'Discarded', 'SKIP'];
+const missingStatus = statuses.filter((s) => !exampleText.includes(`| ${s} |`));
+if (exampleText.includes('허구') && exampleText.includes('예시테크') && missingStatus.length === 0
+    && !/@gmail\.|@naver\.|010-/.test(exampleText)) {
+  pass('examples/applications.example.md documents all canonical statuses (fictional, no PII)');
+} else {
+  fail(`applications.example.md incomplete or looks like PII: missing=${missingStatus.join(',')}`);
 }
 
 const fixture = join(ROOT, 'test-fixtures', 'dashboard-web', 'data', 'applications.md');
