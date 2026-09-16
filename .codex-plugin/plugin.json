@@ -7,6 +7,7 @@
     "url": "https://santifer.io"
   },
   "skills": [
-    "./.agents/skills/chaeyong-ops"
+    "./.agents/skills/chaeyong-ops",
+    "./.agents/skills/chaeyong-ops-consulting"
   ]
 }
