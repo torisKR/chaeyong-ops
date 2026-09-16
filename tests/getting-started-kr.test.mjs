@@ -13,9 +13,10 @@ const gitignore = readFileSync(join(ROOT, '.gitignore'), 'utf-8');
 const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf-8'));
 
 if (/5분 시작/.test(readme) && /setup\.mjs --defaults/.test(readme) && /experience\.years/.test(readme)
+    && /직종/.test(readme) && /blocked_companies/.test(readme) && /chaeyong-ops-consulting/.test(readme)
     && /GETTING-STARTED-KR\.md/.test(readme) && /APPLY-KR\.md/.test(readme)
     && /NOTICE\.md/.test(readme) && /assets\/icon\.png/.test(readme) && /assets\/banner\.png/.test(readme)) {
-  pass('README.md has 5분 시작, setup, experience.years, docs + badge assets');
+  pass('README.md has 5분 시작, setup, 직종/연차/블랙리스트, consulting skill, docs + badge assets');
 } else {
   fail('README.md 5분 시작 section is incomplete');
 }
@@ -25,8 +26,9 @@ if (existsSync(getting)) {
   const hasIgnore = /config\/profile\.yml/.test(gs) && /cv\.md/.test(gs) && /\.gitignore/.test(gs);
   const hasCursor = /Cursor/.test(gs) && /Claude Code/.test(gs);
   const hasTos = /이용약관/.test(gs) && /never submits an application/.test(gs);
-  if (hasIgnore && hasCursor && hasTos && /experience\.years/.test(gs) && /본인 경력\(년\) 숫자/.test(gs)) {
-    pass('docs/GETTING-STARTED-KR.md covers Cursor/Claude, gitignore, ToS, experience.years');
+  if (hasIgnore && hasCursor && hasTos && /experience\.years/.test(gs) && /본인 경력\(년\) 숫자/.test(gs)
+      && /직종/.test(gs) && /--configure/.test(gs) && /blocked_companies/.test(gs)) {
+    pass('docs/GETTING-STARTED-KR.md covers Cursor/Claude, gitignore, ToS, 직종/연차/블랙리스트');
   } else {
     fail('GETTING-STARTED-KR.md missing a required section');
   }

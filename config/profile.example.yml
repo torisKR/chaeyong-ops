@@ -32,7 +32,8 @@ candidate:
   photo_style: rounded
 
 target_roles:
-  # 목표 직무 — 본인이 지원할 직군 (North Star)
+  # 목표 직무 — node setup.mjs 직종 선택(백엔드/풀스택/프론트엔드/모바일/데이터/DevOps/기타)이
+  # 이 목록과 portals.yml 검색 키워드를 맞춥니다.
   primary:
     - "풀스택 개발자"
     - "백엔드 개발자"
@@ -49,6 +50,8 @@ target_roles:
       fit: "secondary"
 
 # 총 경력. 스캔 제목 필터와 gonggo SKIP이 이 숫자를 읽습니다 (고정 주니어 밴드 아님).
+# setup 밴드: 신입 / 0–1 / 1–3 / 3–5 / 5+ 또는 --years 1.7
+# 확인: node doctor.mjs  (experience.years 줄이 보임)
 #
 #   years  — 권장. 소수 가능 (1.7 ≈ 1년 8개월).
 #   months — years 가 없을 때만 사용 (months / 12).

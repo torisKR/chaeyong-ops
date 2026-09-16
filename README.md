@@ -39,23 +39,25 @@
 git clone https://github.com/torisKR/chaeyong-ops.git
 cd chaeyong-ops
 npm install
-node setup.mjs --defaults          # 또는 npm run setup
+node setup.mjs                    # TTY: 직종 · 연차 · 블랙리스트 선택
+# CI / 파이프:
+# node setup.mjs --defaults --years 1.7 --families backend,fullstack --blocked ExampleCorp
 ```
 
-`config/profile.yml`에서 **이름, 이메일, `experience.years`(본인 경력(년) 숫자)** 를 고칩니다.
+`config/profile.yml`의 **직종**(`target_roles.primary`), **연차**(`experience.years`, 본인 경력(년) 숫자), `portals.yml`의 **블랙리스트**(`blocked_companies`)가 스캔·평가에 쓰입니다. 다시 고치려면 `node setup.mjs --configure`.
 
 ```bash
-node doctor.mjs                    # 설정 확인
+node doctor.mjs                    # 설정 확인 (연차·직종·블랙리스트가 보임)
 npm run scan:kr                    # 원티드 스캔 (기본 활성)
 ```
 
-Cursor / Claude Code에 **채용 공고 URL**을 붙여넣으면 평가가 시작됩니다.
+Cursor / Claude Code에 **채용 공고 URL**을 붙여넣으면 평가가 시작됩니다. 취업 상담은 `chaeyong-ops-consulting` 스킬 (`.agents/skills/chaeyong-ops-consulting/`).
 
 지원 현황 뷰어는 **두 가지**입니다. 둘 다 **Go 1.24+** 가 필요하고, 같은 `data/applications.md` 를 읽습니다.
 
 | | 명령 | |
 |---|---|---|
-| **웹 보드** | `npm run dashboard:web` | 브라우저 `http://127.0.0.1:3847` (로컬 전용, 읽기 전용) |
+| **웹 보드** | `npm run dashboard:web` | 브라우저 `http://127.0.0.1:3847` (로컬 전용). 지원 표는 읽기 전용, `/settings` 에서 블랙리스트 편집 |
 | **터미널 UI** | `npm run serve:dashboard` | TUI (필터 탭 · 리포트 · 상태 변경) |
 
 자세한 내용: **[docs/DASHBOARD-KR.md](docs/DASHBOARD-KR.md)**. 허구 예시 트래커: [`examples/applications.example.md`](examples/applications.example.md).

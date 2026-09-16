@@ -448,7 +448,8 @@ const USER_LAYER_PREREQS = [
     path: 'config/profile.yml',
     fix: [
       '없음: node setup.mjs --defaults  (또는 cp config/profile.example.yml config/profile.yml)',
-      '이름, 이메일, experience.years(본인 경력(년) 숫자)를 본인 값으로 수정하세요.',
+      '이름, 이메일, 직종(target_roles.primary), experience.years(본인 경력(년) 숫자)를 본인 값으로 수정하세요.',
+      '대화형: node setup.mjs   직종/연차/블랙리스트만: node setup.mjs --configure',
       'Run: node setup.mjs --defaults',
     ],
   },
@@ -465,6 +466,7 @@ const USER_LAYER_PREREQS = [
     fix: [
       '없음: node setup.mjs --defaults  (또는 cp templates/portals-kr.example.yml portals.yml)',
       '원티드는 기본 활성. 사람인·잡코리아·리멤버는 이용약관 확인 후에만 enabled: true',
+      '지원하지 않을 회사는 portals.yml blocked_companies (예: ExampleCorp). setup --configure 로 편집',
       'Run: node setup.mjs --defaults',
     ],
   },
@@ -486,15 +488,80 @@ function checkExperienceYears(root) {
   if (!existsSync(profilePath)) return null; // USER_LAYER_PREREQS already covers the missing file
   const years = resolveExperienceYears(loadExperienceBlock(profilePath));
   if (years != null) {
-    return { pass: true, label: `experience.years 설정됨 (${years}) / set` };
+    return { pass: true, label: `experience.years 설정됨 (${years}) / set — 스캔 제목 밴드와 gonggo SKIP이 이 숫자를 읽습니다` };
   }
   return {
     warn: true,
     label: 'experience.years 없음 — 스캔·평가 경력 밴드가 비활성',
     fix: [
+      'node setup.mjs --configure  또는  --years 1.7  (신입/0–1/1–3/3–5/5+ 밴드도 가능)',
       'config/profile.yml 에 본인 경력(년) 숫자를 적으세요. 예: experience.years: 1.7',
       '없으면 3년+/시니어 제목을 걸러 주지 않습니다 (invented junior band 없음).',
     ],
+  };
+}
+
+function loadYamlFile(filePath) {
+  try {
+    return yaml.load(readFileSync(filePath, 'utf-8'));
+  } catch {
+    return null;
+  }
+}
+
+function profileTargetRoles(root) {
+  const profilePath = join(root, 'config', 'profile.yml');
+  if (!existsSync(profilePath)) return null;
+  const doc = loadYamlFile(profilePath);
+  const primary = doc?.target_roles?.primary;
+  if (!Array.isArray(primary)) return [];
+  return primary.map((r) => String(r).trim()).filter(Boolean);
+}
+
+function portalsBlockedCompanies(root) {
+  const portalsPath = join(root, 'portals.yml');
+  if (!existsSync(portalsPath)) return null;
+  const doc = loadYamlFile(portalsPath);
+  if (!doc || typeof doc !== 'object' || Array.isArray(doc)) return [];
+  if (!Array.isArray(doc.blocked_companies)) return [];
+  return doc.blocked_companies.map((n) => String(n).trim()).filter(Boolean);
+}
+
+function checkTargetRoles(root) {
+  const profilePath = join(root, 'config', 'profile.yml');
+  if (!existsSync(profilePath)) return null;
+  const roles = profileTargetRoles(root);
+  if (roles && roles.length) {
+    return { pass: true, label: `직종 target_roles.primary 설정됨 / set (${roles.join(', ')})` };
+  }
+  return {
+    warn: true,
+    label: 'target_roles.primary 없음 — 직종을 고르지 않으면 스캔 키워드가 비어 있거나 예제 값입니다',
+    fix: [
+      'node setup.mjs --configure  또는  --families backend,frontend',
+      'config/profile.yml 의 target_roles.primary 에 지원할 직무를 적으세요 (예: 백엔드 개발자).',
+    ],
+  };
+}
+
+function checkBlockedCompanies(root) {
+  const portalsPath = join(root, 'portals.yml');
+  if (!existsSync(portalsPath)) return null;
+  const list = portalsBlockedCompanies(root) || [];
+  const exampleish = list.length > 0 && list.every((n) => /examplecorp|example agency/i.test(n));
+  if (exampleish) {
+    return {
+      warn: true,
+      label: `blocked_companies 가 예제입니다 (${list.join(', ')})`,
+      fix: [
+        '지원하지 않을 회사를 넣거나 목록을 비우세요: node setup.mjs --configure',
+        'node setup.mjs --blocked "ExampleCorp"  (문서·예제에는 허구 이름만)',
+      ],
+    };
+  }
+  return {
+    pass: true,
+    label: `blocked_companies: ${list.length}곳 (portals.yml) — 스캔이 이 회사 공고를 건너뜁니다`,
   };
 }
 
@@ -774,6 +841,8 @@ async function main() {
     checkScanExtractor(projectRoot),
     ...USER_LAYER_PREREQS.map(checkPrereq),
     checkExperienceYears(projectRoot),
+    checkTargetRoles(projectRoot),
+    checkBlockedCompanies(projectRoot),
     checkWantedEnabled(projectRoot),
     checkFonts(),
     checkPersonalization(projectRoot),
@@ -948,18 +1017,24 @@ function onboardingState(root) {
   const unpersonalized = unpersonalizedFiles(root);
   const bakCheck = checkTrackedBakFiles(root);
   const yearsCheck = checkExperienceYears(root);
+  const rolesCheck = checkTargetRoles(root);
+  const blockedCheck = checkBlockedCompanies(root);
   const wantedCheck = checkWantedEnabled(root);
   const trackerCheck = checkApplicationsTracker(root);
   const profilePath = join(root, 'config', 'profile.yml');
   const experienceYears = existsSync(profilePath)
     ? resolveExperienceYears(loadExperienceBlock(profilePath))
     : null;
+  const targetRoles = existsSync(profilePath) ? profileTargetRoles(root) : null;
+  const blockedCompanies = existsSync(join(root, 'portals.yml')) ? portalsBlockedCompanies(root) : null;
   const wantedEnabled = wantedCheck ? wantedCheck.pass === true : null;
   const warnings = [
     ...(cliWarning ? [cliWarning] : []),
     ...(mcpCheck?.warn ? [`${mcpCheck.label}\n→ ${[].concat(mcpCheck.fix || []).join('\n  ')}`] : []),
     ...(bakCheck.warn ? [`${bakCheck.label}\n→ ${[].concat(bakCheck.fix || []).join('\n  ')}`] : []),
     ...(yearsCheck?.warn ? [`${yearsCheck.label}\n→ ${[].concat(yearsCheck.fix || []).join('\n  ')}`] : []),
+    ...(rolesCheck?.warn ? [`${rolesCheck.label}\n→ ${[].concat(rolesCheck.fix || []).join('\n  ')}`] : []),
+    ...(blockedCheck?.warn ? [`${blockedCheck.label}\n→ ${[].concat(blockedCheck.fix || []).join('\n  ')}`] : []),
     ...(wantedCheck?.warn ? [`${wantedCheck.label}\n→ ${[].concat(wantedCheck.fix || []).join('\n  ')}`] : []),
     ...(trackerCheck?.warn ? [`${trackerCheck.label}\n→ ${[].concat(trackerCheck.fix || []).join('\n  ')}`] : []),
     ...unpersonalized.map((u) => `${u.path} ${u.reason} — ${u.impact}\n→ Personalize it from cv.md before running evaluations.`),
@@ -999,6 +1074,8 @@ function onboardingState(root) {
     active_cli: activeCli,
     cli_source: cliSource,
     experienceYears,
+    targetRoles,
+    blockedCompanies,
     wantedEnabled,
     integrations: (() => {
       try {
