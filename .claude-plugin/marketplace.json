@@ -2,7 +2,7 @@
   "name": "career-ops",
   "metadata": {
     "description": "한국형 AI 구직 파이프라인 — 잡코리아·사람인·원티드·리멤버 스캔, 채용 공고 평가, 맞춤 이력서, 지원 추적 (career-ops 기반 포크)",
-    "version": "1.32.0"
+    "version": "1.33.0"
   },
   "owner": {
     "name": "santifer",
@@ -14,7 +14,7 @@
       "source": "./",
       "description": "한국형 AI 구직 파이프라인 — 잡코리아·사람인·원티드·리멤버 스캔, 채용 공고 평가, 맞춤 이력서, 지원 추적 (career-ops 기반 포크)",
       "category": "productivity",
-      "version": "1.32.0"
+      "version": "1.33.0"
     }
   ]
 }
