@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>설정 · 채용옵스</title>
+  <style>
+    :root {
+      --teal: #0f766e;
+      --ink: #111827;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --bg: #f8fafc;
+      --card: #ffffff;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", ui-sans-serif, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+    a { color: #2563eb; }
+    header {
+      background: linear-gradient(120deg, #1e3a8a 0%, #0f766e 100%);
+      color: #fff;
+      padding: 1.5rem 1.25rem;
+    }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 0 1.25rem 3rem; }
+    header .wrap { padding-bottom: 0; }
+    .brand { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
+    .brand h1 { font-size: 1.5rem; margin: 0; }
+    .brand p { margin: 0.2rem 0 0; opacity: 0.85; font-size: 0.9rem; }
+    .nav a { color: #fff; opacity: 0.9; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      margin-top: 1.25rem;
+      padding: 1.25rem 1.15rem;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    }
+    h2 { font-size: 1rem; margin: 0 0 0.5rem; }
+    .muted { color: var(--muted); font-size: 0.9rem; }
+    .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.4rem 0 0; }
+    .chip { background: #ccfbf1; color: var(--teal); border-radius: 999px; padding: 0.15rem 0.6rem; font-size: 0.82rem; font-weight: 600; }
+    label { display: block; font-weight: 650; margin-bottom: 0.35rem; }
+    textarea {
+      width: 100%; min-height: 8rem; font: inherit; border: 1px solid var(--line);
+      border-radius: 10px; padding: 0.65rem 0.75rem; resize: vertical;
+    }
+    button {
+      margin-top: 0.75rem; background: var(--teal); color: #fff; border: 0;
+      border-radius: 10px; padding: 0.55rem 1rem; font: inherit; font-weight: 650; cursor: pointer;
+    }
+    button:hover { filter: brightness(1.05); }
+    .ok { background: #dcfce7; color: #166534; border-radius: 10px; padding: 0.6rem 0.75rem; margin-top: 1rem; }
+    .err { background: #ffe4e6; color: #9f1239; border-radius: 10px; padding: 0.6rem 0.75rem; margin-top: 1rem; }
+    footer { margin-top: 1.25rem; color: var(--muted); font-size: 0.8rem; }
+    code { font-size: 0.78rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="brand">
+        <div>
+          <h1>설정</h1>
+          <p>직종 · 연차 · 블랙리스트 (이 컴퓨터만)</p>
+        </div>
+        <span class="nav"><a href="/">← 지원 현황</a></span>
+      </div>
+    </div>
+  </header>
+  <div class="wrap">
+    {{if .Message}}<div class="ok">{{.Message}}</div>{{end}}
+    {{if .Error}}<div class="err">{{.Error}}</div>{{end}}
+
+    <div class="card">
+      <h2>직종 · 연차</h2>
+      {{if .ProfileMissing}}
+      <p class="muted">아직 <code>{{.ProfileRel}}</code> 이 없습니다. 터미널에서 <code>node setup.mjs</code> 를 실행하세요.</p>
+      {{else}}
+      <p class="muted">읽기 전용. 직종·연차를 바꾸려면 <code>node setup.mjs --configure</code></p>
+      <p>연차 <code>experience.years</code>: <strong>{{if .Years}}{{.Years}}{{else}}(없음){{end}}</strong></p>
+      <p>직종 <code>target_roles.primary</code></p>
+      {{if .Roles}}
+      <div class="chips">
+        {{range .Roles}}<span class="chip">{{.}}</span>{{end}}
+      </div>
+      {{else}}
+      <p class="muted">아직 고른 직종이 없습니다.</p>
+      {{end}}
+      {{end}}
+    </div>
+
+    <div class="card">
+      <h2>블랙리스트 기업</h2>
+      {{if .PortalsMissing}}
+      <p class="muted"><code>{{.PortalsRel}}</code> 이 없습니다. <code>node setup.mjs --defaults</code> 후 다시 열어 주세요.</p>
+      {{else}}
+      <p class="muted">지원하지 않을 회사. 한 줄 또는 쉼표. 실명 이메일은 넣지 마세요. 스캔이 이 회사 공고를 pipeline에 넣지 않습니다.</p>
+      <form method="post" action="/settings">
+        <label for="blocked">blocked_companies</label>
+        <textarea id="blocked" name="blocked" placeholder="ExampleCorp&#10;Example Agency">{{.BlockedText}}</textarea>
+        <button type="submit">저장</button>
+      </form>
+      {{end}}
+    </div>
+
+    <footer>
+      <p>직종·연차 CLI: <code>node setup.mjs --configure</code> · <code>--families backend,frontend --years 1.7 --blocked ExampleCorp</code></p>
+      <p>이 서버는 <code>127.0.0.1</code> 에만 바인딩됩니다. 제출 버튼을 대신 누르지 않습니다.</p>
+    </footer>
+  </div>
+</body>
+</html>

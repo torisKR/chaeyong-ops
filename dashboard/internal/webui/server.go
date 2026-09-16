@@ -15,10 +15,11 @@ import (
 // DefaultAddr is the loopback listen address for the Korean status board.
 const DefaultAddr = "127.0.0.1:3847"
 
-//go:embed template.html
+//go:embed template.html settings.html
 var templateFS embed.FS
 
 var pageTmpl = template.Must(template.ParseFS(templateFS, "template.html"))
+var settingsTmpl = template.Must(template.ParseFS(templateFS, "settings.html"))
 
 type jsonBoard struct {
 	TrackerRel string         `json:"tracker"`
@@ -97,6 +98,46 @@ func NewHandler(careerOpsPath string) http.Handler {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		if err := pageTmpl.Execute(w, board); err != nil {
 			http.Error(w, "template error", http.StatusInternalServerError)
+		}
+	})
+	mux.HandleFunc("/settings", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet, http.MethodHead:
+			view := LoadSettings(careerOpsPath)
+			if r.URL.Query().Get("saved") == "1" {
+				view.Message = "블랙리스트를 저장했습니다. 다음 스캔부터 적용됩니다."
+			}
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			if err := settingsTmpl.Execute(w, view); err != nil {
+				http.Error(w, "template error", http.StatusInternalServerError)
+			}
+		case http.MethodPost:
+			if err := r.ParseForm(); err != nil {
+				http.Error(w, "form error", http.StatusBadRequest)
+				return
+			}
+			names, err := ParseBlockedForm(r.FormValue("blocked"))
+			if err != nil {
+				view := LoadSettings(careerOpsPath)
+				view.Error = err.Error()
+				view.BlockedText = r.FormValue("blocked")
+				w.Header().Set("Content-Type", "text/html; charset=utf-8")
+				w.WriteHeader(http.StatusBadRequest)
+				_ = settingsTmpl.Execute(w, view)
+				return
+			}
+			if err := SaveBlockedCompanies(careerOpsPath, names); err != nil {
+				view := LoadSettings(careerOpsPath)
+				view.Error = err.Error()
+				w.Header().Set("Content-Type", "text/html; charset=utf-8")
+				w.WriteHeader(http.StatusBadRequest)
+				_ = settingsTmpl.Execute(w, view)
+				return
+			}
+			http.Redirect(w, r, "/settings?saved=1", http.StatusSeeOther)
+		default:
+			w.Header().Set("Allow", "GET, HEAD, POST")
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
 	mux.HandleFunc("/api/applications.json", func(w http.ResponseWriter, r *http.Request) {

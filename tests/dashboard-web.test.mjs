@@ -46,6 +46,16 @@ if (main.includes('webFlag') && main.includes('webui.ListenAndServe')) {
   fail('dashboard/main.go does not wire --web to webui.ListenAndServe');
 }
 
+const settingsHtml = join(ROOT, 'dashboard', 'internal', 'webui', 'settings.html');
+const settingsGo = readFileSync(join(ROOT, 'dashboard', 'internal', 'webui', 'server.go'), 'utf8');
+if (existsSync(settingsHtml) && /blocked_companies/.test(readFileSync(settingsHtml, 'utf8'))
+    && settingsGo.includes('/settings') && /experience\.years/.test(readFileSync(docs, 'utf8'))
+    && /\/settings/.test(readFileSync(docs, 'utf8'))) {
+  pass('dashboard /settings documents 직종/연차/블랙리스트');
+} else {
+  fail('dashboard settings page or DASHBOARD-KR /settings docs missing');
+}
+
 if (main.includes('SetLang("ko")') && main.includes('Defaults to ko')) {
   pass('TUI defaults to Korean labels (not LANG=en_US)');
 } else {

@@ -77,11 +77,13 @@ npm run doctor
 
 ## setup
 
-Copies Korean user-layer examples when missing (`profile.yml`, `portals.yml`, `cv.md`, `modes/_profile.md`). Never overwrites existing files. `--defaults` is the CI / non-interactive path; a TTY without flags prompts for name, email, `experience.years`, roles, location.
+Copies Korean user-layer examples when missing (`profile.yml`, `portals.yml`, `cv.md`, `modes/_profile.md`). Never overwrites existing files. `--defaults` is the CI / non-interactive path; a TTY without flags prompts for name, email, **직종** (job family), **연차** (`experience.years`), **블랙리스트** (`blocked_companies`), location.
 
 ```bash
 npm run setup                 # node setup.mjs --defaults
-node setup.mjs                # interactive on a TTY
+node setup.mjs                # interactive on a TTY (직종 · 연차 · 블랙리스트)
+node setup.mjs --configure    # re-prompt targeting only
+node setup.mjs --years 1.7 --families backend,frontend --blocked ExampleCorp
 node setup.mjs --help
 ```
 

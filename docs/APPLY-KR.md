@@ -10,6 +10,8 @@
 
 ```bash
 node setup.mjs --defaults
+# TTY: node setup.mjs     (직종 · 연차 · 블랙리스트)
+# 다시: node setup.mjs --configure
 ```
 
 `cv.md`, `config/profile.yml`, `portals.yml`, `data/*` 는 **gitignored** 입니다. 예제만 커밋되어 있습니다.
@@ -35,7 +37,7 @@ cp config/profile.example.yml config/profile.yml
 | 언어 | `language.output: ko`, `language.modes_dir: modes/ko` |
 | PDF | `cv.template: ko-standard`, `auto_pdf_score_threshold: 4.0` |
 
-이름·이메일·전화·연봉 범위·**`experience.years`** 를 **본인 값**으로 바꿉니다. 예제 이름 `김예시` 를 그대로 두지 마세요. 경력 연차가 스캔 제목 필터와 `gonggo` SKIP을 결정합니다.
+이름·이메일·전화·연봉 범위·**`experience.years`**·**직종**을 **본인 값**으로 바꿉니다. 예제 이름 `김예시` 를 그대로 두지 마세요. 경력 연차가 스캔 제목 필터와 `gonggo` SKIP을 결정합니다 (`experience-band.mjs`). 직종은 `target_roles.primary` 와 원티드 `searchKeywords`를 맞춥니다.
 
 확인:
 
@@ -115,7 +117,11 @@ experience:
 
 개인 출시 프로젝트는 스킬 핏을 보강할 수 있지만 **연차로 치지 않습니다.** `years`를 바꾸면 필터가 따라갑니다.
 
-`portals.yml` 에 절대 지원하지 않을 회사를 적습니다 (이전 직장 등). 실명 예제는 저장소에 넣지 마세요:
+`portals.yml` 에 절대 지원하지 않을 회사를 적습니다 (이전 직장 등). 실명 예제는 저장소에 넣지 마세요. setup:
+
+```bash
+node setup.mjs --blocked "ExampleCorp, Example Agency"
+```
 
 ```yaml
 # portals.yml — copy from templates/portals-kr.example.yml

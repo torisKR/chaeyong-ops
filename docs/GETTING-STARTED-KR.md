@@ -20,7 +20,8 @@
 git clone https://github.com/torisKR/chaeyong-ops.git
 cd chaeyong-ops
 npm install
-node setup.mjs --defaults
+node setup.mjs                    # TTY: 직종 · 연차 · 블랙리스트
+# CI: node setup.mjs --defaults
 ```
 
 `setup.mjs` 가 **없을 때만** 복사합니다 (기존 개인 파일은 덮어쓰지 않음):
@@ -32,7 +33,7 @@ node setup.mjs --defaults
 | `cv.md` | `cv.example.md` |
 | `modes/_profile.md` | `modes/_profile.template.md` |
 
-대화형으로 이름·이메일을 넣고 싶으면 TTY에서 `node setup.mjs` (플래그 없음). CI·파이프에서는 `--defaults` 만 쓰세요.
+대화형(`node setup.mjs`, TTY)에서 **직종**(백엔드/풀스택/프론트엔드/모바일/데이터/DevOps/기타), **연차**(신입·0–1·1–3·3–5·5+ 또는 숫자), **블랙리스트 기업**(쉼표 구분)을 고릅니다. CI·파이프에서는 `--defaults` 만 쓰세요. 플래그 예: `--years 1.7 --families backend,frontend --blocked ExampleCorp`. 이미 만든 프로필의 세 가지만 다시: `node setup.mjs --configure`.
 
 ```bash
 npm run setup       # = node setup.mjs --defaults
@@ -47,8 +48,8 @@ npm run doctor      # 빠진 설정 확인
 |------|------|
 | `candidate.full_name` | 본인 이름 |
 | `candidate.email` | 본인 이메일 |
-| `experience.years` | **본인 경력(년) 숫자** (예: `1.7`). 스캔 제목 필터와 평가 SKIP이 이 값을 읽습니다. 출시 프로젝트는 넣지 마세요. |
-| `target_roles.primary` | 지원할 직무 |
+| `experience.years` | **본인 경력(년) 숫자** (예: `1.7`). 스캔 제목 필터와 평가 SKIP이 이 값을 읽습니다 (`experience-band.mjs`). 출시 프로젝트는 넣지 마세요. setup 밴드: 신입 / 0–1 / 1–3 / 3–5 / 5+ |
+| `target_roles.primary` | 지원할 직무. setup 직종 선택(백엔드, 풀스택, …)이 여기와 `portals.yml` 검색 키워드를 맞춥니다 |
 | `location.city` | 기본 `서울` |
 | `language.output` | 한국 지원이면 `ko` |
 | `language.modes_dir` | 한국 시장이면 `modes/ko` |
@@ -65,7 +66,15 @@ node doctor.mjs
 
 기본 `portals.yml` 은 **원티드만** `enabled: true` 입니다. 사람인·잡코리아·리멤버는 각 사이트 [이용약관](https://www.wanted.co.kr/)·robots.txt 확인 후에만 켜세요. MIT 라이선스가 채용 사이트 약관을 대체하지 않습니다.
 
-이전 직장처럼 **절대 지원하지 않을 회사**는 `portals.yml` 의 `blocked_companies` 에 적습니다 (예제 이름은 `ExampleCorp` — 실명·개인정보를 예제 파일에 넣지 마세요). 스캔이 해당 회사 공고를 pipeline에 넣지 않습니다. `data/blacklist.md` 도 같은 역할입니다.
+이전 직장처럼 **절대 지원하지 않을 회사**는 `portals.yml` 의 `blocked_companies` 에 적습니다 (예제 이름은 `ExampleCorp` — 실명·개인정보를 예제 파일에 넣지 마세요). 스캔이 해당 회사 공고를 pipeline에 넣지 않습니다. `data/blacklist.md` 도 같은 역할입니다. setup에서 넣으려면:
+
+```bash
+node setup.mjs --configure
+# 또는
+node setup.mjs --blocked "ExampleCorp, Example Agency"
+```
+
+로컬 대시보드 `npm run dashboard:web` → [http://127.0.0.1:3847/settings](http://127.0.0.1:3847/settings) 에서도 블랙리스트만 고칠 수 있습니다.
 
 ```bash
 npm run scan:kr          # = node scan.mjs
@@ -113,7 +122,7 @@ node scan.mjs --company Wanted
 ## 7. 다음에 할 일
 
 ```text
-setup → experience.years 수정 → scan → gonggo ≥ 4.0 → pdf / jiwon 초안 → 포털에서 직접 제출
+setup (직종·연차·블랙리스트) → doctor → scan → gonggo ≥ 4.0 → pdf / jiwon 초안 → 포털에서 직접 제출
 ```
 
 - [APPLY-KR.md](APPLY-KR.md) — 4.0 필터, PDF, `jiwon`, 트래커
@@ -126,7 +135,7 @@ setup → experience.years 수정 → scan → gonggo ≥ 4.0 → pdf / jiwon �
 
 ## English
 
-Clone, `npm install`, `node setup.mjs --defaults`. Edit `config/profile.yml`: name, email, and `experience.years` (your years of experience as a number). Then `node doctor.mjs` and `npm run scan:kr`. Paste a job URL in Cursor or Claude Code.
+Clone, `npm install`, `node setup.mjs` (TTY: pick job family, years of experience, blocked companies). Or `node setup.mjs --defaults --years 1.7 --families backend --blocked ExampleCorp`. Then `node doctor.mjs` and `npm run scan:kr`. Paste a job URL in Cursor or Claude Code. Consulting skill: `.agents/skills/chaeyong-ops-consulting/`.
 
 Do not commit `cv.md`, `config/profile.yml`, `portals.yml`, or `data/*` — they are gitignored. Wanted is the only board enabled by default; check each site’s terms before enabling others. MIT does not replace job-board ToS. The tool never submits an application.
 
