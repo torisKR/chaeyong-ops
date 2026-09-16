@@ -5,9 +5,21 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 	"time"
 )
+
+// PID that getProcessStatus reports as dead on this OS. 999999999 is fine on
+// Unix (ESRCH), but on Windows OpenProcess can return ERROR_ACCESS_DENIED for
+// that value and we treat that as alive — so the recover-dead-owner test
+// waited out its timeout on GitHub windows-latest.
+func deadOwnerPID() int {
+	if runtime.GOOS == "windows" {
+		return int(^uint32(0)) + 1
+	}
+	return 999999999
+}
 
 func TestAcquireTrackerLockRecoversDeadOwner(t *testing.T) {
 	t.Setenv("CAREER_OPS_TRACKER_LOCK", "")
@@ -22,7 +34,7 @@ func TestAcquireTrackerLockRecoversDeadOwner(t *testing.T) {
 	t.Cleanup(func() { _ = os.RemoveAll(lockDir) })
 
 	staleOwner := trackerLockOwner{
-		PID:       999999999,
+		PID:       deadOwnerPID(),
 		Token:     "dead-owner",
 		StartedAt: time.Now().Add(-time.Hour).UTC().Format(time.RFC3339Nano),
 		Tracker:   trackerPath,
