@@ -11,7 +11,7 @@
 | **웹 보드 (권장)** | `npm run dashboard:web` | 브라우저 `http://127.0.0.1:3847` — 한국어 지원 현황 |
 | 터미널 UI | `npm run serve:dashboard` | Go TUI (한국어 상태 탭 · 리포트 뷰어 · 상태 변경) |
 
-둘 다 같은 소스 `data/applications.md` (없으면 루트 `applications.md`)를 읽습니다. 웹 보드는 **읽기 전용**입니다. 상태 변경은 `tracker` 모드, `node set-status.mjs`, 또는 터미널 UI를 쓰세요. 허구 예시 행: [`examples/applications.example.md`](../examples/applications.example.md).
+둘 다 같은 소스 `data/applications.md` (없으면 루트 `applications.md`)를 읽습니다. 지원 표는 **읽기 전용**입니다. 상태 변경은 `tracker` 모드, `node set-status.mjs`, 또는 터미널 UI를 쓰세요. 블랙리스트만 `/settings` 에서 고칠 수 있습니다. 직종·연차는 `node setup.mjs --configure`. 허구 예시 행: [`examples/applications.example.md`](../examples/applications.example.md).
 
 실험용 Next.js 앱(`web/`, `cd web && npm run dev`)은 별도 alpha 이며 이 보드와 다릅니다. 채용옵스 지원 현황은 `npm run dashboard:web` 이 정답입니다.
 
@@ -47,6 +47,7 @@ cd dashboard && go run . --web --addr 127.0.0.1:4000 --path ..
 - 헤더 숫자: **지원완료 / 서류통과 / 면접 / 합격 / 불합격 / 보류**
 - 표: 회사, 포지션, 포털(원티드·사람인·잡코리아·리멤버), 점수, 상태, 지원일, 공고 링크
 - 필터: 상태 타일, 포털, 검색
+- **설정** (`/settings`): `experience.years`, 직종(`target_roles.primary`) 표시 + `blocked_companies` 로컬 편집. 직종·연차 변경은 `node setup.mjs --configure`
 
 트래커 상태(영어 canonical) → 화면 라벨:
 

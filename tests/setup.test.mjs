@@ -31,8 +31,9 @@ function tmpTarget(label) {
 try {
   {
     const r = runSetup(['--help']);
-    if (r.status === 0 && /Usage:/.test(r.stdout) && /setup\.mjs/.test(r.stdout) && /experience\.years/.test(r.stdout)) {
-      pass('--help prints Korean usage and exits 0');
+    if (r.status === 0 && /Usage:/.test(r.stdout) && /setup\.mjs/.test(r.stdout)
+        && /experience\.years/.test(r.stdout) && /--families/.test(r.stdout) && /--blocked/.test(r.stdout)) {
+      pass('--help prints Korean usage with 직종/연차/블랙리스트 flags');
     } else {
       fail(`--help failed: status=${r.status} stdout=${r.stdout.slice(0, 200)}`);
     }
@@ -105,6 +106,36 @@ try {
       const payload = JSON.parse(r.stdout.trim());
       if ((payload.copied || []).includes('portals.yml')) pass('non-TTY without --defaults copies like --defaults (no hang)');
       else fail(`non-TTY copy missing portals: ${JSON.stringify(payload)}`);
+    }
+  }
+
+  {
+    const dir = tmpTarget('flags');
+    const r = runSetup([
+      '--defaults', '--json', '--target', dir,
+      '--years', '4',
+      '--families', 'frontend',
+      '--blocked', 'ExampleCorp',
+    ]);
+    if (r.status !== 0) {
+      fail(`flag targeting failed: ${r.stderr}${r.stdout}`);
+    } else {
+      const payload = JSON.parse(r.stdout.trim());
+      const profile = yaml.load(readFileSync(join(dir, 'config', 'profile.yml'), 'utf-8'));
+      const portals = yaml.load(readFileSync(join(dir, 'portals.yml'), 'utf-8'));
+      const years = profile?.experience?.years;
+      const primary = profile?.target_roles?.primary || [];
+      const blocked = portals?.blocked_companies || [];
+      const wantedOn = (portals?.job_boards || []).filter((b) => b?.provider === 'wanted' && b?.enabled === true).map((b) => b.searchKeywords);
+      const wantedOff = (portals?.job_boards || []).filter((b) => b?.provider === 'wanted' && b?.enabled === false);
+      const saraminOn = (portals?.job_boards || []).some((b) => b?.provider === 'saramin' && b?.enabled === true);
+      if (payload.patched && years === 4 && primary.includes('프론트엔드 개발자')
+          && blocked.length === 1 && blocked[0] === 'ExampleCorp'
+          && wantedOn.includes('프론트엔드') && wantedOff.length > 0 && !saraminOn) {
+        pass('--defaults --years/--families/--blocked writes profile + Wanted keywords, leaves Saramin off');
+      } else {
+        fail(`flag targeting: years=${years} primary=${JSON.stringify(primary)} blocked=${JSON.stringify(blocked)} wantedOn=${JSON.stringify(wantedOn)} patched=${payload.patched} applied=${JSON.stringify(payload.applied)}`);
+      }
     }
   }
 } catch (e) {

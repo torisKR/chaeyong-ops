@@ -340,6 +340,7 @@ Two separate axes:
 | Asks about application status | `tracker` |
 | Fills out application form | `apply` |
 | Searches for new offers | `scan` |
+| Asks for 취업 상담 / 지원 전략 / 직종·연차·블랙리스트 설정 | `chaeyong-ops-consulting` skill (`.agents/skills/chaeyong-ops-consulting/`) |
 | Processes pending URLs | `pipeline` |
 | Wants a fast first-pass filter before full evaluation | `triage` |
 | Batch processes offers | `batch` |

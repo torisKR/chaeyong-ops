@@ -36,7 +36,7 @@ function fixture(label, files = {}) {
 
 const PREREQS = {
   'cv.md': '# 김테스트\n\n## 경력\n\n### 회사 — 개발자\n',
-  'config/profile.yml': 'candidate:\n  full_name: "김테스트"\n  email: "a@b.co"\nexperience:\n  years: 1.7\nlanguage:\n  output: ko\n',
+  'config/profile.yml': 'candidate:\n  full_name: "김테스트"\n  email: "a@b.co"\nexperience:\n  years: 1.7\ntarget_roles:\n  primary:\n    - "백엔드 개발자"\nlanguage:\n  output: ko\n',
   'modes/_profile.md': '# Profile\n백엔드 개발자.\n',
   'portals.yml': 'job_boards:\n  - name: Wanted — 백엔드\n    provider: wanted\n    enabled: true\n',
 };
@@ -95,8 +95,10 @@ try {
     const dir = fixture('ready', PREREQS);
     const s = runDoctor(dir);
     if (s._error) fail(`ready crashed: ${s._error}`);
-    else if (s.onboardingNeeded === false && s.experienceYears === 1.7 && s.wantedEnabled === true) {
-      pass('complete KR profile reports experienceYears + wantedEnabled');
+    else if (s.onboardingNeeded === false && s.experienceYears === 1.7 && s.wantedEnabled === true
+      && Array.isArray(s.targetRoles) && s.targetRoles.includes('백엔드 개발자')
+      && Array.isArray(s.blockedCompanies)) {
+      pass('complete KR profile reports experienceYears + targetRoles + wantedEnabled');
     } else {
       fail(`ready JSON: ${JSON.stringify({ onboardingNeeded: s.onboardingNeeded, experienceYears: s.experienceYears, wantedEnabled: s.wantedEnabled, missing: s.missing })}`);
     }
