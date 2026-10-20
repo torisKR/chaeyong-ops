@@ -65,11 +65,11 @@ const PDF_PAGE_MARGIN = '0.6in';
 // self-correcting the moment it does. Same defect class as #3159.
 let __rootCache = { key: null, root: null, canonical: null };
 function refreshRootCache() {
-  const key = process.env.CAREER_OPS_TRACKER || '';
+  const key = JSON.stringify([process.env.CAREER_OPS_TRACKER || '', getCareerOpsRoot()]);
   if (__rootCache.key !== key) {
     // Always re-derive: falling back to the import-time const when the variable
     // is unset would hand back the very value the poisoned import froze.
-    const root = resolveWorkspaceRoot(resolveTrackerPath(__dirname));
+    const root = resolveWorkspaceRoot(resolveTrackerPath(getCareerOpsRoot()));
     __rootCache = { key, root, canonical: realpathSync(root) };
   }
   return __rootCache;
@@ -1364,7 +1364,12 @@ async function generatePDF() {
     // module is genuinely missing in a real workspace this throws and the render
     // fails, which is the correct direction to fail for a fact gate.
     const { assertFacts } = await import('./verify-cv-facts.mjs');
-    const factCheck = assertFacts(html, { label: basename(inputPath) });
+    const factCheck = assertFacts(html, {
+      label: basename(inputPath),
+      cwd: workspaceRoot,
+      sourcePaths: ['cv.md', 'article-digest.md', 'config/profile.yml', 'modes/_profile.md'],
+      configPath: resolve(workspaceRoot, 'config', 'cv-facts.json'),
+    });
     // Ahead of the verdict, because it qualifies it: with no config the phrase
     // lists are empty, so a "passed" below covers metrics and facts only.
     if (factCheck.configMissing) {

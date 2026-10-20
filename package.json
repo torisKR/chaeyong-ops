@@ -74,7 +74,9 @@
     "dashboard": "npm run dashboard:web",
     "dashboard:web": "cd dashboard && go run . --web --path ..",
     "postinstall": "npx playwright install chromium --with-deps || npx playwright install chromium --with-deps",
-    "manifesto": "node manifesto.mjs"
+    "manifesto": "node manifesto.mjs",
+    "test:kr-integration": "node tests/korean-flow.integration.mjs",
+    "verify:kr-portals": "node scripts/verify-korean-portals.mjs"
   },
   "keywords": [
     "ai",

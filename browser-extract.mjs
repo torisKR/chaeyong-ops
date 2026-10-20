@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { readJobPage } from './lib/job-browser.mjs';
 /**
  * browser-extract.mjs — headless Playwright reader for the scan / JD-extraction
  * path (the opt-in alternative to the browser MCP; see #1449).
@@ -46,7 +47,7 @@ import { readFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import * as yaml from 'js-yaml';
-import { LIVENESS_CONTEXT_OPTIONS, rejectPrivateOrInvalid } from './liveness-browser.mjs';
+import { rejectPrivateOrInvalid } from './liveness-browser.mjs';
 import { getCareerOpsRoot } from './path-resolver.mjs';
 import { resolveAtsApi, JD_TEXT_API_ATS } from './liveness-api.mjs';
 import { decodeEntities } from './providers/_html-entities.mjs';
@@ -701,35 +702,6 @@ export function parseArgs(argv) {
   };
 }
 
-// Read the raw DOM inside the page: title, main visible text, and visible
-// anchors. Runs in the browser context; returns plain data only.
-async function readDom(page) {
-  return page.evaluate(() => {
-    const title = (document.querySelector('h1')?.innerText || document.title || '').trim();
-
-    // Main text: prefer <main>/[role=main]/<article>, else body; strip nav chrome.
-    const root =
-      document.querySelector('main, [role="main"], article') || document.body;
-    let text = '';
-    if (root) {
-      const clone = root.cloneNode(true);
-      clone.querySelectorAll('script, style, nav, header, footer, noscript').forEach((el) => el.remove());
-      text = clone.innerText || '';
-    }
-
-    const anchors = Array.from(document.querySelectorAll('a[href]'))
-      .filter((el) => {
-        if (el.closest('nav, header, footer')) return false;
-        const style = window.getComputedStyle(el);
-        if (style.display === 'none' || style.visibility === 'hidden') return false;
-        return el.getClientRects().length > 0;
-      })
-      .map((el) => ({ href: el.getAttribute('href') || '', label: (el.innerText || '').trim() }));
-
-    return { title, text, anchors };
-  });
-}
-
 async function main() {
   const args = process.argv.slice(2);
 
@@ -778,50 +750,18 @@ async function main() {
     }
   }
 
-  let chromium;
   try {
-    ({ chromium } = await import('playwright'));
-  } catch {
-    console.error(JSON.stringify({ error: 'playwright not installed', code: 'no_playwright' }));
-    process.exit(1);
-  }
-
-  let browser;
-  try {
-    browser = await chromium.launch({ headless: true });
-    const context = await browser.newContext(LIVENESS_CONTEXT_OPTIONS);
-    // Block every request (main navigation, redirect hop, or subresource) to a
-    // private/loopback/link-local or non-http(s) host. Guarding only the initial
-    // URL isn't enough once we return page CONTENT: a server-side redirect could
-    // otherwise steer the browser at internal infrastructure (SSRF).
-    await context.route('**/*', (route) => {
-      if (rejectPrivateOrInvalid(route.request().url())) return route.abort('blockedbyclient');
-      return route.continue();
-    });
-    const page = await context.newPage();
-    await page.goto(url, { waitUntil: 'domcontentloaded', timeout });
-    await page.waitForTimeout(HYDRATION_WAIT_MS); // let SPAs hydrate
-
-    // Belt-and-suspenders: never emit content read from a private final URL.
-    const finalUrl = page.url();
-    const finalGuard = rejectPrivateOrInvalid(finalUrl);
-    if (finalGuard) {
-      console.error(JSON.stringify({ error: `blocked final URL: ${finalGuard.reason}`, code: finalGuard.code }));
-      process.exitCode = 1;
-      return;
-    }
-    const raw = await readDom(page);
-
-    if (mode === 'listing') {
-      process.stdout.write(JSON.stringify(normalizeListing(raw.anchors, finalUrl, max)));
-    } else {
-      emitJd(normalizeJd(raw, finalUrl, maxChars), maxChars);
+    const raw = await readJobPage(url, { timeout });
+    if (mode === 'listing') process.stdout.write(JSON.stringify(normalizeListing(raw.anchors, raw.url, max)));
+    else {
+      if (raw.liveness.result === 'expired' || ['bot_challenge', 'access_blocked', 'login_required', 'loading', 'server_error'].includes(raw.liveness.code)) {
+        throw new Error(raw.liveness.reason);
+      }
+      emitJd(normalizeJd(raw, raw.url, maxChars), maxChars);
     }
   } catch (err) {
     console.error(JSON.stringify({ error: `navigation error: ${String(err.message).split('\n')[0]}`, code: 'navigation_error' }));
     process.exitCode = 1;
-  } finally {
-    if (browser) await browser.close().catch(() => {});
   }
 }
 

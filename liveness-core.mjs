@@ -11,10 +11,14 @@ function normalizeForMatch(text = '') {
     .replace(/[“”″]/g, '"')
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
+    .normalize('NFC')
     .replace(/\s+/g, ' ');
 }
 
 const HARD_EXPIRED_PATTERNS = [
+  /(?:채용|모집|접수)(?:공고)?\s*(?:이|가|는|은)?\s*(?:이미\s*)?(?:마감|종료)(?:되었|됐|된|되었습니다|합니다)/,
+  /(?:해당\s*|본\s*)?(?:공고|지원)\s*(?:이|가|는|은)?\s*(?:이미\s*)?(?:마감|종료)(?:되었|됐|된)/,
+  /(?:마감|종료)된\s*(?:채용\s*)?공고/,
   /job (is )?no longer available/i,
   /job.*no longer open/i,
   // Generalized "filled" signal. The old /position has been filled/ missed the
@@ -60,6 +64,9 @@ const LISTING_PAGE_PATTERNS = [
 // `insufficient_content` → expired, and scan --verify would write live jobs to
 // scan-history and permanently filter them out. Treat as uncertain instead.
 const BOT_CHALLENGE_PATTERNS = [
+  /보안\s*(?:확인|검증|문자)/,
+  /비정상적인?\s*(?:접근|요청)/,
+  /자동\s*입력\s*방지/,
   /just a moment/i,
   /performing security verification/i,
   /checking your browser before/i,
@@ -76,6 +83,8 @@ const EXPIRED_URL_PATTERNS = [
 ];
 
 const APPLY_PATTERNS = [
+  /^(?:(?:온라인|즉시|간편|홈페이지|이메일)\s*)?(?:입사\s*)?지원(?:\s*하기)?$/,
+  /^(?:기업|회사)\s*(?:사이트|홈페이지)에서\s*지원하기$/,
   /\bapply\b/i,
   /\bsolicitar\b/i,
   /\bbewerben\b/i,
@@ -151,6 +160,13 @@ export function classifyLiveness({ status = 0, requestedUrl = '', finalUrl = '',
   // "expired" permanently dedup-filters a real job out of future scans.
   if (status >= 500) {
     return { result: 'uncertain', code: 'server_error', reason: `HTTP ${status} (transient server error)` };
+  }
+
+  if (/(?:로그인|login|sign-in)/i.test(finalUrl) || /로그인이?\s*필요|로그인\s*후\s*(?:이용|확인)/.test(bodyText)) {
+    return { result: 'uncertain', code: 'login_required', reason: 'login required to read posting' };
+  }
+  if (/불러오는\s*중|로딩\s*중|잠시\s*후\s*다시/.test(bodyText)) {
+    return { result: 'uncertain', code: 'loading', reason: 'posting has not finished loading' };
   }
 
   const expiredUrl = firstMatch(EXPIRED_URL_PATTERNS, finalUrl);

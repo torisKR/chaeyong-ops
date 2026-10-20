@@ -1,7 +1,8 @@
+import { readJobPage } from '../lib/job-browser.mjs';
 // @ts-check
 /** @typedef {import('./_types.js').Provider} Provider */
 
-// Saramin (사람인) provider — HTML list/search pages on saramin.co.kr.
+// Saramin (사람인) provider — Playwright-rendered list/search pages on saramin.co.kr.
 // Configure via `job_boards` with `provider: saramin`:
 //
 //   - name: Saramin (KR)
@@ -11,10 +12,9 @@
 //     max_pages: 5
 //     enabled: true
 //
-// Parses server-rendered search results. Respect Saramin's terms of service
+// Reads rendered search cards with their actual company and region. Respect Saramin's terms of service
 // and robots.txt before enabling automated scans.
 
-import { BROWSER_LIKE_USER_AGENT } from './_http.mjs';
 import { decodeEntities } from './_html-entities.mjs';
 
 const SITE_ORIGIN = 'https://www.saramin.co.kr';
@@ -100,28 +100,30 @@ export default {
   async fetch(entry, ctx) {
     const keyword = resolveKeyword(entry);
     const maxPages = Math.min(resolveMaxPages(entry), ctx?.maxPages ?? Number.POSITIVE_INFINITY);
-    const fallbackCompany = entry?.name;
     const out = [];
     const seen = new Set();
 
     for (let page = 1; page <= maxPages; page++) {
       const url = buildSaraminSearchUrl(keyword, page);
-      const html = await ctx.fetchText(url, {
-        redirect: 'error',
-        headers: { 'User-Agent': BROWSER_LIKE_USER_AGENT, 'Accept-Language': 'ko-KR,ko;q=0.9' },
-      });
-      const rows = parseSaraminSearchPage(html, fallbackCompany);
+      const snapshot = await (ctx.readJobPage || readJobPage)(url, { listing: 'saramin' });
+      if (['bot_challenge', 'access_blocked', 'login_required', 'server_error', 'loading'].includes(snapshot.liveness.code)) {
+        throw new Error('saramin: unable to verify listing: ' + snapshot.liveness.reason);
+      }
+      const rows = snapshot.jobs;
       if (rows.length === 0) {
         if (page === 1) {
           throw new Error('saramin: search page returned no parseable postings — markup may have changed');
         }
         break;
       }
+      let added = 0;
       for (const row of rows) {
         if (seen.has(row.url)) continue;
         seen.add(row.url);
         out.push(row);
+        added++;
       }
+      if (added === 0) break; // repeated/stuck pagination
       if (page < maxPages) {
         await (ctx.sleep ? ctx.sleep(INTER_PAGE_DELAY_MS) : new Promise((r) => setTimeout(r, INTER_PAGE_DELAY_MS)));
       }

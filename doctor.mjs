@@ -68,12 +68,9 @@ const STRICT = argv.includes('--strict');
 const cliIdx = argv.indexOf('--cli');
 const cliFlag = cliIdx !== -1 ? argv[cliIdx + 1] : null;
 
-// ANSI colors (only on TTY)
-const isTTY = process.stdout.isTTY;
-const green = (s) => isTTY ? `\x1b[32m${s}\x1b[0m` : s;
-const red = (s) => isTTY ? `\x1b[31m${s}\x1b[0m` : s;
-const yellow = (s) => isTTY ? `\x1b[33m${s}\x1b[0m` : s;
-const dim = (s) => isTTY ? `\x1b[2m${s}\x1b[0m` : s;
+import { cliStyle } from './lib/cli-style.mjs';
+// Shared human-output colors; JSON takes its existing separate path.
+const { success: green, error: red, warning: yellow, path: dim, title } = cliStyle();
 
 function checkNodeVersion() {
   const versionStr = process.versions.node;
@@ -823,8 +820,8 @@ function checkIntegrations(root) {
 }
 
 async function main() {
-  console.log('\n채용옵스 doctor');
-  console.log('===============\n');
+  console.log(title('\n채용옵스 진단'));
+  console.log('================\n');
 
   const { cli: activeCli, source: cliSource, warning: cliWarning } = resolveActiveCli();
 

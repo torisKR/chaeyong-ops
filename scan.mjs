@@ -37,6 +37,9 @@
  *   node scan.mjs --help                       # print this usage block and exit
  */
 
+import { cliStyle } from './lib/cli-style.mjs';
+const scanStyle = cliStyle();
+
 import {
   appendFileSync,
   closeSync,
@@ -2975,7 +2978,7 @@ async function main() {
   if (boardCount > 0) parts.push(`${boardCount} job boards`);
   parts.push(`${localParserCount} local parser`);
   parts.push(`${skippedCount} skipped — no provider matched`);
-  console.log(`Scanning ${parts.join('; ')} via providers`);
+  console.log(scanStyle.title(`Scanning ${parts.join('; ')} via providers`));
   if (dryRun) console.log('(dry run — no files will be written)\n');
 
   // 3.5. Load the user's do-not-apply list (#1742) and union portals.yml
@@ -3068,7 +3071,8 @@ async function main() {
       includeUndated: true,
       locationHints: config.location_filter,
     };
-    let sourceName = provider.id === 'local-parser' ? 'local-parser' : `${provider.id}-api`;
+    let sourceName = provider.id === 'local-parser' ? 'local-parser'
+      : ['jobkorea', 'saramin'].includes(provider.id) ? `${provider.id}-playwright` : `${provider.id}-api`;
     try {
       let jobs;
       try {
@@ -3395,7 +3399,7 @@ async function main() {
     console.log(`No apply control:      ${droppedOffers.length} dropped`);
     console.log(`Invalid (guarded):     ${invalidOffers.length} dropped`);
   }
-  console.log(`New offers added:      ${verifiedOffers.length}`);
+  console.log(scanStyle.success(`New offers added:      ${verifiedOffers.length}`));
 
   // Trust validation summary (only when trust_filter is configured)
   if (config.trust_filter && config.trust_filter.enabled !== false && verifiedOffers.length > 0) {
@@ -3491,13 +3495,13 @@ async function main() {
   if (newlyDeadNetwork.length > 0) {
     console.log(`\nNetwork errors (${newlyDeadNetwork.length}):`);
     for (const e of newlyDeadNetwork) {
-      console.log(`  ✗ ${e.company}: ${e.error}`);
+      console.log(scanStyle.error(`  ✗ ${e.company}: ${e.error}`));
     }
   }
   if (otherErrors.length > 0) {
     console.log(`\nErrors (${otherErrors.length}):`);
     for (const e of otherErrors) {
-      console.log(`  ✗ ${e.company}: ${e.error}`);
+      console.log(scanStyle.error(`  ✗ ${e.company}: ${e.error}`));
     }
   }
 
@@ -3513,7 +3517,7 @@ async function main() {
     if (dryRun) {
       console.log('\n(dry run — run without --dry-run to save results)');
     } else {
-      console.log(`\nResults saved to ${PIPELINE_PATH} and ${SCAN_HISTORY_PATH}`);
+      console.log(`\nResults saved to ${scanStyle.path(PIPELINE_PATH)} and ${scanStyle.path(SCAN_HISTORY_PATH)}`);
     }
   }
 

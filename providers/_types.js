@@ -131,6 +131,9 @@
  *                              paginating providers (avature, workday) to throttle between page
  *                              requests. May be absent — providers fall back to a native
  *                              `setTimeout`-based delay.
+ * @property {(url: string, options?: object) => Promise<object>} [readJobPage] Optional
+ *                              rendered-page transport for Korean providers; defaults
+ *                              to the shared serial Node Playwright reader.
  */
 
 /**

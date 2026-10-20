@@ -1,7 +1,8 @@
+import { readJobPage } from '../lib/job-browser.mjs';
 // @ts-check
 /** @typedef {import('./_types.js').Provider} Provider */
 
-// JobKorea (잡코리아) provider — HTML search pages on jobkorea.co.kr.
+// JobKorea (잡코리아) provider — Playwright-rendered search pages on jobkorea.co.kr.
 // Configure via `job_boards` with `provider: jobkorea`:
 //
 //   - name: JobKorea (KR)
@@ -11,10 +12,9 @@
 //     max_pages: 5
 //     enabled: true
 //
-// Parses server-rendered search cards (CardJob / Title components).
+// Reads rendered search cards (CardJob / Title components).
 // Respect JobKorea's terms of service before enabling automated scans.
 
-import { BROWSER_LIKE_USER_AGENT } from './_http.mjs';
 import { decodeEntities } from './_html-entities.mjs';
 
 const SITE_ORIGIN = 'https://www.jobkorea.co.kr';
@@ -135,22 +135,25 @@ export default {
 
     for (let page = 1; page <= maxPages; page++) {
       const url = buildJobkoreaSearchUrl(keyword, page);
-      const html = await ctx.fetchText(url, {
-        redirect: 'error',
-        headers: { 'User-Agent': BROWSER_LIKE_USER_AGENT, 'Accept-Language': 'ko-KR,ko;q=0.9' },
-      });
-      const rows = parseJobkoreaSearchPage(html);
+      const snapshot = await (ctx.readJobPage || readJobPage)(url, { listing: 'jobkorea' });
+      if (['bot_challenge', 'access_blocked', 'login_required', 'server_error', 'loading'].includes(snapshot.liveness.code)) {
+        throw new Error('jobkorea: unable to verify listing: ' + snapshot.liveness.reason);
+      }
+      const rows = snapshot.jobs;
       if (rows.length === 0) {
         if (page === 1) {
           throw new Error('jobkorea: search page returned no parseable postings — markup may have changed');
         }
         break;
       }
+      let added = 0;
       for (const row of rows) {
         if (seen.has(row.url)) continue;
         seen.add(row.url);
         out.push(row);
+        added++;
       }
+      if (added === 0) break; // repeated/stuck pagination
       if (page < maxPages) {
         await (ctx.sleep ? ctx.sleep(INTER_PAGE_DELAY_MS) : new Promise((r) => setTimeout(r, INTER_PAGE_DELAY_MS)));
       }

@@ -240,6 +240,15 @@ export async function validateUrlSecurity(urlString) {
 }
 
 export async function checkUrlLiveness(page, url, { extraSettleMs = 0 } = {}) {
+  if (/^https:\/\/(?:www\.)?(?:jobkorea|saramin|wanted)\.co\.kr\//i.test(url)) {
+    try {
+      const { readJobPage } = await import('./lib/job-browser.mjs');
+      return (await readJobPage(url)).liveness;
+    } catch (err) {
+      return { result: 'uncertain', code: 'navigation_error', reason: String(err.message).split('\n')[0] };
+    }
+  }
+
   const guardError = rejectPrivateOrInvalid(url);
   if (guardError) {
     return { result: 'uncertain', code: guardError.code, reason: guardError.reason };
