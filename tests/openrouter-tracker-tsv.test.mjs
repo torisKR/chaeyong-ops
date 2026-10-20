@@ -62,8 +62,8 @@ if (SCORE_COL > 0 && STATUS_COL > 0) {
   fail(`fixture header lost its Score/Status labels (score=${SCORE_COL}, status=${STATUS_COL}) — the column assertions below would be vacuous`);
 }
 
-// The exact shape openrouter-runner writes (openrouter-runner.mjs `tsvLine`):
-// num, date, company, "(see report)", status, score, pdf, report-link, notes.
+// The canonical addition's field order (the runner delegates its writer):
+// num, date, company, role, status, score, pdf, report-link, notes.
 const num = 35, today = '2026-08-09', slug = 'acme-corp';
 const company = slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 const link = `[0${num}](reports/0${num}-${slug}-${today}.md)`;
@@ -136,17 +136,24 @@ try {
     fail('the column assertion does not discriminate a transposed row — the legs above are vacuous');
   }
 
-  // Guard: the source must WRITE the header, from the shared constant. The old
-  // guard searched for the literal `num\tdate\tcompany\trole\tstatus` in the
-  // source and would now pass vacuously either way, since the labels live in
-  // tracker-parse.mjs's TSV_ADDITION_HEADER rather than in a string here.
-  const src = readFileSync(join(ROOT, 'openrouter-runner.mjs'), 'utf-8');
-  const importsHeader = /import\s*\{[^}]*\bTSV_ADDITION_HEADER\b[^}]*\}\s*from\s*'\.\/tracker-parse\.mjs'/.test(src);
-  const writesHeader = /writeFile\(\s*tsvFile\s*,\s*`\$\{TSV_ADDITION_HEADER\}/.test(src);
-  if (importsHeader && writesHeader) {
-    pass('openrouter-runner.mjs writes the shared header row above the data line');
+  // Follow the runner's canonical writer. The shared constant must reach an
+  // actual atomic TSV write followed by merge-tracker, not merely appear in
+  // an import or comment after an implementation moves to another module.
+  const executable = source => source.replace(/\/\*[\s\S]*?\*\//g, '').split('\n').filter(line => !/^\s*\/\//.test(line)).join('\n');
+  const src = executable(readFileSync(join(ROOT, 'openrouter-runner.mjs'), 'utf-8'));
+  const helper = executable(readFileSync(join(ROOT, 'lib/application-prep.mjs'), 'utf-8'));
+  const writer = helper.match(/export async function updatePreparedTracker\([^]*?\n\}/)?.[0] || '';
+  const importsWriter = /import\s*\{[^}]*\bupdatePreparedTracker\b[^}]*\}\s*from\s*['"]\.\/lib\/application-prep\.mjs['"]/.test(src);
+  const invokesWriter = /await updatePreparedTracker\(DATA_ROOT,\s*\{[^;]*\breport:\s*[A-Za-z_$][\w$]*/.test(src);
+  const importsHeader = /import\s*\{[^}]*\bTSV_ADDITION_HEADER\b[^}]*\}\s*from\s*['"]\.\.\/tracker-parse\.mjs['"]/.test(helper);
+  const importsAtomic = /import\s*\{[^}]*\bwriteFileAtomic\b[^}]*\}\s*from\s*['"]\.\.\/tracker-utils\.mjs['"]/.test(helper);
+  const writesHeader = /writeFileAtomic\(path\.join\(additions,[^;]*TSV_ADDITION_HEADER[^;]*row\.map\(cell\)\.join\(['"]\\t['"]\)/.test(writer);
+  const writesAddition = /const additions\s*=\s*path\.join\(root,\s*['"]batch\/tracker-additions['"]/.test(writer);
+  const mergesAddition = /await run\(process\.execPath,\s*\[path\.join\(SYSTEM_ROOT,\s*['"]merge-tracker\.mjs['"]\)/.test(writer) && /CAREER_OPS_ADDITIONS:\s*additions/.test(writer);
+  if (importsWriter && invokesWriter && importsHeader && importsAtomic && writesHeader && writesAddition && mergesAddition) {
+    pass('openrouter delegates to the headed canonical atomic TSV writer and merge-tracker');
   } else {
-    fail(`openrouter-runner.mjs must write TSV_ADDITION_HEADER above the data row (imports=${importsHeader}, writes=${writesHeader})`);
+    fail(`openrouter canonical TSV path incomplete (importsWriter=${importsWriter}, invokesWriter=${invokesWriter}, importsHeader=${importsHeader}, importsAtomic=${importsAtomic}, writesHeader=${writesHeader}, writesAddition=${writesAddition}, mergesAddition=${mergesAddition})`);
   }
 } finally {
   try { rmSync(work, { recursive: true, force: true }); } catch { /* best effort */ }

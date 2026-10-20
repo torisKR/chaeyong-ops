@@ -4163,14 +4163,25 @@ const openrouterRunnerPath = join(ROOT, 'openrouter-runner.mjs');
 if (!existsSync(openrouterRunnerPath)) {
   fail('job-page fetch boundary source file is missing (#2619)');
 } else {
-  const openrouterRunner = readFile('openrouter-runner.mjs');
+  const executable = (source) => source.replace(/\/\*[\s\S]*?\*\//g, '').split('\n').filter(line => !/^\s*\/\//.test(line)).join('\n');
+  const openrouterRunner = executable(readFile('openrouter-runner.mjs'));
+  const reader = existsSync(join(ROOT, 'lib/job-browser.mjs')) ? executable(readFile('lib/job-browser.mjs')) : '';
+  // The browser session now belongs to the shared reader. Follow that call
+  // boundary rather than requiring an obsolete inline plain-fetch fallback.
+  // Failed/browser-blocked reads must remain unverified, not fall back to an
+  // unrendered response that could be mistaken for a JD.
+  const fetchBoundary = openrouterRunner.match(/export async function fetchJobPage\([^]*?\n\}/)?.[0] || '';
   if (
-    openrouterRunner.includes('// Job page content fetcher (Playwright-first, plain fetch fallback)') &&
-    openrouterRunner.includes('browser = await chromium.launch({ headless: true })') &&
-    openrouterRunner.includes('falling back to plain fetch.') &&
-    openrouterRunner.includes('if (browser) await browser.close().catch(() => {})')
+    /import\s*\{\s*readJobPage\s*\}\s*from ['"]\.\/lib\/job-browser\.mjs['"]/.test(openrouterRunner) &&
+    /fetchJobPage\(url,\s*read\s*=\s*readJobPage\)/.test(fetchBoundary) &&
+    /await read\(url\)/.test(fetchBoundary) &&
+    /liveness\.result\s*!==\s*['"]active['"]/.test(fetchBoundary) &&
+    !/\bfetch\s*\(/.test(fetchBoundary) &&
+    /await import\(['"]playwright['"]\)\)\.chromium\.launch\(/.test(reader) &&
+    /browser\s*=\s*await launch\(\{\s*headless:\s*true\s*\}\)/.test(reader) &&
+    /finally\s*\{\s*if\s*\(browser\)\s*await browser\.close\(\)/.test(reader)
   ) {
-    pass('job-page fetch boundary launches a browser first and closes its session before fallback (#2619)');
+    pass('job-page fetch boundary delegates to the browser reader, closes every session and rejects unverified content (#2619)');
   } else {
     fail('job-page fetch boundary lost browser-first or per-call session cleanup (#2619)');
   }
@@ -9879,9 +9890,26 @@ try {
     const defined = source.match(new RegExp(`const\\s+${payload.replace(/[^A-Za-z0-9_]/g, '')}\\s*=[^;]*`));
     return Boolean(defined && defined[0].includes('\\t'));
   };
+  // A delegated writer must prove the same sink, not merely import a helper.
+  // The runner's canonical helper owns the headed/sanitized TSV, atomic write
+  // and merge invocation; checking its executable body catches removal of any
+  // of those operations even when the caller's API remains unchanged.
+  const trackerHelperSource = executable(readFile('lib/application-prep.mjs'));
+  const trackerWriter = trackerHelperSource.match(/export async function updatePreparedTracker\([^]*?\n\}/)?.[0] || '';
+  const canonicalTrackerSink =
+    /const additions\s*=\s*path\.join\(root,\s*['"]batch\/tracker-additions['"]/.test(trackerWriter) &&
+    /const row\s*=\s*\[num,\s*date,\s*summary\.company,\s*summary\.role,\s*['"]Evaluated['"]/.test(trackerWriter) &&
+    /writeFileAtomic\(path\.join\(additions,[^;]*TSV_ADDITION_HEADER[^;]*row\.map\(cell\)\.join\(['"]\\t['"]\)/.test(trackerWriter) &&
+    /await run\(process\.execPath,\s*\[path\.join\(SYSTEM_ROOT,\s*['"]merge-tracker\.mjs['"]\)/.test(trackerWriter) &&
+    /CAREER_OPS_ADDITIONS:\s*additions/.test(trackerWriter);
+  const delegatesTrackerRow = (rawSource) => {
+    const source = executable(rawSource);
+    return /import\s*\{[^}]*\bupdatePreparedTracker\b[^}]*\}\s*from ['"]\.\/lib\/application-prep\.mjs['"]/.test(source) &&
+      /await updatePreparedTracker\(DATA_ROOT,\s*\{[^;]*\breport:\s*[A-Za-z_$][\w$]*/.test(source) && canonicalTrackerSink;
+  };
   const pastedRowRe = /Tracker entry \(add to|console\.log\(`[^`]*\|\s*\$\{num\}\s*\|/;
   const unpersistedEvaluators = evaluatorSources
-    .filter(([, source]) => !writesTheRow(source) || pastedRowRe.test(source))
+    .filter(([, source]) => !(delegatesTrackerRow(source) || writesTheRow(source)) || pastedRowRe.test(source))
     .map(([name]) => name);
   if (unpersistedEvaluators.length === 0) {
     pass('all headless evaluators write their addition to disk, none dictates a hand-pasted row');
@@ -9935,6 +9963,12 @@ try {
   // ties the header to a value reaching the report write path.
   const urlHeaderRe  = /\*\*URL:\*\*[^\n]*\$\{/;
   const urlSourceRe  = /--posting-url|\bpostingUrl\b|\$\{input \|\| '\(pasted\)'\}/;
+  // URL input can be carried through a named identity expression. Follow the
+  // HTTP-preserving branch to the interpolated header instead of requiring the
+  // historical variable name `postingUrl`. A hash-only/hardcoded identity does
+  // not satisfy this: the URL branch must retain the original input verbatim.
+  const writesUrlIdentity = (source) => [...source.matchAll(/\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*([A-Za-z_$][\w$]*)\??\.startsWith\(['"]https?['"]\)\s*\?\s*\2\s*:[^;\n]+;/g)]
+    .some(([, identity]) => new RegExp(`write(?:File|FileSync)\\([^;]*\\*\\*URL:\\*\\*[^\\n]*\\$\\{${identity}\\}`).test(source));
   // Empty since #3797 landed the header in openai-eval.mjs and ollama-eval.mjs,
   // the two files it exempted. The list is asserted to be EXACTLY the files still
   // missing the header, so leaving the names here would fail as a stale
@@ -9944,7 +9978,7 @@ try {
   const pendingUrlHeader = [];
   const missingUrlHeader = evaluatorSources
     .map(([name, source]) => [name, executable(source)])
-    .filter(([, source]) => !urlHeaderRe.test(source) || !urlSourceRe.test(source))
+    .filter(([, source]) => !urlHeaderRe.test(source) || !(urlSourceRe.test(source) || writesUrlIdentity(source)))
     .map(([name]) => name);
   const staleExemptions = pendingUrlHeader.filter(name => !missingUrlHeader.includes(name));
   const unexemptedGaps  = missingUrlHeader.filter(name => !pendingUrlHeader.includes(name));

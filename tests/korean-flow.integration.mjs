@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 import { readJobPage } from '../lib/job-browser.mjs';
@@ -10,7 +11,8 @@ import saramin from '../providers/saramin.mjs';
 import { prepareApplication, updatePreparedTracker } from '../lib/application-prep.mjs';
 
 const repo = fileURLToPath(new URL('../', import.meta.url));
-const root = process.env.CAREER_OPS_TEST_ARTIFACTS || fs.mkdtempSync('/private/tmp/chaeyong-kr-');
+const tempRoot = fs.realpathSync(tmpdir());
+const root = process.env.CAREER_OPS_TEST_ARTIFACTS || fs.mkdtempSync(path.join(tempRoot, 'chaeyong-kr-'));
 fs.mkdirSync(root, { recursive: true });
 process.env.CAREER_OPS_ROOT = root;
 process.env.CAREER_OPS_DATA_DIR = root;
@@ -106,7 +108,7 @@ assert.equal(result.failed,1); assert.equal(process.exitCode,1);
 assert.ok(fs.readFileSync(path.join(root,'data/pipeline.md'),'utf8').startsWith('- [ ]'));
 process.exitCode = 0;
 // A tracker elsewhere must not move artifacts outside the selected data root.
-const external = fs.mkdtempSync('/private/tmp/chaeyong-tracker-');
+const external = fs.mkdtempSync(path.join(tempRoot, 'chaeyong-tracker-'));
 process.env.CAREER_OPS_TRACKER = path.join(external, 'applications.md');
 await updatePreparedTracker(root, {num:1, report, summary:{company:'가상회사',role:'백엔드 개발자',score:4.2}});
 const other = await prepareApplication({root, reportPath:report, context:{...ctx,custom:'external tracker'}, generate});

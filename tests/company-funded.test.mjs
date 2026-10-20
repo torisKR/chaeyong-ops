@@ -326,6 +326,8 @@ try {
   }
 
   const originalFetch = globalThis.fetch;
+  const originalDate = globalThis.Date;
+  const redirectTestNow = originalDate.parse('2026-07-20T00:00:00Z');
   const seenFetchOptions = [];
   globalThis.fetch = async (url, options) => {
     seenFetchOptions.push({ url, options });
@@ -352,6 +354,11 @@ try {
     return res;
   };
   try {
+    // Discovery uses the wall clock; keep this redirect test's July feed fresh.
+    globalThis.Date = class extends originalDate {
+      constructor(...args) { super(...(args.length ? args : [redirectTestNow])); }
+      static now() { return redirectTestNow; }
+    };
     const result = await mod.discoverFundedCompanies({
       dryRun: true,
       sources: ['techcrunch'],
@@ -370,6 +377,7 @@ try {
     }
   } finally {
     globalThis.fetch = originalFetch;
+    globalThis.Date = originalDate;
   }
 
   globalThis.fetch = async (url, options) => {

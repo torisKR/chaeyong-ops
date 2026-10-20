@@ -24,7 +24,6 @@ import { fileURLToPath } from 'node:url';
 import readline from 'node:readline';
 import * as yaml from 'js-yaml';
 import { outputLanguageInstruction, parseOutputLanguage } from './profile-language.mjs';
-import { TSV_ADDITION_HEADER } from './tracker-parse.mjs';
 import {
   formatReportNumber, releaseReportNumbers, reserveReportNumbers,
 } from './reserve-report-num.mjs';
@@ -517,7 +516,21 @@ async function cmdScan() {
 
 // -- EVALUATE --
 export async function cmdEvaluate(input, ctx, { generate = callOpenRouter, readPage = readJobPage } = {}) {
-  if (!input) return evaluateLocked(input, ctx, { generate, readPage });
+  if (!input) {
+    console.log('Paste job description or URL, then press Enter on an empty line:\n');
+    const rl = readline.createInterface({ input: process.stdin });
+    const lines = [];
+    try {
+      for await (const line of rl) {
+        if (line === '') break;
+        lines.push(line);
+      }
+    } finally {
+      rl.close();
+    }
+    input = lines.join('\n');
+    if (!input.trim()) { console.log('No input provided.'); return null; }
+  }
   const key = createHash('sha256').update(input).digest('hex');
   return withPipelineLock(path.join(DATA_ROOT, 'data', `evaluation-${key}`), () => evaluateLocked(input, ctx, { generate, readPage }));
 }
@@ -538,23 +551,7 @@ async function evaluateLocked(input, ctx, { generate, readPage }) {
     return rel;
   }
 
-  if (!input) {
-    // Interactive paste mode
-    console.log('Paste job description or URL, then press Enter on an empty line:\n');
-    const rl = readline.createInterface({ input: process.stdin });
-    const lines = [];
-    try {
-      for await (const line of rl) {
-        if (line === '') break;
-        lines.push(line);
-      }
-    } finally {
-      rl.close();
-    }
-    jdText = lines.join('\n');
-    if (!jdText.trim()) { console.log('No input provided.'); return null; }
-    return cmdEvaluate(jdText, ctx, { generate, readPage });
-  } else if (input.startsWith('http')) {
+  if (input.startsWith('http')) {
     console.log('Fetching job page...');
     try {
       jdText = await fetchJobPage(input, readPage);
@@ -600,11 +597,6 @@ async function evaluateLocked(input, ctx, { generate, readPage }) {
     const legitLine = `**Legitimacy:** ${summary.legitimacy_tier}`;
     writeFile(relPath, `**URL:** ${identity}\n${legitLine}\n\n${result.split(/^## Job Description/m)[0]}\n\n## Job Description (archived verbatim)\n\n${jdText}\n`);
 
-    const scoreStr = `${summary.score.toFixed(1)}/5`;
-    const companyName = summary.company;
-    const reportLink  = `[${numStr}](reports/${numStr}-${slug}-${today}.md)`;
-    const tsvFile = `batch/tracker-additions/openrouter-${num}/evaluation.tsv`;
-    writeFile(tsvFile, `${TSV_ADDITION_HEADER}\n${num}\t${today}\t${companyName}\t${summary.role}\tEvaluated\t${scoreStr}\t❌\t${reportLink}\t\n`);
     await updatePreparedTracker(DATA_ROOT, { num, date: today, summary, report: relPath });
 
     console.log(style.success('\n✅ 평가 저장') + ' ' + style.path(relPath));
