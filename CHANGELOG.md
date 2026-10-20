@@ -1,5 +1,45 @@
 # Changelog
 
+## [1.33.0](https://github.com/torisKR/chaeyong-ops/compare/career-ops-v1.32.0...career-ops-v1.33.0) (2026-10-20)
+
+
+### Features
+
+* add Korean junior experience-band filtering ([84a172d](https://github.com/torisKR/chaeyong-ops/commit/84a172df2d504779c4b9b06427e93077961a20a8))
+* add localhost Korean application status board ([18da146](https://github.com/torisKR/chaeyong-ops/commit/18da14659a53ad5b84264062f2c7637b2110f0d4))
+* company blocklist + optional Slack/Discord/Telegram alerts ([1ea6d11](https://github.com/torisKR/chaeyong-ops/commit/1ea6d11544f14faf3d24ac0d90d255b0a71e7550))
+* drive Korean experience filters from profile.years ([ca3d349](https://github.com/torisKR/chaeyong-ops/commit/ca3d3492aab82633dda0e5f97eb4395a5d399da0))
+* gonggo A–G+H 평가, 로고, chaeyong-ops 스킬 리브랜딩 ([670f053](https://github.com/torisKR/chaeyong-ops/commit/670f0536df6e2b5a413ab5744d47af1d06b52203))
+* guided 직종/연차/블랙리스트 setup and consulting skill ([24c3a52](https://github.com/torisKR/chaeyong-ops/commit/24c3a5210425234c900d44189163ccdf9de104af))
+* Korean junior experience-band filtering (~1–2y) ([8055c3c](https://github.com/torisKR/chaeyong-ops/commit/8055c3cc7971ca547159220adacc33ba83dc3d93))
+* localhost Korean application status board ([a01f940](https://github.com/torisKR/chaeyong-ops/commit/a01f940c76c1b529ef8c353ff82b43a091f71e1b))
+* one-command Korean setup (clone → first scan) ([da57abf](https://github.com/torisKR/chaeyong-ops/commit/da57abf67038bada87075e90536c47f1b9e2a35a))
+* one-command Korean setup for first-time contributors ([669d163](https://github.com/torisKR/chaeyong-ops/commit/669d163fe3eb42400659b416825f9befa765696e))
+* OSS setup for 직종/연차/블랙리스트 + 취업 컨설팅 skill ([d6a5ecf](https://github.com/torisKR/chaeyong-ops/commit/d6a5ecfa0d6e66d80c62da8cb2ae0a9318801eda))
+* Playwright 기반 채용 검증과 지원 준비 흐름 개선 ([9addd5d](https://github.com/torisKR/chaeyong-ops/commit/9addd5dce24b410f168dc6b2d8716bceef6563e4))
+* portals.yml company blocklist and optional hiring-ops alerts ([5692cf5](https://github.com/torisKR/chaeyong-ops/commit/5692cf5c55d2a1c02595dca277add31bcb9cca98))
+* profile-driven experience filtering (not a fixed junior band) ([131cada](https://github.com/torisKR/chaeyong-ops/commit/131cadaff297fec499331b0dbd3eac8ee2dce495))
+* 한국 백엔드/풀스택 타깃 정리와 리멤버 provider stub ([a7759ca](https://github.com/torisKR/chaeyong-ops/commit/a7759ca6125a6736a4602b6908aab081b91c7ac3))
+* 한국어 auto-pipeline·scan 모드 추가 ([37a40c4](https://github.com/torisKR/chaeyong-ops/commit/37a40c4013f1621da71e179784c69c050fc8da27))
+* 한국어 pdf·triage 모드 및 brief 템플릿 ([49064c6](https://github.com/torisKR/chaeyong-ops/commit/49064c6e329034aa60d55bc9804b6091da837ccd))
+* 한국어 모드 전체 + batch 인프라 + doctor brief 자동화 ([048c2fd](https://github.com/torisKR/chaeyong-ops/commit/048c2fd3f1a1cf572bbd725bbdfcde3e3aa96af7))
+* 한국형 구직 파이프인 채용옵스 초기 릴리스 ([2c90c53](https://github.com/torisKR/chaeyong-ops/commit/2c90c535d3631256453942cf3eea30b9c51da613))
+
+
+### Bug Fixes
+
+* keep doctor --json warnings compatible with MCP CLI tests ([8bfd693](https://github.com/torisKR/chaeyong-ops/commit/8bfd6930f50d13076a42a54eb7f0c391118d4495))
+* keep web-board fixture tracked under test-fixtures ([a192743](https://github.com/torisKR/chaeyong-ops/commit/a192743cad5cee17c65defd81a60b9519a869683))
+* point TUI dashboard at repo-root tracker and Korean status tabs ([6802ee5](https://github.com/torisKR/chaeyong-ops/commit/6802ee5301ab2d6e9185d578d04584e47dd7b05f))
+* recover dead tracker-lock owner on Windows CI ([65f0a6a](https://github.com/torisKR/chaeyong-ops/commit/65f0a6a292427f5018eba1e9a2a7ff8f645b53e4))
+* silence CodeQL URL-substring alerts and fail closed on bad YAML ([3c0551a](https://github.com/torisKR/chaeyong-ops/commit/3c0551ade60edddca53bd70fc1616822086cff67))
+* silence favicon 404 on the localhost status board ([7b9fbc0](https://github.com/torisKR/chaeyong-ops/commit/7b9fbc09af1d59a0c7f1a11189bb33832a165dcf))
+* unblock CI after chaeyong-ops skill rebrand and missing fixtures ([ff6931d](https://github.com/torisKR/chaeyong-ops/commit/ff6931db9b623d46201b750a74c7bba702692f30))
+* unblock CI on chaeyong-ops fork paths and missing fixtures ([c0c8ee2](https://github.com/torisKR/chaeyong-ops/commit/c0c8ee27ec63d14006f0b33e314e1cbce456ed55))
+* 브라우저 내부망 접근과 로컬 대시보드 보안 강화 ([7b58d75](https://github.com/torisKR/chaeyong-ops/commit/7b58d75ecf686cb27181218c95cb9c8143e8eb4d))
+* 원티드 CloudFront 403 처리와 한국 지원 워크플로 ([1eb5414](https://github.com/torisKR/chaeyong-ops/commit/1eb54148ce0ceb51ffed07a833bea3ec4e32fa7b))
+* 평가 저장 경로와 회귀 검증 안정화 ([3dcce11](https://github.com/torisKR/chaeyong-ops/commit/3dcce11e743232b775b1ad013131c11dd2e891d7))
+
 ## [1.32.0](https://github.com/career-ops-hq/career-ops/compare/career-ops-v1.31.0...career-ops-v1.32.0) (2026-09-03)
 
 
