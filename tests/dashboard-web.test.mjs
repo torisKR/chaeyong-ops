@@ -32,11 +32,13 @@ if (existsSync(docs) && readFileSync(docs, 'utf8').includes('127.0.0.1:3847')) {
 }
 
 const readme = readFileSync(join(ROOT, 'README.md'), 'utf8');
+const goVersion = readFileSync(join(ROOT, 'dashboard', 'go.mod'), 'utf8').match(/^go\s+(\d+\.\d+)/m)?.[1];
+const goRequirement = `Go ${goVersion}+`;
 if (readme.includes('npm run dashboard:web') && readme.includes('127.0.0.1:3847')
-    && readme.includes('npm run serve:dashboard') && readme.includes('Go 1.24+')) {
-  pass('README documents both viewers and Go 1.24+');
+    && readme.includes('npm run serve:dashboard') && goVersion && readme.includes(goRequirement)) {
+  pass(`README documents both viewers and ${goRequirement} from go.mod`);
 } else {
-  fail('README.md should mention dashboard:web, serve:dashboard, 127.0.0.1:3847, and Go 1.24+');
+  fail(`README.md should mention dashboard:web, serve:dashboard, 127.0.0.1:3847, and ${goRequirement}`);
 }
 
 const main = readFileSync(join(ROOT, 'dashboard', 'main.go'), 'utf8');
