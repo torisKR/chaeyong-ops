@@ -29,7 +29,8 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { getCareerOpsRoot } from './path-resolver.mjs';
 import { reportPrefix } from './jd-capture.mjs';
-import { rejectPrivateOrInvalid, validateUrlSecurity } from './liveness-browser.mjs';
+import { rejectPrivateOrInvalid } from './liveness-browser.mjs';
+import { BROWSER_EGRESS_LAUNCH_OPTIONS, newGuardedBrowserContext, installBrowserRequestGuard } from './lib/browser-egress.mjs';
 import { validateFlags } from './lib/cli-flags.mjs';
 import { isMainModule } from './lib/is-main-module.mjs';
 
@@ -289,34 +290,17 @@ async function extractPipelineEntries() {
  * Register the egress guard on a Playwright context.
  *
  * Registered on the *context* rather than the page: a route bound to a single
- * page doesn't cover requests the flow makes outside it, and the context is
- * what owns the whole navigation. Both layers of the shared guard run here —
- * the literal-host check first (cheap, no network), then the DNS re-check that
- * catches a public hostname resolving into private space.
+ * page doesn't cover requests the flow makes outside it. Real contexts must
+ * already have the enforced SOCKS connection boundary; this routing hook is
+ * an additional early refusal and cannot retrofit connection enforcement.
  *
  * @param {import('playwright').BrowserContext} context - Context to guard.
  */
 export async function installEgressGuard(context) {
-  await context.route('**/*', async (route) => {
-    const requestUrl = route.request().url();
-
-    const verdict = rejectPrivateOrInvalid(requestUrl);
-    if (verdict) {
-      console.warn(`   Blocked request to restricted destination: ${requestUrl} (${verdict.reason})`);
-      return route.abort('blockedbyclient');
-    }
-
-    try {
-      await validateUrlSecurity(requestUrl);
-      return route.continue();
-    } catch (err) {
-      console.warn(`   Blocked request to restricted destination (DNS): ${requestUrl} - ${err.message}`);
-      return route.abort('blockedbyclient');
-    }
-  });
+  await installBrowserRequestGuard(context);
 }
 
-export async function archiveUrl(browser, url, { company: companyHint, role: roleHint } = {}) {
+export async function archiveUrl(browser, url, { company: companyHint, role: roleHint, egressOptions } = {}) {
   console.log(`\n🔗  ${url}`);
 
   // Refuse before launching any navigation, so an obviously-internal target
@@ -326,17 +310,14 @@ export async function archiveUrl(browser, url, { company: companyHint, role: rol
     throw new Error(`refusing to archive restricted destination: ${preGuard.reason}`);
   }
 
-  const context = await browser.newContext();
-  await installEgressGuard(context);
-  const page = await context.newPage();
-
+  const context = await newGuardedBrowserContext(browser, {}, egressOptions);
   try {
+    const page = await context.newPage();
     const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
     const httpStatus = response?.status() ?? 0;
 
-    // Re-check where we actually landed. The route guard already inspects every
-    // redirect hop, so this is defence-in-depth: a first-hop-only check is the
-    // classic miss here, and asserting on the settled URL costs nothing.
+    // Re-check where we actually landed as defence in depth. The SOCKS
+    // connection boundary enforces redirect destinations before any dialing.
     const landedUrl = page.url();
     const postGuard = rejectPrivateOrInvalid(landedUrl);
     if (postGuard) {
@@ -434,7 +415,7 @@ async function main() {
     }
   } else {
     // Sequential — project convention: never Playwright in parallel
-    const browser = await chromium.launch({ headless: true });
+    const browser = await chromium.launch({ headless: true, ...BROWSER_EGRESS_LAUNCH_OPTIONS });
     try {
       for (const { url, company, role } of targets) {
         try {

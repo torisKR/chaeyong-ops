@@ -27,6 +27,7 @@
 // an undici Agent — and undici is not a dependency of this project.
 
 import { AsyncLocalStorage } from 'node:async_hooks';
+import { isIP } from 'node:net';
 
 /**
  * Set while a provider HTTP request is in flight. The patched dns.lookup
@@ -99,30 +100,40 @@ export function isBlockedAddress(address) {
   const raw = String(address ?? '').trim();
   if (!raw) return true; // nothing to validate is not the same as safe
 
-  // Strip an RFC 4007 zone id (fe80::1%eth0) before parsing.
+  // Parse addresses before applying ranges. Prefix regexes miss expanded
+  // loopback/mapped addresses and accepting malformed IPv6 is unsafe.
   const addr = raw.split('%')[0].toLowerCase();
-
-  const asV4 = v4ToInt(addr);
-  if (asV4 !== null) {
-    return V4_BLOCKED.some(([net, bits]) => {
-      const mask = bits === 0 ? 0 : (0xFFFFFFFF << (32 - bits)) >>> 0;
-      return (asV4 & mask) >>> 0 === net;
+  const family = isIP(addr);
+  if (!family) return true;
+  if (family === 4) {
+    const value = v4ToInt(addr);
+    return value === null || V4_BLOCKED.some(([net, bits]) => {
+      const mask = (0xFFFFFFFF << (32 - bits)) >>> 0;
+      return ((value & mask) >>> 0) === net;
     });
   }
 
-  if (!addr.includes(':')) return true; // neither v4 nor v6 — refuse to guess
-
-  // IPv4-mapped (::ffff:a.b.c.d) and IPv4-compatible (::a.b.c.d).
-  const tail = addr.slice(addr.lastIndexOf(':') + 1);
-  if (tail.includes('.')) {
-    const embedded = v4ToInt(tail);
-    return embedded === null ? true : isBlockedAddress(tail);
+  let hex = addr;
+  if (hex.includes('.')) {
+    const split = hex.lastIndexOf(':');
+    const embedded = v4ToInt(hex.slice(split + 1));
+    if (embedded === null) return true;
+    hex = hex.slice(0, split + 1) + `${(embedded >>> 16).toString(16)}:${(embedded & 0xffff).toString(16)}`;
   }
-
-  if (addr === '::' || addr === '::1') return true;      // unspecified, loopback
-  if (/^f[cd]/.test(addr)) return true;                   // fc00::/7 unique local
-  if (/^fe[89ab]/.test(addr)) return true;                // fe80::/10 link-local
-  if (/^ff/.test(addr)) return true;                      // ff00::/8 multicast
+  const halves = hex.split('::');
+  const left = halves[0] ? halves[0].split(':') : [];
+  const right = halves.length > 1 && halves[1] ? halves[1].split(':') : [];
+  const words = [...left, ...Array(8 - left.length - right.length).fill('0'), ...right].map(part => parseInt(part, 16));
+  // Mapped and compatible addresses must inherit their IPv4 verdict, including
+  // fully expanded spellings such as 0:0:0:0:0:ffff:7f00:1.
+  if (words.slice(0, 5).every(word => word === 0) && (words[5] === 0xffff || words[5] === 0)) {
+    return isBlockedAddress(`${words[6] >>> 8}.${words[6] & 255}.${words[7] >>> 8}.${words[7] & 255}`);
+  }
+  // Only global unicast is dialable. This rejects ULA (fc00::/7), all
+  // fe80::/10 spellings, multicast, NAT64 and special/reserved address space.
+  if ((words[0] & 0xe000) !== 0x2000) return true;
+  if (words[0] === 0x2002) return true; // 6to4 may encapsulate a private IPv4
+  if (words[0] === 0x2001 && (words[1] < 0x0200 || words[1] === 0x0db8)) return true;
   return false;
 }
 

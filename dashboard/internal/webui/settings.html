@@ -102,6 +102,7 @@
       {{else}}
       <p class="muted">지원하지 않을 회사. 한 줄 또는 쉼표. 실명 이메일은 넣지 마세요. 스캔이 이 회사 공고를 pipeline에 넣지 않습니다.</p>
       <form method="post" action="/settings">
+        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
         <label for="blocked">blocked_companies</label>
         <textarea id="blocked" name="blocked" placeholder="ExampleCorp&#10;Example Agency">{{.BlockedText}}</textarea>
         <button type="submit">저장</button>

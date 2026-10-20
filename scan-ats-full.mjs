@@ -656,7 +656,8 @@ async function filterLive(offers) {
     );
   }
   console.error(`\nVerifying liveness of ${offers.length} match(es) with Playwright (sequential)...`);
-  const browser = await chromium.launch({ headless: true });
+  const { BROWSER_EGRESS_LAUNCH_OPTIONS } = await import('./lib/browser-egress.mjs');
+  const browser = await chromium.launch({ ...BROWSER_EGRESS_LAUNCH_OPTIONS, headless: true });
   const live = [];
   try {
     const page = await newLivenessPage(browser);

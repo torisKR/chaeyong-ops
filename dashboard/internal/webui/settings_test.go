@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -84,13 +85,17 @@ func TestSettingsRoundTrip(t *testing.T) {
 
 	form := url.Values{}
 	form.Set("blocked", "ExampleCorp, Sample Labs")
-	post, err := http.PostForm(srv.URL+"/settings", form)
+	form.Set("csrf_token", settingsTokenFromHTML(t, html))
+	client := &http.Client{CheckRedirect: func(*http.Request, []*http.Request) error {
+		return http.ErrUseLastResponse
+	}}
+	post, err := client.PostForm(srv.URL+"/settings", form)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer post.Body.Close()
-	if post.StatusCode != http.StatusOK && post.Request.URL.Query().Get("saved") != "1" {
-		t.Fatalf("post status %d url %s", post.StatusCode, post.Request.URL)
+	if post.StatusCode != http.StatusSeeOther || post.Header.Get("Location") != "/settings?saved=1" {
+		t.Fatalf("post status %d location %s", post.StatusCode, post.Header.Get("Location"))
 	}
 	saved, err := os.ReadFile(filepath.Join(dir, "portals.yml"))
 	if err != nil {
@@ -100,6 +105,15 @@ func TestSettingsRoundTrip(t *testing.T) {
 	if !strings.Contains(text, "Sample Labs") || !strings.Contains(text, "ExampleCorp") {
 		t.Fatalf("portals.yml after save:\n%s", text)
 	}
+}
+
+func settingsTokenFromHTML(t *testing.T, html string) string {
+	t.Helper()
+	match := regexp.MustCompile(`name="csrf_token" value="([^"]+)"`).FindStringSubmatch(html)
+	if len(match) != 2 {
+		t.Fatal("settings form is missing its CSRF token")
+	}
+	return match[1]
 }
 
 func TestHandlerBoardLinksSettings(t *testing.T) {

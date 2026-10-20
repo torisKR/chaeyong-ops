@@ -4178,7 +4178,8 @@ if (!existsSync(openrouterRunnerPath)) {
     /liveness\.result\s*!==\s*['"]active['"]/.test(fetchBoundary) &&
     !/\bfetch\s*\(/.test(fetchBoundary) &&
     /await import\(['"]playwright['"]\)\)\.chromium\.launch\(/.test(reader) &&
-    /browser\s*=\s*await launch\(\{\s*headless:\s*true\s*\}\)/.test(reader) &&
+    /browser\s*=\s*await launch\(\{\s*headless:\s*true,\s*\.\.\.BROWSER_EGRESS_LAUNCH_OPTIONS\s*\}\)/.test(reader) &&
+    /context\s*=\s*await newGuardedBrowserContext\(browser,/.test(reader) &&
     /finally\s*\{\s*if\s*\(browser\)\s*await browser\.close\(\)/.test(reader)
   ) {
     pass('job-page fetch boundary delegates to the browser reader, closes every session and rejects unverified content (#2619)');

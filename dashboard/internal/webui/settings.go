@@ -17,16 +17,17 @@ const (
 
 // SettingsView is the localhost targeting page (직종 / 연차 / 블랙리스트).
 type SettingsView struct {
-	Years           string
-	Roles           []string
-	Blocked         []string
-	BlockedText     string
-	Message         string
-	Error           string
-	ProfileMissing  bool
-	PortalsMissing  bool
-	ProfileRel      string
-	PortalsRel      string
+	CSRFToken      string
+	Years          string
+	Roles          []string
+	Blocked        []string
+	BlockedText    string
+	Message        string
+	Error          string
+	ProfileMissing bool
+	PortalsMissing bool
+	ProfileRel     string
+	PortalsRel     string
 }
 
 var (

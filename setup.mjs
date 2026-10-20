@@ -110,7 +110,6 @@ const COPIES = [
 const EXAMPLE_MARKERS = [
   'you.example@example.com',
   '김예시',
-  '김예시',
   '010-0000-0000',
 ];
 

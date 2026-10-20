@@ -19,7 +19,8 @@ npm ci
 npm run dev
 ```
 
-Open http://localhost:3000. The app reads the career-ops checkout it lives in
+Open the private session link printed in the terminal after the server is ready.
+The server binds to `127.0.0.1`; each launch creates a fresh session key. The app reads the career-ops checkout it lives in
 (the parent directory) — your existing CV, pipeline and reports appear as-is.
 
 ## What works today
@@ -59,20 +60,30 @@ npm run dev          # dev server (Turbopack)
 npm test             # unit suites (node --test, no framework)
 npx tsc --noEmit     # typecheck
 npm run build        # production build
+node tests/security-web.integration.mjs # real listener, synthetic CV, auth/CSRF checks
 ```
 
 Set `CAREER_OPS_ROOT=/path/to/checkout` in `web/.env.local` to point the app at
 a different career-ops directory (useful for testing against sample data).
 
-`/api` is gated by the same-origin + loopback guard in `src/lib/origin-guard.mjs`.
-Two opt-ins widen it, both unset by default and both in `web/.env.local`:
-`CAREER_OPS_WEB_ALLOWED_HOSTS` names extra non-loopback hosts the dashboard may
-answer on, and `CAREER_OPS_ALLOWED_ORIGINS` names origins allowed to call the
+Every page, server-rendered payload, and API requires the launcher session, in
+addition to the Host/origin guard in `src/lib/origin-guard.mjs`. The session link
+sets an HttpOnly, SameSite=Strict cookie and redirects to `/`. Restarting the
+server invalidates old cookies. Direct `next dev`/`next start` without a session
+key fails closed. Use `npm run dev` or `npm start`; hostname overrides and LAN
+serving are unsupported.
+
+`CAREER_OPS_WEB_ALLOWED_HOSTS` can allow additional Host header names but does
+not change the loopback listener or provide authentication.
+`CAREER_OPS_ALLOWED_ORIGINS` names origins allowed to call the
 API from outside the app — a comma- or space-separated list, no trailing slash.
 The second is what a local companion client needs: a browser extension calls
 from a `chrome-extension://` origin, which Fetch Metadata always reports as
 `cross-site`, so the guard refuses it unless the id is named here. The host
-layer still applies to an allowlisted origin.
+layer and session authentication still apply to an allowlisted origin. A companion
+client or curl must send `Authorization: Bearer <session key>` using the key in
+the current terminal session link. Keep that link private; it grants access to
+your local CV, tracker and editing tools.
 
 ### Tests
 

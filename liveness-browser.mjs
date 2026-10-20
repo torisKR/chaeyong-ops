@@ -7,6 +7,8 @@
 
 import { classifyLiveness } from './liveness-core.mjs';
 import { BROWSER_LIKE_USER_AGENT } from './user-agent.mjs';
+import { BROWSER_EGRESS_LAUNCH_OPTIONS, newGuardedBrowserContext, closeGuardedBrowserContext, isGuardedContext, resetPageEgress, rejectPrivateOrInvalid, validateUrlSecurity } from './lib/browser-egress.mjs';
+export { rejectPrivateOrInvalid, validateUrlSecurity, setHostResolver } from './lib/browser-egress.mjs';
 
 const NAVIGATE_TIMEOUT_MS = 15_000;
 const HYDRATION_WAIT_MS = 2_000;
@@ -44,9 +46,10 @@ export const LIVENESS_CONTEXT_OPTIONS = {
 
 // Open a page in a context that already presents a realistic UA. Both callers use
 // this instead of browser.newPage() so headless checks aren't instantly bot-walled.
-export async function newLivenessPage(browser) {
-  const context = await browser.newContext(LIVENESS_CONTEXT_OPTIONS);
-  return context.newPage();
+export async function newLivenessPage(browser, { egressOptions } = {}) {
+  const context = await newGuardedBrowserContext(browser, LIVENESS_CONTEXT_OPTIONS, egressOptions);
+  try { return await context.newPage(); }
+  catch (error) { await closeGuardedBrowserContext(context); throw error; }
 }
 
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -59,184 +62,6 @@ export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 export function jitteredDelayMs(baseMs) {
   if (!baseMs || baseMs <= 0) return 0;
   return baseMs + Math.floor(Math.random() * baseMs);
-}
-
-// Defensive guards: URLs come from ATS feeds (mostly trusted) but a misconfigured
-// portals.yml entry or a hijacked feed shouldn't be able to point Playwright at
-// internal infrastructure. Only allow http(s) and reject loopback/private/link-local.
-//
-// The hostname coming out of `new URL(...)` needs normalization before the regex
-// pass, because the WHATWG URL parser surfaces several encodings that bypass a
-// naive match against `parsed.hostname`:
-//   1. IPv6 hosts are serialized with brackets — `new URL('http://[::1]/').hostname`
-//      is `'[::1]'`, so a regex like `/^::1$/` never fires unless brackets are stripped.
-//   2. FQDN trailing dot is preserved — `localhost.` reaches the network as
-//      localhost, but `/^localhost$/` doesn't match it.
-//   3. IPv4-mapped IPv6 (`::ffff:127.0.0.1` or the hex form `::ffff:7f00:1`)
-//      routes to the embedded IPv4 in Chromium, so the embedded address must
-//      also be matched against the IPv4 block list.
-// `0.0.0.0` and the all-zeros IPv6 `::` both reach loopback on Linux and need
-// explicit entries; the original list omitted them.
-const PRIVATE_HOST_PATTERNS = [
-  /^localhost$/,
-  /^localhost\.localdomain$/,
-  /^0\.0\.0\.0$/,
-  /^127\./,
-  /^10\./,
-  /^192\.168\./,
-  /^172\.(1[6-9]|2\d|3[01])\./,
-  /^169\.254\./,
-  /^::1$/,
-  /^::$/,
-  /^fc[0-9a-f]{2}:/,
-  /^fe80:/,
-];
-
-// Lowercase, strip IPv6 brackets, strip FQDN trailing dot. The `hostname`
-// returned by `new URL(...)` is already percent-decoded and IDNA-normalized,
-// but it preserves brackets around IPv6 hosts and trailing dots on FQDNs.
-function normalizeHost(rawHostname) {
-  if (!rawHostname) return '';
-  let h = String(rawHostname).toLowerCase();
-  if (h.startsWith('[') && h.endsWith(']')) h = h.slice(1, -1);
-  if (h.endsWith('.')) h = h.slice(0, -1);
-  return h;
-}
-
-// IPv4-mapped IPv6 (RFC 4291 §2.5.5.2): `::ffff:0:0/96` routes to the embedded
-// IPv4 address. Two textual forms — dotted (`::ffff:127.0.0.1`) and pure-hex
-// (`::ffff:7f00:1`). Return the embedded IPv4 in dotted-decimal form, or null
-// if `host` is not an IPv4-mapped IPv6.
-function extractMappedIPv4(host) {
-  const dotted = host.match(/^::ffff:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/);
-  if (dotted) return dotted[1];
-  const hex = host.match(/^::ffff:([0-9a-f]{1,4}):([0-9a-f]{1,4})$/);
-  if (hex) {
-    const a = parseInt(hex[1], 16);
-    const b = parseInt(hex[2], 16);
-    return `${(a >> 8) & 0xff}.${a & 0xff}.${(b >> 8) & 0xff}.${b & 0xff}`;
-  }
-  return null;
-}
-
-// Returns null when the URL is safe to fetch, otherwise a structured guard
-// result with a stable `code` (used for routing in scan.mjs) plus a human
-// `reason`. Stable codes — not regex on reason strings — drive downstream
-// dispatch so the wording can change freely without breaking callers.
-//
-// Exported for unit tests; the main entry point is checkUrlLiveness.
-export function rejectPrivateOrInvalid(url) {
-  let parsed;
-  try {
-    parsed = new URL(url);
-  } catch {
-    return { code: 'invalid_url', reason: 'invalid URL' };
-  }
-  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
-    return { code: 'unsupported_protocol', reason: `unsupported protocol ${parsed.protocol}` };
-  }
-  const host = normalizeHost(parsed.hostname);
-  const mappedIPv4 = extractMappedIPv4(host);
-  const candidates = mappedIPv4 ? [host, mappedIPv4] : [host];
-  for (const candidate of candidates) {
-    if (PRIVATE_HOST_PATTERNS.some((pattern) => pattern.test(candidate))) {
-      return { code: 'blocked_host', reason: `blocked host ${parsed.hostname}` };
-    }
-  }
-  return null;
-}
-
-const dnsCache = new Map();
-
-// Real DNS: resolve4 + resolve6 + lookup, each tolerant of its own failure, so a
-// host that only answers on one of the three still yields an address list.
-async function resolveViaDns(hostname) {
-  const dns = await import('dns/promises');
-  const [ipv4, ipv6, lookupList] = await Promise.all([
-    dns.resolve4(hostname).catch(() => []),
-    dns.resolve6(hostname).catch(() => []),
-    dns.lookup(hostname, { all: true }).catch(() => [])
-  ]);
-  return Array.from(new Set([
-    ...ipv4,
-    ...ipv6,
-    ...lookupList.map(item => item.address)
-  ]));
-}
-
-let hostResolver = resolveViaDns;
-
-/**
- * Swap the resolver the egress guard uses, returning a restore function.
- *
- * `dns/promises` is imported dynamically and the guard calls the ESM namespace
- * bindings, which are immutable — monkey-patching the module object has no
- * effect on them (#2386). Without this seam a test can only ever reach the
- * "host resolved to nothing" branch: the real resolver returns an empty list
- * for the synthetic hostname, the guard blocks on that, and the loopback
- * rejection the test exists to cover never runs. The memo cache is cleared on
- * every swap, in both directions, so a verdict computed under one resolver can
- * never be served to the next.
- *
- * @param {((hostname: string) => Promise<string[]>)|null} resolver - Resolver to
- *   install, or null to restore the real DNS one.
- * @returns {() => void} Restores the resolver in place before this call.
- */
-export function setHostResolver(resolver) {
-  const previous = hostResolver;
-  hostResolver = resolver ?? resolveViaDns;
-  dnsCache.clear();
-  return () => {
-    hostResolver = previous;
-    dnsCache.clear();
-  };
-}
-
-async function resolveDnsCached(hostname) {
-  if (dnsCache.has(hostname)) {
-    const cached = dnsCache.get(hostname);
-    if (cached instanceof Error) throw cached;
-    return cached;
-  }
-  try {
-    const addresses = await hostResolver(hostname);
-    if (addresses.length === 0) {
-      // Tagged so the route guard can tell "this host does not exist" apart from
-      // "this host resolves into private space". The first is a dead third-party
-      // script, the second is an egress-guard hit. Only the second says anything
-      // about the page being checked.
-      const missing = new Error(`DNS resolution returned no addresses for ${hostname}`);
-      missing.livenessCode = 'dns_no_addresses';
-      throw missing;
-    }
-    dnsCache.set(hostname, addresses);
-    return addresses;
-  } catch (err) {
-    dnsCache.set(hostname, err);
-    throw err;
-  }
-}
-
-// Second layer of the egress guard: `rejectPrivateOrInvalid` only sees the
-// literal host, so a public hostname that *resolves* to private space still
-// gets through it. Resolve and re-check every address before the request is
-// allowed out. Exported so other Playwright callers (archive-posting.mjs) wire
-// up the same two-layer guard instead of growing a second implementation.
-export async function validateUrlSecurity(urlString) {
-  const url = new URL(urlString.endsWith('.') ? urlString.slice(0, -1) : urlString);
-  const hostname = url.hostname;
-  const host = normalizeHost(hostname);
-  const addresses = await resolveDnsCached(host);
-  for (const ip of addresses) {
-    const norm = normalizeHost(ip);
-    const mapped = extractMappedIPv4(norm);
-    const candidates = mapped ? [norm, mapped] : [norm];
-    for (const candidate of candidates) {
-      if (PRIVATE_HOST_PATTERNS.some((pattern) => pattern.test(candidate))) {
-        throw new Error(`Access denied: Egress guard blocked private target IP ${ip}`);
-      }
-    }
-  }
 }
 
 export async function checkUrlLiveness(page, url, { extraSettleMs = 0 } = {}) {
@@ -253,10 +78,16 @@ export async function checkUrlLiveness(page, url, { extraSettleMs = 0 } = {}) {
   if (guardError) {
     return { result: 'uncertain', code: guardError.code, reason: guardError.reason };
   }
+  if (typeof page?.context === 'function' && !isGuardedContext(page.context())) {
+    return { result: 'uncertain', code: 'blocked_host', reason: 'Browser context has no enforced egress proxy' };
+  }
   if (page) {
     page._blockedByGuard = null;
+    resetPageEgress(page);
   }
-  if (page && typeof page.route === 'function' && !page._routeInterceptorRegistered) {
+  // Lightweight doubles retain the routing checks; real pages are guarded at
+  // their context and TCP connection boundary, including browser redirects.
+  if (page && typeof page.context !== 'function' && typeof page.route === 'function' && !page._routeInterceptorRegistered) {
     page._routeInterceptorRegistered = true;
     await page.route('**/*', async (route) => {
       const requestUrl = route.request().url();
@@ -479,12 +310,13 @@ export function createHeadedPageProvider(chromium) {
       if (page) return page;
       if (launchFailed) return null;
       try {
-        browser = await chromium.launch({ headless: false });
-        const context = await browser.newContext(LIVENESS_CONTEXT_OPTIONS);
+        browser = await chromium.launch({ headless: false, ...BROWSER_EGRESS_LAUNCH_OPTIONS });
+        const context = await newGuardedBrowserContext(browser, LIVENESS_CONTEXT_OPTIONS);
         page = await context.newPage();
         return page;
       } catch {
         launchFailed = true;
+        try { await browser?.close(); } catch { /* best-effort teardown */ }
         browser = null;
         page = null;
         return null;

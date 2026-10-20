@@ -1,4 +1,5 @@
-// Same-origin / loopback guard for the local dashboard's API surface.
+// CSRF / Host guard for the local dashboard. Authentication is separate in
+// local-session.mjs and applies to all pages and APIs in proxy.ts.
 //
 // The dashboard is local-first: its /api routes spawn child processes and read
 // and write the user's files. A route that answers an unauthenticated request
@@ -21,8 +22,9 @@
 //     sound a signal as same-origin is. That is what a local companion client
 //     needs — a browser extension speaks from a chrome-extension:// origin,
 //     which is always "cross-site" to Fetch Metadata and so blocked outright.
-//   Host layer (F2): only answer on a loopback Host by default; extra hosts
-//     require an explicit opt-in (CAREER_OPS_WEB_ALLOWED_HOSTS).
+//   Host layer: reject unexpected authorities to limit DNS rebinding. Host is
+//     supplied by the client and cannot authenticate a network peer. The
+//     launcher binds literal loopback and proxy.ts requires the session key.
 
 /** Lowercase a Host/authority, drop the port, unwrap a bracketed IPv6 literal. */
 export function normalizeHost(hostHeader) {

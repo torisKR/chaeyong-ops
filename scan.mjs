@@ -2648,7 +2648,8 @@ async function verifyOffers(offers, { headedFallback = false, throttleBaseMs = 0
 
   let browser;
   try {
-    browser = await chromium.launch({ headless: true });
+    const { BROWSER_EGRESS_LAUNCH_OPTIONS } = await import('./lib/browser-egress.mjs');
+    browser = await chromium.launch({ ...BROWSER_EGRESS_LAUNCH_OPTIONS, headless: true });
   } catch (err) {
     throw new Error(
       `--verify could not launch Chromium (run "npx playwright install chromium" or re-run without --verify): ${err.message}`,

@@ -1,6 +1,8 @@
 package webui
 
 import (
+	"crypto/rand"
+	"crypto/subtle"
 	"embed"
 	"encoding/json"
 	"fmt"
@@ -78,8 +80,14 @@ func withSecurityHeaders(h http.Handler) http.Handler {
 	})
 }
 
-// NewHandler serves the read-only status board for careerOpsPath.
+// NewHandler serves the local status board and settings for careerOpsPath.
 func NewHandler(careerOpsPath string) http.Handler {
+	csrfToken := rand.Text()
+	loadSettings := func() SettingsView {
+		view := LoadSettings(careerOpsPath)
+		view.CSRFToken = csrfToken
+		return view
+	}
 	mux := http.NewServeMux()
 	mux.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
@@ -103,7 +111,7 @@ func NewHandler(careerOpsPath string) http.Handler {
 	mux.HandleFunc("/settings", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet, http.MethodHead:
-			view := LoadSettings(careerOpsPath)
+			view := loadSettings()
 			if r.URL.Query().Get("saved") == "1" {
 				view.Message = "블랙리스트를 저장했습니다. 다음 스캔부터 적용됩니다."
 			}
@@ -112,22 +120,31 @@ func NewHandler(careerOpsPath string) http.Handler {
 				http.Error(w, "template error", http.StatusInternalServerError)
 			}
 		case http.MethodPost:
+			if !isSameOriginRequest(r) {
+				http.Error(w, "forbidden", http.StatusForbidden)
+				return
+			}
 			if err := r.ParseForm(); err != nil {
 				http.Error(w, "form error", http.StatusBadRequest)
 				return
 			}
-			names, err := ParseBlockedForm(r.FormValue("blocked"))
+			tokens := r.PostForm["csrf_token"]
+			if len(tokens) != 1 || subtle.ConstantTimeCompare([]byte(tokens[0]), []byte(csrfToken)) != 1 {
+				http.Error(w, "forbidden", http.StatusForbidden)
+				return
+			}
+			names, err := ParseBlockedForm(r.PostForm.Get("blocked"))
 			if err != nil {
-				view := LoadSettings(careerOpsPath)
+				view := loadSettings()
 				view.Error = err.Error()
-				view.BlockedText = r.FormValue("blocked")
+				view.BlockedText = r.PostForm.Get("blocked")
 				w.Header().Set("Content-Type", "text/html; charset=utf-8")
 				w.WriteHeader(http.StatusBadRequest)
 				_ = settingsTmpl.Execute(w, view)
 				return
 			}
 			if err := SaveBlockedCompanies(careerOpsPath, names); err != nil {
-				view := LoadSettings(careerOpsPath)
+				view := loadSettings()
 				view.Error = err.Error()
 				w.Header().Set("Content-Type", "text/html; charset=utf-8")
 				w.WriteHeader(http.StatusBadRequest)
@@ -151,7 +168,7 @@ func NewHandler(careerOpsPath string) http.Handler {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		_ = json.NewEncoder(w).Encode(boardJSON(board))
 	})
-	return withSecurityHeaders(mux)
+	return withSecurityHeaders(withLoopbackHost(mux))
 }
 
 // ValidateAddr rejects non-loopback binds so the tracker never leaves this machine.

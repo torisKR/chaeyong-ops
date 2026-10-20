@@ -32,6 +32,8 @@ jds/*
 !jds/.gitkeep
 
 # Personal documents — never commit scans or copies of these (PII).
+# Root-level intake PDFs may contain names in any Unicode normalization form.
+/*.[pP][dD][fF]
 # Catches common identity/credential filenames so they can't be staged by accident.
 *passport*
 *diploma*
